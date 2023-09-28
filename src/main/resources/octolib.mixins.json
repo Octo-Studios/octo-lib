@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "it.hurts.sskirillss.octolib.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "octolib.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

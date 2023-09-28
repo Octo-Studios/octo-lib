@@ -1,0 +1,94 @@
+plugins {
+    id "dev.architectury.loom" version "1.3-SNAPSHOT"
+    id "io.freefair.lombok" version "8.3"
+    id "maven-publish"
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+archivesBaseName = project.mod_id
+version = project.mod_version
+group = project.mod_group_id
+
+loom {
+    silentMojangMappingsLicense()
+
+    forge {
+        mixinConfigs = [
+                "octolib.mixins.json"
+        ]
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven { url "https://maven.neoforged.net/releases/" }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    mappings loom.officialMojangMappings()
+
+    forge "net.neoforged:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+
+    if (System.getProperty("idea.sync.active") != "true") {
+        annotationProcessor "org.spongepowered:mixin:0.8.4:processor"
+    }
+
+    implementation 'com.jayway.jsonpath:json-path:2.8.0'
+    forgeRuntimeLibrary 'com.jayway.jsonpath:json-path:2.8.0'
+    include 'com.jayway.jsonpath:json-path:2.8.0'
+
+    implementation 'org.jetbrains:annotations:20.1.0'
+}
+
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: minecraft_version, forge_version: forge_version,
+        mod_id           : mod_id, mod_name: mod_name, mod_version: mod_version,
+        mod_authors      : mod_authors
+]
+
+processResources {
+    inputs.properties replaceProperties
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "MixinConfigs"            : mod_id + ".mixins.json",
+                "Specification-Title"     : mod_id,
+                "Specification-Vendor"    : mod_authors,
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : mod_authors,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

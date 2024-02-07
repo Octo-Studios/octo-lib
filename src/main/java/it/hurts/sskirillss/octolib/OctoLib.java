@@ -17,17 +17,14 @@ public class OctoLib {
 
     public OctoLib() {
         Configuration.setDefaults(new Configuration.Defaults() {
-            private final JsonProvider jsonProvider = new GsonJsonProvider();
-            private final MappingProvider mappingProvider = new GsonMappingProvider();
-
             @Override
             public JsonProvider jsonProvider() {
-                return jsonProvider;
+                return new GsonJsonProvider();
             }
 
             @Override
             public MappingProvider mappingProvider() {
-                return mappingProvider;
+                return new GsonMappingProvider();
             }
 
             @Override

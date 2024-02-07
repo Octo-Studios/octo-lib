@@ -15,5 +15,6 @@ import net.minecraftforge.fml.event.IModBusEvent;
 @EqualsAndHashCode(callSuper = true)
 public class ConfigLoadEvent extends Event implements IModBusEvent {
     private OctoConfig config;
-    private ConfigContext context;
+
+    private ConfigContext data;
 }

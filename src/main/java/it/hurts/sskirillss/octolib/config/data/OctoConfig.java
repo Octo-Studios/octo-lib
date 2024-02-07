@@ -1,5 +1,6 @@
 package it.hurts.sskirillss.octolib.config.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
@@ -10,13 +11,13 @@ import it.hurts.sskirillss.octolib.config.storage.ConfigStorage;
 import it.hurts.sskirillss.octolib.config.utils.ConfigUtils;
 import lombok.Data;
 import lombok.SneakyThrows;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoader;
 
 import java.io.File;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 @Data
 public class OctoConfig {
@@ -41,7 +42,7 @@ public class OctoConfig {
 
             if (!event.isCanceled()) {
                 try (Writer writer = Files.newBufferedWriter(path)) {
-                    ConfigUtils.SERIALIZER.toJson(ConfigUtils.SERIALIZER.fromJson(event.getConfig().getData().jsonString(), JsonObject.class), writer);
+                    ConfigUtils.SERIALIZER.toJson(data.json(), writer);
 
                     writer.flush();
                 }
@@ -60,24 +61,55 @@ public class OctoConfig {
 
         ModLoader.get().postEventWrapContainerInModOrder(event);
 
-        if (!event.isCanceled())
-            this.setData(event.getContext());
+        if (!event.isCanceled()) {
+            JsonElement data = event.getData().json();
 
-        return this;
-    }
+            JsonElement result = invalidateJson(event.getConfig().getSchema().json(), data);
 
-    public final OctoConfig reload() {
-        this.loadFromFile();
+            this.setData(new ConfigContext(JsonPath.parse(result)));
+
+            if (!data.equals(result))
+                saveToFile();
+        }
 
         ConfigStorage.set(this);
 
         return this;
     }
 
-    public final OctoConfig getOrSetup() {
-        OctoConfig config = ConfigStorage.get(constructor);
+    protected final JsonElement invalidateJson(JsonElement original, JsonElement edited) throws StackOverflowError {
+        if (!original.isJsonObject() || !edited.isJsonObject())
+            return edited;
 
-        return config == null ? constructor.setup() : config;
+        JsonObject result = new JsonObject();
+
+        JsonObject originalObj = original.getAsJsonObject();
+        JsonObject editedObj = edited.getAsJsonObject();
+
+        for (Map.Entry<String, JsonElement> entry : originalObj.entrySet()) {
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+
+            if (editedObj.has(key)) {
+                JsonElement editedValue = editedObj.get(key);
+
+                if (value.isJsonObject() && editedValue.isJsonObject())
+                    result.add(key, invalidateJson(value.getAsJsonObject(), editedValue.getAsJsonObject()));
+                else
+                    result.add(key, editedValue);
+            } else
+                result.add(key, value);
+        }
+
+        for (String key : editedObj.keySet()) {
+            if (!originalObj.has(key))
+                continue;
+
+            if (!result.has(key))
+                result.add(key, editedObj.get(key));
+        }
+
+        return result;
     }
 
     public <T> T get(String path) {

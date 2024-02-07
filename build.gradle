@@ -39,9 +39,9 @@ dependencies {
         annotationProcessor "org.spongepowered:mixin:0.8.4:processor"
     }
 
-    implementation 'com.jayway.jsonpath:json-path:2.8.0'
-    forgeRuntimeLibrary 'com.jayway.jsonpath:json-path:2.8.0'
-    include 'com.jayway.jsonpath:json-path:2.8.0'
+    implementation 'com.jayway.jsonpath:json-path:2.9.0'
+    forgeRuntimeLibrary 'com.jayway.jsonpath:json-path:2.9.0'
+    include 'com.jayway.jsonpath:json-path:2.9.0'
 
     implementation 'org.jetbrains:annotations:20.1.0'
 }

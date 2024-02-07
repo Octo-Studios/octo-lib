@@ -6,20 +6,14 @@ import it.hurts.sskirillss.octolib.config.data.ConfigContext;
 import it.hurts.sskirillss.octolib.config.data.OctoConfig;
 import it.hurts.sskirillss.octolib.config.storage.ConfigStorage;
 import it.hurts.sskirillss.octolib.config.utils.ConfigUtils;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.registries.RegisterEvent;
 
-import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface IOctoConfig {
     Path getPath();
 
-    @Nullable
     default <T extends IOctoConfig> T setup() {
         OctoConfig config = new OctoConfig(this);
 
@@ -28,7 +22,7 @@ public interface IOctoConfig {
         ModLoader.get().postEventWrapContainerInModOrder(event);
 
         if (!event.isCanceled()) {
-            ConfigContext context = event.getContext();
+            ConfigContext context = event.getSchema();
 
             config.setSchema(context);
 

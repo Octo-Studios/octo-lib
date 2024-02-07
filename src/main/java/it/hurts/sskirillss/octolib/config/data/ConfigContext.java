@@ -13,6 +13,10 @@ public class ConfigContext {
         return source.jsonString();
     }
 
+    public <T> T json() {
+        return source.json();
+    }
+
     public ConfigContext set(String path, Object newValue) {
         source.set(path, newValue);
 

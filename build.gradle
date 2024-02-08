@@ -8,9 +8,12 @@ apply plugin: 'java'
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.mod_id
-version = project.mod_version
-group = project.mod_group_id
+version = minecraft_version + "-" + mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
 
 loom {
     silentMojangMappingsLicense()
@@ -33,7 +36,7 @@ dependencies {
 
     mappings loom.officialMojangMappings()
 
-    forge "net.neoforged:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+    forge "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
     if (System.getProperty("idea.sync.active") != "true") {
         annotationProcessor "org.spongepowered:mixin:0.8.4:processor"
@@ -69,23 +72,10 @@ jar {
                 "Specification-Vendor"    : mod_authors,
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Version"  : archiveVersion,
                 "Implementation-Vendor"   : mod_authors,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
     }
 }
 

@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,10 +24,11 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +37,6 @@ import java.util.Locale;
 
 public class BasicColoredParticle extends TextureSheetParticle {
     private final Constructor constructor;
-    private final ParticleRenderType renderer;
 
     public BasicColoredParticle(ClientLevel world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, Constructor constructor) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -48,7 +47,6 @@ public class BasicColoredParticle extends TextureSheetParticle {
         setLifetime(constructor.getLifetime());
 
         this.constructor = constructor;
-        this.renderer = new RenderType(constructor);
 
         this.quadSize = constructor.getDiameter();
         this.hasPhysics = constructor.isPhysical();
@@ -118,34 +116,21 @@ public class BasicColoredParticle extends TextureSheetParticle {
     @Nonnull
     @Override
     public ParticleRenderType getRenderType() {
-        return renderer;
+        return RENDERER;
     }
 
-    private static class RenderType implements ParticleRenderType {
-        private final Constructor constructor;
-
-        public RenderType(Constructor constructor) {
-            this.constructor = constructor;
-        }
-
+    private static final ParticleRenderType RENDERER = new ParticleRenderType() {
         @Override
         public void begin(BufferBuilder buffer, @NotNull TextureManager manager) {
             RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
 
-            if (constructor.isBlended()) {
-                RenderSystem.enableBlend();
+            RenderSystem.enableBlend();
 
-                if (constructor.getBlendFunc() != null)
-                    RenderSystem.blendFunc(constructor.getBlendFunc().getLeft(), constructor.getBlendFunc().getRight());
-            }
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 
-            if (constructor.isBlurred())
-                manager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
-
-            if (constructor.isDepthTest())
-                RenderSystem.depthMask(false);
+            RenderSystem.depthMask(false);
 
             buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
@@ -154,15 +139,8 @@ public class BasicColoredParticle extends TextureSheetParticle {
         public void end(Tesselator tesselator) {
             tesselator.end();
 
-            if (constructor.isBlended())
-                RenderSystem.disableBlend();
-
-            if (constructor.isBlurred())
-                Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
-
-            if (constructor.isDepthTest())
-                RenderSystem.enableDepthTest();
-
+            RenderSystem.disableBlend();
+            RenderSystem.enableDepthTest();
             RenderSystem.depthMask(true);
         }
 
@@ -170,7 +148,7 @@ public class BasicColoredParticle extends TextureSheetParticle {
         public String toString() {
             return OctoLib.MODID + ":" + "basic_colored";
         }
-    }
+    };
 
     @Data
     @Builder

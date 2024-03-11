@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.hurts.sskirillss.octolib.OctoLib;
@@ -26,8 +28,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -64,16 +64,15 @@ public class BasicColoredParticle extends TextureSheetParticle {
         float f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
         float f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
 
-        Quaternionf quaternionf = new Quaternionf(camera.rotation());
-
-        quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
+        Quaternion quaternion = new Quaternion(camera.rotation());
+        quaternion.mul(Vector3f.ZP.rotation(Mth.lerp(partialTicks, this.oRoll, this.roll)));
 
         Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
         float f3 = this.getQuadSize(partialTicks);
 
         for (int i = 0; i < 4; ++i) {
             Vector3f vector3f = avector3f[i];
-            vector3f.rotate(quaternionf);
+            vector3f.transform(quaternion);
             vector3f.mul(f3);
             vector3f.add(f, f1, f2);
         }

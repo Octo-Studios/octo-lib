@@ -24,6 +24,6 @@ public class OctoParticles {
 
     @SubscribeEvent
     public static void onParticleRegistry(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(BASIC_COLORED.get(), BasicColoredParticle.Factory::new);
+        event.register(BASIC_COLORED.get(), BasicColoredParticle.Factory::new);
     }
 }

@@ -19,7 +19,7 @@ public interface IOctoConfig {
 
         ConfigConstructEvent event = new ConfigConstructEvent(this, new ConfigContext(JsonPath.parse(ConfigUtils.SERIALIZER.toJson(this))));
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.get().postEvent(event);
 
         if (!event.isCanceled()) {
             ConfigContext context = event.getSchema();

@@ -38,7 +38,7 @@ public class OctoConfig {
         if (file.isDirectory() || file.mkdirs()) {
             ConfigSaveEvent event = new ConfigSaveEvent(this);
 
-            ModLoader.get().postEventWrapContainerInModOrder(event);
+            ModLoader.get().postEvent(event);
 
             if (!event.isCanceled()) {
                 try (Writer writer = Files.newBufferedWriter(path)) {
@@ -59,7 +59,7 @@ public class OctoConfig {
 
         ConfigLoadEvent event = new ConfigLoadEvent(this, new ConfigContext(JsonPath.parse(constructor.getPath().toFile())));
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        ModLoader.get().postEvent(event);
 
         if (!event.isCanceled()) {
             JsonElement data = event.getData().json();

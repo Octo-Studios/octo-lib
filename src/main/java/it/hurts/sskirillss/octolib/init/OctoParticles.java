@@ -2,9 +2,10 @@ package it.hurts.sskirillss.octolib.init;
 
 import it.hurts.sskirillss.octolib.OctoLib;
 import it.hurts.sskirillss.octolib.particle.BasicColoredParticle;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -23,7 +24,7 @@ public class OctoParticles {
     }
 
     @SubscribeEvent
-    public static void onParticleRegistry(RegisterParticleProvidersEvent event) {
-        event.register(BASIC_COLORED.get(), BasicColoredParticle.Factory::new);
+    public static void onParticleRegistry(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particleEngine.register(BASIC_COLORED.get(), BasicColoredParticle.Factory::new);
     }
 }

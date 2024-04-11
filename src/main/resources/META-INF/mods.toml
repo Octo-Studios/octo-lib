@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[40,)"
 license = "All Rights Reserved"
 issueTrackerURL = "https://discord.gg/pHren9yxzW"
 logoFile = ""
@@ -15,12 +15,12 @@ description = ''''''
 [[dependencies.${mod_id}]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.2]"
+versionRange = "[1.18.2]"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "forge"
 mandatory = true
-versionRange = "[43,)"
+versionRange = "[40,)"
 ordering = "NONE"
 side = "BOTH"

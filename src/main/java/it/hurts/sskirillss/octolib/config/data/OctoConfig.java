@@ -11,7 +11,7 @@ import it.hurts.sskirillss.octolib.config.storage.ConfigStorage;
 import it.hurts.sskirillss.octolib.config.utils.ConfigUtils;
 import lombok.Data;
 import lombok.SneakyThrows;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.io.File;
 import java.io.Writer;
@@ -38,7 +38,7 @@ public class OctoConfig {
         if (file.isDirectory() || file.mkdirs()) {
             ConfigSaveEvent event = new ConfigSaveEvent(this);
 
-            ModLoader.get().postEventWrapContainerInModOrder(event);
+            NeoForge.EVENT_BUS.post(event);
 
             if (!event.isCanceled()) {
                 try (Writer writer = Files.newBufferedWriter(path)) {
@@ -59,7 +59,7 @@ public class OctoConfig {
 
         ConfigLoadEvent event = new ConfigLoadEvent(this, new ConfigContext(JsonPath.parse(constructor.getPath().toFile())));
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        NeoForge.EVENT_BUS.post(event);
 
         if (!event.isCanceled()) {
             JsonElement data = event.getData().json();

@@ -1,28 +1,15 @@
 plugins {
-    id "dev.architectury.loom" version "1.3-SNAPSHOT"
-    id "io.freefair.lombok" version "8.3"
+    id "dev.architectury.loom" version "1.6.397"
     id "maven-publish"
 }
 
 apply plugin: 'java'
-
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 version = minecraft_version + "-" + mod_version
 group = mod_group_id
 
 base {
     archivesName = mod_id
-}
-
-loom {
-    silentMojangMappingsLicense()
-
-    forge {
-        mixinConfigs = [
-                "octolib.mixins.json"
-        ]
-    }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -33,10 +20,9 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    neoForge "net.neoforged:neoforge:${neoforge_version}"
 
     mappings loom.officialMojangMappings()
-
-    forge "net.neoforged:forge:${minecraft_version}-${forge_version}"
 
     if (System.getProperty("idea.sync.active") != "true") {
         annotationProcessor "org.spongepowered:mixin:0.8.4:processor"
@@ -46,12 +32,18 @@ dependencies {
     forgeRuntimeLibrary 'com.jayway.jsonpath:json-path:2.9.0'
     include 'com.jayway.jsonpath:json-path:2.9.0'
 
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.32'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+
     implementation 'org.jetbrains:annotations:20.1.0'
 }
 
-def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def resourceTargets = ['META-INF/neoforge.mods.toml', 'pack.mcmeta']
 def replaceProperties = [
-        minecraft_version: minecraft_version, forge_version: forge_version,
+        minecraft_version: minecraft_version, forge_version: neoforge_version,
         mod_id           : mod_id, mod_name: mod_name, mod_version: mod_version,
         mod_authors      : mod_authors
 ]

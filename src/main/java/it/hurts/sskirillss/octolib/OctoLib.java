@@ -6,9 +6,10 @@ import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import it.hurts.sskirillss.octolib.init.OctoParticles;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -17,9 +18,7 @@ import java.util.Set;
 public class OctoLib {
     public static final String MODID = "octolib";
 
-    public OctoLib() {
-        MinecraftForge.EVENT_BUS.register(this);
-
+    public OctoLib(IEventBus bus, ModContainer container) {
         Configuration.setDefaults(new Configuration.Defaults() {
             @Override
             public JsonProvider jsonProvider() {
@@ -36,7 +35,5 @@ public class OctoLib {
                 return EnumSet.of(Option.DEFAULT_PATH_LEAF_TO_NULL);
             }
         });
-
-        OctoParticles.register();
     }
 }

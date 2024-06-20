@@ -6,7 +6,7 @@ import it.hurts.sskirillss.octolib.config.data.ConfigContext;
 import it.hurts.sskirillss.octolib.config.data.OctoConfig;
 import it.hurts.sskirillss.octolib.config.storage.ConfigStorage;
 import it.hurts.sskirillss.octolib.config.utils.ConfigUtils;
-import net.minecraftforge.fml.ModLoader;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public interface IOctoConfig {
 
         ConfigConstructEvent event = new ConfigConstructEvent(this, new ConfigContext(JsonPath.parse(ConfigUtils.SERIALIZER.toJson(this))));
 
-        ModLoader.get().postEventWrapContainerInModOrder(event);
+        NeoForge.EVENT_BUS.post(event);
 
         if (!event.isCanceled()) {
             ConfigContext context = event.getSchema();

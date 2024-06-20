@@ -5,15 +5,14 @@ import it.hurts.sskirillss.octolib.config.data.ConfigContext;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fml.event.IModBusEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.fml.event.IModBusEvent;
 
 @Data
-@Cancelable
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ConfigConstructEvent extends Event implements IModBusEvent {
+public class ConfigConstructEvent extends Event implements IModBusEvent, ICancellableEvent {
     private IOctoConfig constructor;
 
     private ConfigContext schema;

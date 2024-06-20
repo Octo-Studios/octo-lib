@@ -1,8 +1,11 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[1,)"
 license = "All Rights Reserved"
 issueTrackerURL = "https://discord.gg/pHren9yxzW"
 logoFile = ""
+
+[[mixins]]
+config = "octolib.mixins.json"
 
 [[mods]]
 modId = "${mod_id}"
@@ -15,12 +18,12 @@ description = ''''''
 [[dependencies.${mod_id}]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.1,1.21)"
+versionRange = "[1.21,1.21.1)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.${mod_id}]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[21.0.0-beta,)"
 ordering = "NONE"
 side = "BOTH"

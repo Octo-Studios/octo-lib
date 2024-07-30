@@ -32,6 +32,10 @@ dependencies {
     forgeRuntimeLibrary 'com.jayway.jsonpath:json-path:2.9.0'
     include 'com.jayway.jsonpath:json-path:2.9.0'
 
+    implementation 'org.yaml:snakeyaml:2.2'
+    forgeRuntimeLibrary 'org.yaml:snakeyaml:2.2'
+    include 'org.yaml:snakeyaml:2.2'
+
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 

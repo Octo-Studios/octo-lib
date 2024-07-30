@@ -1,0 +1,24 @@
+package it.hurts.sskirillss.octolib.config.cfgbuilder;
+
+import it.hurts.sskirillss.octolib.config.cfgbuilder.scalar.ScalarEntry;
+import org.yaml.snakeyaml.util.EnumUtils;
+
+public class EnumEntry extends ScalarEntry {
+    
+    public EnumEntry(Enum<?> object) {
+        super(object, CfgTag.STR);
+    }
+    
+    @Override
+    public ConfigEntry refactor(ConfigEntry entry) {
+        if (entry.getTag() != CfgTag.ENUM && entry.getTag() != CfgTag.STR)
+            return this;
+        
+        try {
+            return new EnumEntry(EnumUtils.findEnumInsensitiveCase((Class<? extends Enum>) getData(), entry.getData().toString()));
+        } catch (RuntimeException e) {
+            return this;
+        }
+    }
+
+}

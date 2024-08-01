@@ -48,7 +48,7 @@ public class SchemeInjector implements EntryInjector<ConfigEntry> {
             }
         
             try {
-                result.put(key, apply(pattern, target));
+                result.put(key, apply(value, value1));
             } catch (ClassCastException exception) {
                 throw new RuntimeException(String.format("Illegal entry type: %s or %s cannot be parsed.",
                         value.getClass().getSimpleName(), value1.getClass().getSimpleName()), exception);

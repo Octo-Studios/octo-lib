@@ -16,7 +16,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 
-@EventBusSubscriber
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class ConfigEvent {
     
     private static final Type CONFIG_REGISTRATION = Type.getType(ConfigRegistration.class);

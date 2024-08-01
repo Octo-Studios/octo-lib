@@ -69,7 +69,7 @@ public final class ConfigManager {
             provider.insert2ndStep(object, data);
             config.onLoadObject(object);
         } catch (Exception e) {
-            OctoLib.LOGGER.error("Error occurs while " + location.getNamespace() + " config reload.");
+            OctoLib.LOGGER.error("Error occurs while " + location.getPath() + " config reload.");
         } finally {
             config.getLoader().saveToFiles(filePath, Cast.cast(object), provider);
         }

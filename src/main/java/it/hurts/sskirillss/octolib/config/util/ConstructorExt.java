@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.nodes.*;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,56 +66,56 @@ public class ConstructorExt extends Constructor {
         yamlConstructors.put(DECONSTRUCTED_CFG_TAG.yamlTag(), new ConstructMappedEntry());
     }
     
-//    @Override
-//    protected Object newInstance(Class<?> ancestor, Node node, boolean tryDefault) {
-//        try {
-//            Class<?> type = node.getType();
-//            if (typeDefinitions.containsKey(type)) {
-//                TypeDescription td = typeDefinitions.get(type);
-//                final Object instance = td.newInstance(node);
-//                if (instance != null) {
-//                    return instance;
-//                }
-//            }
-//
-//            if (tryDefault) {
-//                /*
-//                 * Removed <code> have InstantiationException in case of abstract type
-//                 */
-//                try {
-//                    if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
-//                        java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
-//                        c.setAccessible(true);
-//                        return c.newInstance();
-//                    } else if (node.getTag().isCustomGlobal()) {
-//                        var newType = getClassForNode(node);
-//                        if (newType != type && type.isAssignableFrom(newType)) {
-//                            node.setType(newType);
-//                            return newInstance(ancestor, node, tryDefault);
-//                        }
-//                    }
-//                } catch (NoSuchMethodException e) {
-//                    if (node.getNodeId() != NodeId.mapping)
-//                        throw e;
-//
-//                    MappingNode mappingNode = (MappingNode) node;
-//
-//                    java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor(mappingNode.getValue()
-//                            .stream().map(t -> t.getValueNode().getType()).toArray(Class[]::new));
-//                    c.setAccessible(true);
-//                    return c.newInstance(mappingNode.getValue()
-//                            .stream()
-//                            .map(NodeTuple::getValueNode)
-//                            .map(this::constructObject)
-//                            .toArray(Object[]::new));
-//                }
-//            }
-//        } catch (Exception e) {
-//            throw new YAMLException(e);
-//        }
-//
-//        return NOT_INSTANTIATED_OBJECT;
-//    }
+    @Override
+    protected Object newInstance(Class<?> ancestor, Node node, boolean tryDefault) {
+        try {
+            Class<?> type = node.getType();
+            if (typeDefinitions.containsKey(type)) {
+                TypeDescription td = typeDefinitions.get(type);
+                final Object instance = td.newInstance(node);
+                if (instance != null) {
+                    return instance;
+                }
+            }
+
+            if (tryDefault) {
+                /*
+                 * Removed <code> have InstantiationException in case of abstract type
+                 */
+                try {
+                    if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
+                        java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
+                        c.setAccessible(true);
+                        return c.newInstance();
+                    } else if (node.getTag().isCustomGlobal()) {
+                        var newType = getClassForNode(node);
+                        if (newType != type && type.isAssignableFrom(newType)) {
+                            node.setType(newType);
+                            return newInstance(ancestor, node, tryDefault);
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    if (node.getNodeId() != NodeId.mapping)
+                        throw e;
+
+                    MappingNode mappingNode = (MappingNode) node;
+
+                    java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor(mappingNode.getValue()
+                            .stream().map(t -> t.getValueNode().getType()).toArray(Class[]::new));
+                    c.setAccessible(true);
+                    return c.newInstance(mappingNode.getValue()
+                            .stream()
+                            .map(NodeTuple::getValueNode)
+                            .map(this::constructObject)
+                            .toArray(Object[]::new));
+                }
+            }
+        } catch (Exception e) {
+            throw new YAMLException(e);
+        }
+
+        return NOT_INSTANTIATED_OBJECT;
+    }
     
     protected void createDefinition(Class<?> type) {
         var constructors = Arrays.stream(type.getConstructors())

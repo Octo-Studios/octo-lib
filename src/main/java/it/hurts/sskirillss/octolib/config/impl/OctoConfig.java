@@ -4,9 +4,11 @@ import it.hurts.sskirillss.octolib.config.loader.IConfigFileLoader;
 
 public interface OctoConfig {
     
-    Object prepareData();
+    default Object prepareData() {
+        return this;
+    };
     
-    void onLoadObject(Object object);
+    default void onLoadObject(Object object) {};
     
     default IConfigFileLoader<?, ?> getLoader() {
         return IConfigFileLoader.SOLID;

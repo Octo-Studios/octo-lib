@@ -215,7 +215,7 @@ public class ConstructorExt extends Constructor {
             } else
                 return new ObjectEntry(CfgTag.by(valueNode.getTag()), ConstructorExt.this.constructObject(valueNode));
         }
-        
+    
         protected CompoundEntry constructMapping(CompoundEntry map, MappingNode mnode) {
             for (NodeTuple tuple : mnode.getValue()) {
                 var keyNode = tuple.getKeyNode();
@@ -280,19 +280,14 @@ public class ConstructorExt extends Constructor {
         
         @Override
         public void construct2ndStep(Node node, Object object) {
-            if (Map.class.isAssignableFrom(node.getType())) {
-                ConstructorExt.this.constructMapping2ndStep((MappingNode) node, (Map) object);
-            } else if (Set.class.isAssignableFrom(node.getType())) {
-                ConstructorExt.this.constructSet2ndStep((MappingNode) node, (Set) object);
-            } else {
-                var construct = typeConstructorsMap.get(node.getType());
-                
-                if (construct == null)
-                    this.constructJavaBean2ndStep((MappingNode) node, object);
-                else
-                    construct.construct2ndStep(node, object);
+            var construct = typeConstructorsMap.get(node.getType());
+    
+            if (construct != null) {
+                construct.construct2ndStep(node, object);
+                return;
             }
-            
+    
+            super.construct2ndStep(node, object);
         }
         
     }

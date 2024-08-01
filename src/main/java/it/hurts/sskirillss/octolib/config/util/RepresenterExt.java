@@ -164,13 +164,13 @@ public class RepresenterExt extends Representer {
             if (extended.getBlockComment() != null)
                 block.addAll(parseStringToComment(extended.getBlockComment(), CommentType.BLOCK));
             if (!block.isEmpty())
-                nodeValue.setBlockComments(block);
+                nodeKey.setBlockComments(block);
             
             List<CommentLine> inline = nodeKey.getInLineComments() == null ? new ArrayList<>() : nodeKey.getInLineComments();
             if (extended.getInlineComment() != null)
                 inline.addAll(parseStringToComment(extended.getInlineComment(), CommentType.IN_LINE));
             if (!inline.isEmpty())
-                nodeValue.setInLineComments(inline);
+                nodeKey.setInLineComments(inline);
         }
         
     }
@@ -225,7 +225,7 @@ public class RepresenterExt extends Representer {
                 }
                 case MAPPING, OBJECT -> {
                     var n = RepresenterExt.this.representData(entry.getData());
-                    if (!removeTypes() && entry.getTag() != CfgTag.MAP && entry.getTag() != null)
+                    if (!removeTypes() && entry.getTag() != CfgTag.MAP && entry.getTag() != null && entry.getTag() != CompoundEntry.COMPOUND_CFG_TAG)
                         n.setTag(entry.getTag().yamlTag());
                     yield n;
                 }

@@ -42,7 +42,10 @@ public class SchemeInjector implements EntryInjector<ConfigEntry> {
             var value = entry.getValue();
         
             var value1 = target.get(key);
-            if (value1 == null || value1.getNodeId() != value.getNodeId()) {
+            if (value1 == null)
+                continue;
+            
+            if (value1.getNodeId() != value.getNodeId()) {
                 result.put(key, value);
                 continue;
             }

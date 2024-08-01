@@ -16,13 +16,14 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class ConfigManager {
     
     private static final HashMap<ResourceLocation, OctoConfig> CONFIG_MAP = new HashMap<>();
     private static final HashMap<ResourceLocation, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
-    private static final HashMap<Class<? extends Annotation>, Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FABRICS = new HashMap<>();
+    private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FABRICS = new IdentityHashMap<>();
     public static final ConfigProvider BASE_PROVIDER;
     
     private static ConfigProvider getConfigProvider(ResourceLocation resourceLocation) {

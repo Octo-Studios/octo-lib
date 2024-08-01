@@ -1,5 +1,6 @@
 package it.hurts.sskirillss.octolib.config.event;
 
+import it.hurts.sskirillss.octolib.OctoLib;
 import it.hurts.sskirillss.octolib.config.ConfigManager;
 import it.hurts.sskirillss.octolib.config.annotations.registration.ConfigRegistration;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +49,12 @@ public class ConfigEvent {
             var value = field.get(null);
             
             for (var a : field.getAnnotations()) {
-                var fabric = ConfigManager.getConfigFabric(a.getClass());
+                var fabric = ConfigManager.getConfigFabric(a.annotationType());
+                
+                if (fabric == null) {
+                    OctoLib.LOGGER.warn("Unsupported annotation {} for config initialization.", a);
+                    continue;
+                }
                 
                 var octoConfig = fabric.getFirst().create(Cast.cast(a), value);
                 var name = fabric.getSecond().getName(Cast.cast(a), value);

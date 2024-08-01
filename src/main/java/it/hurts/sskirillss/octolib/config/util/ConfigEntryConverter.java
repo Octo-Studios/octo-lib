@@ -76,8 +76,12 @@ public class ConfigEntryConverter {
             throw new NullPointerException("Represented object cannot be a scalar.");
         else if (node.getNodeId() == NodeId.sequence)
             node.setType(ArrayEntry.class);
-        else
+        else {
+            if (obj instanceof CompoundEntry)
+                node.setTag(CompoundEntry.COMPOUND_CFG_TAG.yamlTag());
             node.setType(DeconstructedObjectEntry.class);
+        }
+        
         return (ConfigEntry) constructor.constructObject(node);
     }
     
@@ -93,6 +97,7 @@ public class ConfigEntryConverter {
             node.setType(ArrayEntry.class);
         else
             node.setTag(CompoundEntry.COMPOUND_CFG_TAG.yamlTag());
+        
         return (ConfigEntry) constructor.constructObject(node);
     }
     

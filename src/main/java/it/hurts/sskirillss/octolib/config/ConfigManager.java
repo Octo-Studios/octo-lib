@@ -58,17 +58,14 @@ public final class ConfigManager {
     
         String filePath = location.getPath();
         Object object = config.prepareData();
-        var pattern = provider.createPattern(config.prepareData());
+        var pattern = provider.createPattern(object);
     
         try {
             var data = config.getLoader().loadFiles(filePath, pattern, provider);
-            if (object == null)
-                return;
-        
             provider.insert2ndStep(object, data);
+            config.onLoadObject(object);
         } catch (Exception e) {
             OctoLib.LOGGER.error("Error occurs while " + location.getNamespace() + " config reload.");
-            e.printStackTrace();
         } finally {
             config.getLoader().saveToFiles(filePath, Cast.cast(object), provider);
         }
@@ -99,12 +96,6 @@ public final class ConfigManager {
                                 throw new ClassCastException(String.format("Config object (%s) must be a collection", name));
                             
                             yield  new FileSpreadConfig((Collection<?>) object);
-                        }
-                        case DIRECTORY_SPREAD -> {
-                            if (!Map.class.isAssignableFrom(object.getClass()))
-                                throw new ClassCastException(String.format("Config object (%s) must be a collection", name));
-    
-                            yield new DirectoryConfig((Map<String, ?>) object) {};
                         }
                         case SOLID_OBJECT -> new OctoConfigBase(object);
                     };

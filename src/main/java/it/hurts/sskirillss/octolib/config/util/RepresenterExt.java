@@ -2,9 +2,7 @@ package it.hurts.sskirillss.octolib.config.util;
 
 import it.hurts.sskirillss.octolib.config.annotations.TypeProp;
 import it.hurts.sskirillss.octolib.config.annotations.TypePropInherited;
-import it.hurts.sskirillss.octolib.config.cfgbuilder.ArrayEntry;
-import it.hurts.sskirillss.octolib.config.cfgbuilder.CfgTag;
-import it.hurts.sskirillss.octolib.config.cfgbuilder.ConfigEntry;
+import it.hurts.sskirillss.octolib.config.cfgbuilder.*;
 import it.hurts.sskirillss.octolib.config.util.properties.GenericPropertyExt;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.comments.CommentLine;
@@ -24,6 +22,8 @@ public class RepresenterExt extends Representer {
         super(options);
         multiRepresenters.put(Deque.class, new RepresentDeque());
         multiRepresenters.put(ConfigEntry.class, new RepresentEntry());
+        representers.put(CompoundEntry.class, new RepresentEntry());
+        representers.put(DeconstructedObjectEntry.class, new RepresentEntry());
     }
     
     @Override
@@ -84,7 +84,7 @@ public class RepresenterExt extends Representer {
             if (customTag == null) {
                 if (nodeId == NodeId.scalar) {
                     if (property.getType() != Enum.class && propertyValue instanceof Enum) {
-                        if (shouldConvertEnumToStr())
+                        if (convertEnumToStr())
                             nodeValue.setTag(Tag.STR);
                         else
                             nodeValue.setTag(new Tag(nodeValue.getTag().getValue() + CfgTag.ENUM_POSTFIX));
@@ -113,12 +113,19 @@ public class RepresenterExt extends Representer {
         return new NodeTuple(nodeKey, nodeValue);
     }
     
-    protected boolean shouldConvertEnumToStr() {
+    protected boolean convertEnumToStr() {
+        return false;
+    }
+    
+    protected boolean removeTypes() {
         return false;
     }
     
     @Override
     protected MappingNode representJavaBean(Set<Property> properties, Object javaBean) {
+        if (removeTypes() && !classTags.containsKey(javaBean.getClass()))
+            addClassTag(javaBean.getClass(), Tag.MAP);
+        
         var node = super.representJavaBean(properties, javaBean);
         configureCommentsJavaBean(node, javaBean);
         return node;
@@ -218,7 +225,7 @@ public class RepresenterExt extends Representer {
                 }
                 case MAPPING, OBJECT -> {
                     var n = RepresenterExt.this.representData(entry.getData());
-                    if (entry.getTag() != CfgTag.MAP && entry.getTag() != null)
+                    if (!removeTypes() && entry.getTag() != CfgTag.MAP && entry.getTag() != null)
                         n.setTag(entry.getTag().yamlTag());
                     yield n;
                 }

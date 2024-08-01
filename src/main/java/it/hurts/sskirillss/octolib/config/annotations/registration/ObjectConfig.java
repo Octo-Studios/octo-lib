@@ -14,7 +14,6 @@ public @interface ObjectConfig {
     ConfigType type() default ConfigType.SOLID_OBJECT;
     
     enum ConfigType {
-        DIRECTORY_SPREAD,
         FILE_SPREAD,
         SOLID_OBJECT
     }

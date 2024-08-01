@@ -1,6 +1,5 @@
 package it.hurts.sskirillss.octolib.config.loader;
 
-import it.hurts.sskirillss.octolib.config.cfgbuilder.ArrayEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.CompoundEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.ConfigEntry;
 import it.hurts.sskirillss.octolib.config.provider.ConfigProvider;
@@ -8,8 +7,6 @@ import it.hurts.sskirillss.octolib.config.provider.ConfigProvider;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 
 public class SolidConfigLoader<T> implements IConfigFileLoader<T, T> {
     
@@ -30,8 +27,8 @@ public class SolidConfigLoader<T> implements IConfigFileLoader<T, T> {
     public T loadFiles(String filePath, ConfigEntry pattern, ConfigProvider provider) {
         var file = PATH.resolve(filePath + ".yaml").toFile();
         if (file.isFile()) {
-            try (FileReader writer = new FileReader(file)) {
-                return (T) provider.load(writer, (CompoundEntry) pattern);
+            try (FileReader reader = new FileReader(file)) {
+                return (T) provider.load(reader, (CompoundEntry) pattern);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

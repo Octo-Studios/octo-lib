@@ -54,7 +54,18 @@ public class ConfigProviderBase implements ConfigProvider {
         options.setProcessComments(true);
         options.setIndent(indent);
     
-        var configRepresenter = new RepresenterWithoutTag(options);
+        var configRepresenter = new RepresenterExt(options) {
+    
+            @Override
+            protected boolean removeTypes() {
+                return true;
+            }
+    
+            @Override
+            protected boolean convertEnumToStr() {
+                return true;
+            }
+        };
         configRepresenter.setPropertyUtils(propertyUtils);
     
         RepresenterExt patternRepresenter = new RepresenterExt(options);
@@ -82,7 +93,7 @@ public class ConfigProviderBase implements ConfigProvider {
     public Object load(FileReader reader, CompoundEntry pattern) {
         var compound = yamlConverted.loadAs(reader, CompoundEntry.class);
         if (compound == null)
-            return null;
+            return configEntryConverter.construct(pattern);
         var resultFirst = injector.apply(pattern, compound);
         return configEntryConverter.construct(resultFirst);
     }

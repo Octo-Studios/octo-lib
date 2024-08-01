@@ -6,7 +6,6 @@ import it.hurts.sskirillss.octolib.config.cfgbuilder.scalar.ScalarEntry;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
-import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -14,7 +13,6 @@ import org.yaml.snakeyaml.nodes.*;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,56 +65,56 @@ public class ConstructorExt extends Constructor {
         yamlConstructors.put(DECONSTRUCTED_CFG_TAG.yamlTag(), new ConstructMappedEntry());
     }
     
-    @Override
-    protected Object newInstance(Class<?> ancestor, Node node, boolean tryDefault) {
-        try {
-            Class<?> type = node.getType();
-            if (typeDefinitions.containsKey(type)) {
-                TypeDescription td = typeDefinitions.get(type);
-                final Object instance = td.newInstance(node);
-                if (instance != null) {
-                    return instance;
-                }
-            }
-            
-            if (tryDefault) {
-                /*
-                 * Removed <code> have InstantiationException in case of abstract type
-                 */
-                try {
-                    if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
-                        java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
-                        c.setAccessible(true);
-                        return c.newInstance();
-                    } else {
-                        var newType = getClassForNode(node);
-                        if (newType != type) {
-                            node.setType(newType);
-                            return newInstance(ancestor, node, tryDefault);
-                        }
-                    }
-                } catch (NoSuchMethodException e) {
-                    if (node.getNodeId() != NodeId.mapping)
-                        throw e;
-                    
-                    MappingNode mappingNode = (MappingNode) node;
-                    
-                    java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor(mappingNode.getValue()
-                            .stream().map(t -> t.getValueNode().getType()).toArray(Class[]::new));
-                    c.setAccessible(true);
-                    return c.newInstance(mappingNode.getValue()
-                            .stream()
-                            .map(NodeTuple::getValueNode)
-                            .map(this::constructObject)
-                            .toArray(Object[]::new));
-                }
-            }
-        } catch (Exception e) {
-            throw new YAMLException(e);
-        }
-        
-        return NOT_INSTANTIATED_OBJECT;
-    }
+//    @Override
+//    protected Object newInstance(Class<?> ancestor, Node node, boolean tryDefault) {
+//        try {
+//            Class<?> type = node.getType();
+//            if (typeDefinitions.containsKey(type)) {
+//                TypeDescription td = typeDefinitions.get(type);
+//                final Object instance = td.newInstance(node);
+//                if (instance != null) {
+//                    return instance;
+//                }
+//            }
+//
+//            if (tryDefault) {
+//                /*
+//                 * Removed <code> have InstantiationException in case of abstract type
+//                 */
+//                try {
+//                    if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
+//                        java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
+//                        c.setAccessible(true);
+//                        return c.newInstance();
+//                    } else if (node.getTag().isCustomGlobal()) {
+//                        var newType = getClassForNode(node);
+//                        if (newType != type && type.isAssignableFrom(newType)) {
+//                            node.setType(newType);
+//                            return newInstance(ancestor, node, tryDefault);
+//                        }
+//                    }
+//                } catch (NoSuchMethodException e) {
+//                    if (node.getNodeId() != NodeId.mapping)
+//                        throw e;
+//
+//                    MappingNode mappingNode = (MappingNode) node;
+//
+//                    java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor(mappingNode.getValue()
+//                            .stream().map(t -> t.getValueNode().getType()).toArray(Class[]::new));
+//                    c.setAccessible(true);
+//                    return c.newInstance(mappingNode.getValue()
+//                            .stream()
+//                            .map(NodeTuple::getValueNode)
+//                            .map(this::constructObject)
+//                            .toArray(Object[]::new));
+//                }
+//            }
+//        } catch (Exception e) {
+//            throw new YAMLException(e);
+//        }
+//
+//        return NOT_INSTANTIATED_OBJECT;
+//    }
     
     protected void createDefinition(Class<?> type) {
         var constructors = Arrays.stream(type.getConstructors())
@@ -271,23 +269,12 @@ public class ConstructorExt extends Constructor {
         @Override
         public Object construct(Node node) {
             MappingNode mnode = (MappingNode) node;
-            if (Map.class.isAssignableFrom(node.getType())) {
-                return node.isTwoStepsConstruction() ? ConstructorExt.this.newMap(mnode) : ConstructorExt.this.constructMapping(mnode);
-            } else if (Collection.class.isAssignableFrom(node.getType())) {
-                return node.isTwoStepsConstruction() ? ConstructorExt.this.newSet(mnode) : ConstructorExt.this.constructSet(mnode);
-            } else {
-                var construct = typeConstructorsMap.get(node.getType());
-                if (construct == null) {
-                    Object obj = ConstructorExt.this.newInstance(mnode);
-                    if (obj != BaseConstructor.NOT_INSTANTIATED_OBJECT) {
-                        return node.isTwoStepsConstruction() ? obj : this.constructJavaBean2ndStep(mnode, obj);
-                    } else {
-                        throw new YAMLException("Can't create an instance for " + mnode.getTag());
-                    }
-                }
-                
+            var construct = typeConstructorsMap.get(node.getType());
+            
+            if (construct != null)
                 return construct.construct(node);
-            }
+            
+            return super.construct(mnode);
         }
         
         @Override

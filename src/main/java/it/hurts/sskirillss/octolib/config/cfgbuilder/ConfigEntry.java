@@ -47,16 +47,18 @@ public abstract class ConfigEntry {
         return inlineComment;
     }
     
-    public void setInlineComment(String inlineComment) {
+    public ConfigEntry setInlineComment(String inlineComment) {
         this.inlineComment = inlineComment;
+        return this;
     }
     
     public String getBlockComment() {
         return blockComment;
     }
     
-    public void setBlockComment(String blockComment) {
+    public ConfigEntry setBlockComment(String blockComment) {
         this.blockComment = blockComment;
+        return this;
     }
     
     protected String formatInline() {

@@ -27,10 +27,6 @@ public class ConfigInit {
                 CONFIGS.put(i, compoundEntry.getObject("entry_" + i, TestConfig.class));
             }
         }
-
-        @Override
-        protected boolean spreadFiles() {
-            return true;
-        }
+    
     };
 }

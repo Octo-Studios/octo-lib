@@ -1,11 +1,12 @@
 package it.hurts.sskirillss.octolib.config.cfgbuilder;
 
 import it.hurts.sskirillss.octolib.config.cfgbuilder.scalar.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<String, ConfigEntry>> {
+public class CompoundEntry extends ConfigEntry implements Map<String, ConfigEntry> {
     
     public static final CfgTag COMPOUND_CFG_TAG = new CfgTag(CompoundEntry.class);
     
@@ -21,11 +22,11 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
     protected LinkedHashMap<String, ConfigEntry> map = new LinkedHashMap<>();
     
     public CompoundEntry() {
-        super(CfgTag.MAP, EntryId.MAPPING);
+        super(COMPOUND_CFG_TAG, EntryId.MAPPING);
     }
     
     public CompoundEntry(Map<String, ConfigEntry> map) {
-        super(CfgTag.MAP, EntryId.MAPPING);
+        super(COMPOUND_CFG_TAG, EntryId.MAPPING);
         this.map.putAll(map);
     }
     
@@ -38,40 +39,108 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
         return map;
     }
     
-    public void put(String key, ConfigEntry entry) {
+    @Override
+    public int size() {
+        return map.size();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+    
+    @Override
+    public boolean containsKey(Object key) {
+        return false;
+    }
+    
+    @Override
+    public boolean containsValue(Object value) {
+        return false;
+    }
+    
+    @Override
+    public ConfigEntry get(Object key) {
+        return map.get(key);
+    }
+    
+    public ConfigEntry put(String key, ConfigEntry entry) {
         map.put(key, entry);
+        return entry;
     }
     
-    public void putByte(String key, byte value) {
+    @Override
+    public ConfigEntry remove(Object key) {
+        return map.remove(key);
+    }
+    
+    @Override
+    public void putAll(@NotNull Map<? extends String, ? extends ConfigEntry> m) {
+        map.putAll(m);
+    }
+    
+    @Override
+    public void clear() {
+        map.clear();
+    }
+    
+    @NotNull
+    @Override
+    public Set<String> keySet() {
+        return map.keySet();
+    }
+    
+    @NotNull
+    @Override
+    public Collection<ConfigEntry> values() {
+        return map.values();
+    }
+    
+    @NotNull
+    @Override
+    public Set<Entry<String, ConfigEntry>> entrySet() {
+        return map.entrySet();
+    }
+    
+    public BinaryEntry putByte(String key, byte value) {
+        BinaryEntry entry = new BinaryEntry(value);
         map.put(key, new BinaryEntry(value));
+        return entry;
     }
     
-    public void putString(String key, String value) {
+    public StringEntry putString(String key, String value) {
+        var entry = new StringEntry(value);
         map.put(key, new StringEntry(value));
+        return entry;
     }
     
-    public void putBoolean(String key, boolean value) {
-        map.put(key, new BoolEntry(value));
+    public BoolEntry putBoolean(String key, boolean value) {
+        var entry = new BoolEntry(value);
+        map.put(key, entry);
+        return entry;
     }
     
-    public void putObject(String key, Object value) {
-        map.put(key, new ObjectEntry(value));
+    public ObjectEntry putObject(String key, Object value) {
+        var entry = new ObjectEntry(value);
+        map.put(key, entry);
+        return entry;
     }
     
-    public void putObjectList(String key, Object... list) {
-        putObjectList(key, List.of(list));
+    public ArrayEntry putObjectList(String key, Object... list) {
+        return putObjectList(key, List.of(list));
     }
     
-    public void putObjectList(String key, List<Object> list) {
+    public ArrayEntry putObjectList(String key, List<Object> list) {
         ArrayEntry entry = new ArrayEntry(list.stream().map(ObjectEntry::new).toList());
         map.put(key, entry);
+        return entry;
     }
     
-    public void putScalarList(String key, CfgTag scalarTag, Object... list) {
-        putScalarList(key, scalarTag, List.of(list));
+    public ArrayEntry putScalarList(String key, CfgTag scalarTag, Object... list) {
+        return putScalarList(key, scalarTag, List.of(list));
     }
     
-    public void putScalarList(String key, CfgTag scalarTag, List<Object> list) {
+    public ArrayEntry putScalarList(String key, CfgTag scalarTag, List<Object> list) {
         ArrayEntry entry = new ArrayEntry(scalarTag);
         
         if (!SCALAR_FACTORIES.containsKey(scalarTag))
@@ -86,30 +155,36 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
             }
         }
         map.put(key, entry);
+        return entry;
     }
     
-    public void putList(String key, ArrayEntry list) {
+    public ArrayEntry putList(String key, ArrayEntry list) {
         map.put(key, list);
+        return list;
     }
     
-    public void putList(String key, List<ConfigEntry> list) {
+    public ArrayEntry putList(String key, List<ConfigEntry> list) {
+        var entry = new ArrayEntry(list);
         map.put(key, new ArrayEntry(list));
+        return entry;
     }
     
-    public void putInt(String key, int value) {
-        map.put(key, new IntEntry(value));
+    public IntEntry putInt(String key, int value) {
+        IntEntry entry = new IntEntry(value);
+        map.put(key, entry);
+        return entry;
     }
     
-    public void putNull(String key) {
-        map.put(key, new NullEntry());
+    public NullEntry putNull(String key) {
+        var entry = new NullEntry();
+        map.put(key, entry);
+        return entry;
     }
     
-    public void putDouble(String key, double value) {
-        map.put(key, new DoubleEntry(value));
-    }
-    
-    public ConfigEntry get(String key) {
-        return map.get(key);
+    public DoubleEntry putDouble(String key, double value) {
+        var entry = new DoubleEntry(value);
+        map.put(key, entry);
+        return entry;
     }
     
     public byte getByte(String key) {
@@ -124,7 +199,7 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
         return (ArrayEntry) entry;
     }
     
-    public boolean getBoolean(String key, boolean type) {
+    public boolean getBoolean(String key) {
         var entry = map.get(key);
         checkType(entry, CfgTag.BOOL);
         return (boolean) entry.getData();
@@ -155,7 +230,7 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
     }
     
     private void checkType(ConfigEntry entry, CfgTag tag) {
-        if (entry.getType() != tag && !entry.getTag().equals(tag))
+        if (entry != null && entry.getType() != tag && !entry.getTag().equals(tag))
             throw new IllegalArgumentException(String.format("Incorrect tag type: %s is expected.", tag));
     }
     
@@ -191,17 +266,8 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
         return builder.toString();
     }
     
-    public Set<String> getKeys() {
-        return map.keySet();
-    }
-    
     public boolean containsKey(String key) {
         return map.containsKey(key);
-    }
-    
-    @Override
-    public Iterator<Map.Entry<String, ConfigEntry>> iterator() {
-        return map.entrySet().iterator();
     }
     
     public interface ScalarFactory {

@@ -5,7 +5,6 @@ import it.hurts.sskirillss.octolib.config.cfgbuilder.*;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.scalar.ScalarEntry;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.comments.CommentLine;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Construct;
@@ -59,45 +58,96 @@ public class ConstructorExt extends Constructor {
     protected void initConstructors() {
         yamlClassConstructors.put(NodeId.mapping, new ConstructMappingCustomized());
         yamlClassConstructors.put(NodeId.sequence, new ConstructSequenceCustomizable());
-    
+        
         typeConstructorsMap.put(CompoundEntry.class, new ConstructEntry());
         typeConstructorsMap.put(DeconstructedObjectEntry.class, new ConstructMappedEntry());
         typeConstructorsMap.put(ArrayEntry.class, new ConstructMappedEntry());
-    
+        
         yamlConstructors.put(COMPOUND_CFG_TAG.yamlTag(), new ConstructEntry());
         yamlConstructors.put(DECONSTRUCTED_CFG_TAG.yamlTag(), new ConstructMappedEntry());
+    }
+    
+    @Override
+    protected Object newInstance(Class<?> ancestor, Node node, boolean tryDefault) {
+        try {
+            Class<?> type = node.getType();
+            if (typeDefinitions.containsKey(type)) {
+                TypeDescription td = typeDefinitions.get(type);
+                final Object instance = td.newInstance(node);
+                if (instance != null) {
+                    return instance;
+                }
+            }
+            
+            if (tryDefault) {
+                /*
+                 * Removed <code> have InstantiationException in case of abstract type
+                 */
+                try {
+                    if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
+                        java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
+                        c.setAccessible(true);
+                        return c.newInstance();
+                    } else {
+                        var newType = getClassForNode(node);
+                        if (newType != type) {
+                            node.setType(newType);
+                            return newInstance(ancestor, node, tryDefault);
+                        }
+                    }
+                } catch (NoSuchMethodException e) {
+                    if (node.getNodeId() != NodeId.mapping)
+                        throw e;
+                    
+                    MappingNode mappingNode = (MappingNode) node;
+                    
+                    java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor(mappingNode.getValue()
+                            .stream().map(t -> t.getValueNode().getType()).toArray(Class[]::new));
+                    c.setAccessible(true);
+                    return c.newInstance(mappingNode.getValue()
+                            .stream()
+                            .map(NodeTuple::getValueNode)
+                            .map(this::constructObject)
+                            .toArray(Object[]::new));
+                }
+            }
+        } catch (Exception e) {
+            throw new YAMLException(e);
+        }
+        
+        return NOT_INSTANTIATED_OBJECT;
     }
     
     protected void createDefinition(Class<?> type) {
         var constructors = Arrays.stream(type.getConstructors())
                 .filter(c -> c.isAnnotationPresent(CfgConstructor.class))
                 .toList();
-    
+        
         if (constructors.size() > 1)
             throw new RuntimeException("Only one constructor in class can be annotated with @CfgConstructor.");
         else if (!constructors.isEmpty()) {
             final var c = constructors.get(0);
             final var props = c.getAnnotation(CfgConstructor.class).value();
             c.setAccessible(true);
-        
+            
             if (props.length != c.getParameterCount())
                 throw new IncompleteAnnotationException(CfgConstructor.class,
                         "Property count must be equal to constructor arguments count.");
-        
+            
             var iterator = Arrays.stream(c.getParameterTypes()).iterator();
             for (var prop : props)
                 if (getPropertyUtils().getProperty(type, prop).getType().isAssignableFrom(iterator.next()))
                     throw new IncompleteAnnotationException(CfgConstructor.class,
                             "Property types and order must be the same as in constructor.");
-        
-            this.addTypeDescription(new TypeDescription(type) {
             
+            this.addTypeDescription(new TypeDescription(type) {
+                
                 @Override
                 public Object newInstance(Node node) {
                     if (node.getNodeId() != NodeId.mapping)
                         return super.newInstance(node);
-                
-                
+                    
+                    
                     var map = ((MappingNode) node).getValue()
                             .stream()
                             .collect(Collectors.toMap(
@@ -122,7 +172,7 @@ public class ConstructorExt extends Constructor {
     }
     
     public class ConstructMappedEntry extends ConstructEntry {
-    
+        
         protected ConfigEntry constructMappingObject(Node valueNode) {
             MappingNode mappingNode = (MappingNode) valueNode;
             if (valueNode.getTag() == null || valueNode.getTag() == Tag.MAP) {
@@ -173,7 +223,7 @@ public class ConstructorExt extends Constructor {
                 String key = ConstructorExt.this.constructObject(tuple.getKeyNode()).toString();
                 ConfigEntry value = (ConfigEntry) construct(tuple.getValueNode());
                 map.put(key, value);
-    
+                
                 if (keyNode.getBlockComments() != null)
                     value.setBlockComment(keyNode.getBlockComments().stream().map(l -> l.getValue().substring(1)).collect(Collectors.joining("\n")));
                 if (keyNode.getInLineComments() != null)
@@ -190,8 +240,7 @@ public class ConstructorExt extends Constructor {
                 if (valueNode.getTag().getValue().endsWith(CfgTag.ENUM_POSTFIX)) {
                     valueNode.setTag(new Tag(valueNode.getTag().getValue().replace(".enum", "")));
                     entry = new EnumEntry((Enum<?>) ConstructorExt.this.constructObject(valueNode));
-                }
-                else
+                } else
                     throw new YAMLException("Unsupported scalar node tag in compound: " + valueNode.getTag());
             } else
                 entry = factory.create(ConstructorExt.this.constructObject(valueNode));

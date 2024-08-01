@@ -1,5 +1,6 @@
 package it.hurts.sskirillss.octolib.config.util;
 
+import it.hurts.sskirillss.octolib.config.cfgbuilder.ArrayEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.CompoundEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.ConfigEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.DeconstructedObjectEntry;
@@ -73,11 +74,11 @@ public class ConfigEntryConverter {
         
         if (node.getNodeId() == NodeId.scalar)
             throw new NullPointerException("Represented object cannot be a scalar.");
-        if (node.getNodeId() == NodeId.sequence)
-            throw new NullPointerException("Represented object cannot be a sequence.");
-        
-        node.setTag(DeconstructedObjectEntry.DECONSTRUCTED_CFG_TAG.yamlTag());
-        return (CompoundEntry) constructor.constructObject(node);
+        else if (node.getNodeId() == NodeId.sequence)
+            node.setType(ArrayEntry.class);
+        else
+            node.setType(DeconstructedObjectEntry.class);
+        return (ConfigEntry) constructor.constructObject(node);
     }
     
     public ConfigEntry represent(Object obj) {
@@ -88,11 +89,11 @@ public class ConfigEntryConverter {
         
         if (node.getNodeId() == NodeId.scalar)
             throw new NullPointerException("Represented object cannot be a scalar.");
-        if (node.getNodeId() == NodeId.sequence)
-            throw new NullPointerException("Represented object cannot be a sequence.");
-        
-        node.setTag(CompoundEntry.COMPOUND_CFG_TAG.yamlTag());
-        return (CompoundEntry) constructor.constructObject(node);
+        else if (node.getNodeId() == NodeId.sequence)
+            node.setType(ArrayEntry.class);
+        else
+            node.setTag(CompoundEntry.COMPOUND_CFG_TAG.yamlTag());
+        return (ConfigEntry) constructor.constructObject(node);
     }
     
     public <T> T constructAs(ConfigEntry compound, Class<T> type) {

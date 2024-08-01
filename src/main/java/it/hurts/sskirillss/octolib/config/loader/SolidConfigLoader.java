@@ -19,7 +19,7 @@ public class SolidConfigLoader<T> implements IConfigFileLoader<T, T> {
         
         if (file.getParentFile().isDirectory() || file.getParentFile().mkdirs()) {
             try (FileWriter writer = new FileWriter(file)) {
-                provider.save(writer, file);
+                provider.save(writer, data);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

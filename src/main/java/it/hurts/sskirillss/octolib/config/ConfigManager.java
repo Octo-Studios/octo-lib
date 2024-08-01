@@ -70,6 +70,7 @@ public final class ConfigManager {
             config.onLoadObject(object);
         } catch (Exception e) {
             OctoLib.LOGGER.error("Error occurs while " + location.getPath() + " config reload.");
+            e.printStackTrace();
         } finally {
             config.getLoader().saveToFiles(filePath, Cast.cast(object), provider);
         }

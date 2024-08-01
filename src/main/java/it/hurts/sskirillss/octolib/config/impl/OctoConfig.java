@@ -8,6 +8,8 @@ public interface OctoConfig {
     
     void onLoadObject(Object object);
     
-    IConfigFileLoader<?, ?> getLoader();
+    default IConfigFileLoader<?, ?> getLoader() {
+        return IConfigFileLoader.SOLID;
+    };
     
 }

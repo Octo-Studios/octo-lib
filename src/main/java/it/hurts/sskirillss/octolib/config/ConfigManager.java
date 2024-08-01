@@ -30,6 +30,10 @@ public final class ConfigManager {
         return CUSTOM_CONFIG_PROVIDERS.getOrDefault(resourceLocation, BASE_PROVIDER);
     }
     
+    public static OctoConfig getConfig(ResourceLocation resourceLocation) {
+        return CONFIG_MAP.get(resourceLocation);
+    }
+    
     @Nullable
     public static Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>> getConfigFabric(Class<? extends Annotation> clazz) {
         return ANNOTATION_CONFIG_FABRICS.get(clazz);

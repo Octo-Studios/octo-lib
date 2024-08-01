@@ -67,7 +67,7 @@ public abstract class ConfigEntry {
         return blockComment == null ? "" : Arrays.stream(blockComment.split("\n")).map(s -> "<# " + s + ">").collect(Collectors.joining("\n"));
     }
     
-    public ConfigEntry refactor(ConfigEntry entry) {
+    public ConfigEntry refine(ConfigEntry entry) {
         return entry;
     }
     

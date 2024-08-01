@@ -9,7 +9,8 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Mod(OctoLib.MODID)
 public class OctoLib {
     public static final String MODID = "octolib";
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public OctoLib(IEventBus bus, ModContainer container) {
         Configuration.setDefaults(new Configuration.Defaults() {

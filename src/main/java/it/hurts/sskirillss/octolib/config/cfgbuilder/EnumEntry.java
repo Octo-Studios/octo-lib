@@ -10,7 +10,7 @@ public class EnumEntry extends ScalarEntry {
     }
     
     @Override
-    public ConfigEntry refactor(ConfigEntry entry) {
+    public ConfigEntry refine(ConfigEntry entry) {
         if (entry.getTag() != CfgTag.ENUM && entry.getTag() != CfgTag.STR)
             return this;
         

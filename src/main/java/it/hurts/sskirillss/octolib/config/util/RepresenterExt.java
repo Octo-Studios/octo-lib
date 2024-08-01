@@ -22,6 +22,7 @@ public class RepresenterExt extends Representer {
     
     public RepresenterExt(DumperOptions options) {
         super(options);
+        multiRepresenters.put(Deque.class, new RepresentDeque());
         multiRepresenters.put(ConfigEntry.class, new RepresentEntry());
     }
     
@@ -250,6 +251,15 @@ public class RepresenterExt extends Representer {
             return node;
         }
         
+    }
+    
+    protected class RepresentDeque implements Represent {
+        protected RepresentDeque() {
+        }
+        
+        public Node representData(Object data) {
+            return representSequence(getTag(data.getClass(), Tag.SEQ), (Deque)data, DumperOptions.FlowStyle.AUTO);
+        }
     }
     
 }

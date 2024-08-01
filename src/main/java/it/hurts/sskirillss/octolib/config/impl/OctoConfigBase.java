@@ -1,17 +1,13 @@
-package it.hurts.sskirillss.octolib.config;
+package it.hurts.sskirillss.octolib.config.impl;
+
+import it.hurts.sskirillss.octolib.config.loader.IConfigFileLoader;
 
 public class OctoConfigBase implements OctoConfig {
     
     Object object;
-    FileSpreadType spreadType = FileSpreadType.SOLID_OBJECT;
     
     public OctoConfigBase(Object object) {
         this.object = object;
-    }
-    
-    public OctoConfigBase(Object object, FileSpreadType spreadType) {
-        this.object = object;
-        this.spreadType = spreadType;
     }
     
     @Override
@@ -23,8 +19,8 @@ public class OctoConfigBase implements OctoConfig {
     public void onLoadObject(Object object) {}
     
     @Override
-    public FileSpreadType getSpreadType() {
-        return spreadType;
+    public IConfigFileLoader<?, ?> getLoader() {
+        return IConfigFileLoader.SOLID;
     }
     
 }

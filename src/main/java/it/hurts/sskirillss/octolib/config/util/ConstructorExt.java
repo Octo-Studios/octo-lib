@@ -58,9 +58,12 @@ public class ConstructorExt extends Constructor {
     
     protected void initConstructors() {
         yamlClassConstructors.put(NodeId.mapping, new ConstructMappingCustomized());
-        
+        yamlClassConstructors.put(NodeId.sequence, new ConstructSequenceCustomizable());
+    
         typeConstructorsMap.put(CompoundEntry.class, new ConstructEntry());
         typeConstructorsMap.put(DeconstructedObjectEntry.class, new ConstructMappedEntry());
+        typeConstructorsMap.put(ArrayEntry.class, new ConstructMappedEntry());
+    
         yamlConstructors.put(COMPOUND_CFG_TAG.yamlTag(), new ConstructEntry());
         yamlConstructors.put(DECONSTRUCTED_CFG_TAG.yamlTag(), new ConstructMappedEntry());
     }
@@ -119,17 +122,16 @@ public class ConstructorExt extends Constructor {
     }
     
     public class ConstructMappedEntry extends ConstructEntry {
-        
-        protected ConfigEntry constructMapping(Node valueNode) {
+    
+        protected ConfigEntry constructMappingObject(Node valueNode) {
             MappingNode mappingNode = (MappingNode) valueNode;
             if (valueNode.getTag() == null || valueNode.getTag() == Tag.MAP) {
-                valueNode.setTag(DECONSTRUCTED_CFG_TAG.yamlTag());
-                return (CompoundEntry) (ConstructorExt.this.constructObject(valueNode));
+                return constructMapping(new CompoundEntry(), (MappingNode) valueNode);
             } else {
                 var tag = CfgTag.by(mappingNode.getTag());
                 mappingNode.setTag(Tag.MAP);
                 mappingNode.setType(DeconstructedObjectEntry.class);
-                return new DeconstructedObjectEntry(tag, (CompoundEntry) (ConstructorExt.this.constructObject(valueNode)));
+                return constructMapping(new DeconstructedObjectEntry(tag), (MappingNode) valueNode);
             }
         }
         
@@ -139,30 +141,11 @@ public class ConstructorExt extends Constructor {
         
         @Override
         public Object construct(Node node) {
-            MappingNode mnode = (MappingNode) node;
-            CompoundEntry compound = new CompoundEntry();
-            
-            for (NodeTuple tuple : mnode.getValue()) {
-                var keyNode = tuple.getKeyNode();
-                String key = ConstructorExt.this.constructObject(tuple.getKeyNode()).toString();
-                ConfigEntry value = constructValue(tuple.getValueNode());
-                compound.put(key, value);
-                
-                if (keyNode.getBlockComments() != null)
-                    value.setBlockComment(keyNode.getBlockComments().stream().map(CommentLine::getValue).collect(Collectors.joining("\n")));
-                if (keyNode.getInLineComments() != null)
-                    value.setInlineComment(keyNode.getInLineComments().stream().map(CommentLine::getValue).collect(Collectors.joining("\n")));
-            }
-            
-            return compound;
-        }
-        
-        protected ConfigEntry constructValue(Node valueNode) {
-            return switch (valueNode.getNodeId()) {
-                case scalar -> constructScalar(valueNode);
-                case mapping -> constructMapping(valueNode);
-                case sequence -> constructSequence(valueNode);
-                case anchor -> constructAnchor(valueNode);
+            return switch (node.getNodeId()) {
+                case scalar -> constructScalar(node);
+                case mapping -> constructMappingObject(node);
+                case sequence -> constructSequence(node);
+                case anchor -> constructAnchor(node);
             };
         }
         
@@ -172,17 +155,31 @@ public class ConstructorExt extends Constructor {
                     : CfgTag.by(valueNode.getTag()));
             SequenceNode sequenceNode = (SequenceNode) valueNode;
             for (var element : sequenceNode.getValue())
-                arrayEntry.add(constructValue(element));
+                arrayEntry.add((ConfigEntry) construct(element));
             
             return arrayEntry;
         }
         
-        protected ConfigEntry constructMapping(Node valueNode) {
-            if (valueNode.getTag() == null || valueNode.getTag() == Tag.MAP) {
-                valueNode.setTag(COMPOUND_CFG_TAG.yamlTag());
-                return (CompoundEntry) (ConstructorExt.this.constructObject(valueNode));
+        protected ConfigEntry constructMappingObject(Node valueNode) {
+            if (valueNode.getTag() == null || valueNode.getTag() == Tag.MAP || valueNode.getTag().equals(COMPOUND_CFG_TAG.yamlTag())) {
+                return constructMapping(new CompoundEntry(), (MappingNode) valueNode);
             } else
                 return new ObjectEntry(CfgTag.by(valueNode.getTag()), ConstructorExt.this.constructObject(valueNode));
+        }
+        
+        protected CompoundEntry constructMapping(CompoundEntry map, MappingNode mnode) {
+            for (NodeTuple tuple : mnode.getValue()) {
+                var keyNode = tuple.getKeyNode();
+                String key = ConstructorExt.this.constructObject(tuple.getKeyNode()).toString();
+                ConfigEntry value = (ConfigEntry) construct(tuple.getValueNode());
+                map.put(key, value);
+    
+                if (keyNode.getBlockComments() != null)
+                    value.setBlockComment(keyNode.getBlockComments().stream().map(l -> l.getValue().substring(1)).collect(Collectors.joining("\n")));
+                if (keyNode.getInLineComments() != null)
+                    value.setInlineComment(keyNode.getInLineComments().stream().map(l -> l.getValue().substring(1)).collect(Collectors.joining("\n")));
+            }
+            return map;
         }
         
         protected ScalarEntry constructScalar(Node valueNode) {
@@ -193,7 +190,8 @@ public class ConstructorExt extends Constructor {
                 if (valueNode.getTag().getValue().endsWith(CfgTag.ENUM_POSTFIX)) {
                     valueNode.setTag(new Tag(valueNode.getTag().getValue().replace(".enum", "")));
                     entry = new EnumEntry((Enum<?>) ConstructorExt.this.constructObject(valueNode));
-                } else
+                }
+                else
                     throw new YAMLException("Unsupported scalar node tag in compound: " + valueNode.getTag());
             } else
                 entry = factory.create(ConstructorExt.this.constructObject(valueNode));
@@ -203,6 +201,18 @@ public class ConstructorExt extends Constructor {
         
         protected ConfigEntry constructAnchor(Node valueNode) {
             throw new UnsupportedOperationException();
+        }
+        
+    }
+    
+    public class ConstructSequenceCustomizable extends ConstructSequence {
+        
+        @Override
+        public Object construct(Node node) {
+            var construct = typeConstructorsMap.get(node.getType());
+            if (construct != null)
+                return construct.construct(node);
+            return super.construct(node);
         }
         
     }

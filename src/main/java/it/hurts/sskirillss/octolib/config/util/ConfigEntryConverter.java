@@ -1,6 +1,7 @@
 package it.hurts.sskirillss.octolib.config.util;
 
 import it.hurts.sskirillss.octolib.config.cfgbuilder.CompoundEntry;
+import it.hurts.sskirillss.octolib.config.cfgbuilder.ConfigEntry;
 import it.hurts.sskirillss.octolib.config.cfgbuilder.DeconstructedObjectEntry;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -10,13 +11,13 @@ import org.yaml.snakeyaml.nodes.NodeId;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-public class CompoundConverter {
+public class ConfigEntryConverter {
     
     private final Representer representer;
     
     private final ConstructorExt constructor;
     
-    public CompoundConverter(ConstructorExt constructor, Representer representer) {
+    public ConfigEntryConverter(ConstructorExt constructor, Representer representer) {
         this(constructor, representer, initDumperOptions(representer));
     }
     
@@ -29,11 +30,11 @@ public class CompoundConverter {
         return dumperOptions;
     }
     
-    public CompoundConverter(ConstructorExt constructor, Representer representer, DumperOptions dumperOptions) {
+    public ConfigEntryConverter(ConstructorExt constructor, Representer representer, DumperOptions dumperOptions) {
         this(constructor, representer, dumperOptions, constructor.getLoadingConfig());
     }
     
-    public CompoundConverter(ConstructorExt constructor, Representer representer, DumperOptions dumperOptions, LoaderOptions loadingConfig) {
+    public ConfigEntryConverter(ConstructorExt constructor, Representer representer, DumperOptions dumperOptions, LoaderOptions loadingConfig) {
         if (constructor == null) {
             throw new NullPointerException("Constructor must be provided");
         } else if (representer == null) {
@@ -64,7 +65,7 @@ public class CompoundConverter {
         }
     }
     
-    public CompoundEntry representDeconstructed(Object obj) {
+    public ConfigEntry representDeconstructed(Object obj) {
         if (obj == null)
             throw new NullPointerException("Represented object cannot be null.");
         
@@ -79,7 +80,7 @@ public class CompoundConverter {
         return (CompoundEntry) constructor.constructObject(node);
     }
     
-    public CompoundEntry represent(Object obj) {
+    public ConfigEntry represent(Object obj) {
         if (obj == null)
             throw new NullPointerException("Represented object cannot be null.");
         
@@ -94,10 +95,15 @@ public class CompoundConverter {
         return (CompoundEntry) constructor.constructObject(node);
     }
     
-    public <T> T constructAs(CompoundEntry compound, Class<T> type) {
+    public <T> T constructAs(ConfigEntry compound, Class<T> type) {
         MappingNode node = (MappingNode) representer.represent(compound);
         node.setTag(Tag.MAP);
         node.setType(type);
+        return (T) constructor.constructObject(node);
+    }
+    
+    public <T> T construct(ConfigEntry compound) {
+        MappingNode node = (MappingNode) representer.represent(compound);
         return (T) constructor.constructObject(node);
     }
     

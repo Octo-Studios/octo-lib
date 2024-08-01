@@ -24,7 +24,7 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
         super(CfgTag.MAP, EntryId.MAPPING);
     }
     
-    protected CompoundEntry(Map<String, ConfigEntry> map) {
+    public CompoundEntry(Map<String, ConfigEntry> map) {
         super(CfgTag.MAP, EntryId.MAPPING);
         this.map.putAll(map);
     }
@@ -110,6 +110,53 @@ public class CompoundEntry extends ConfigEntry implements Iterable<Map.Entry<Str
     
     public ConfigEntry get(String key) {
         return map.get(key);
+    }
+    
+    public byte getByte(String key) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.BINARY);
+        return (byte) entry.getData();
+    }
+    
+    public ArrayEntry getList(String key) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.SEQ);
+        return (ArrayEntry) entry;
+    }
+    
+    public boolean getBoolean(String key, boolean type) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.BOOL);
+        return (boolean) entry.getData();
+    }
+    
+    public <T> T getObject(String key, Class<T> type) {
+        var entry = map.get(key);
+        checkType(entry, new CfgTag(type));
+        return (T) entry.getData();
+    }
+    
+    public String getString(String key) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.STR);
+        return (String) entry.getData();
+    }
+    
+    public double getDouble(String key) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.FLOAT);
+        return (double) entry.getData();
+    }
+    
+    public int getInt(String key) {
+        var entry = map.get(key);
+        checkType(entry, CfgTag.INT);
+        return (int) entry.getData();
+    }
+    
+    private void checkType(ConfigEntry entry, CfgTag tag) {
+        if (entry.getType() != tag && !entry.getTag().equals(tag))
+            throw new IllegalArgumentException(String.format("Incorrect tag type: %s is expected.", tag));
     }
     
     public CompoundEntry getWithoutTypes() {

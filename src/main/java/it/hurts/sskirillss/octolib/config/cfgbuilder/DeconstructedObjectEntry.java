@@ -9,4 +9,8 @@ public class DeconstructedObjectEntry extends CompoundEntry {
         map.putAll(compoundEntry.map);
     }
     
+    public DeconstructedObjectEntry(CfgTag tag) {
+        super(tag);
+    }
+    
 }

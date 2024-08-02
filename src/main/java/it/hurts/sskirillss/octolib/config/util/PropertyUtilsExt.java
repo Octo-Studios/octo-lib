@@ -8,7 +8,6 @@ import it.hurts.sskirillss.octolib.config.util.properties.GenericPropertyExt;
 import it.hurts.sskirillss.octolib.config.util.properties.MethodPropertyExt;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.BeanAccess;
-import org.yaml.snakeyaml.introspector.MethodProperty;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
@@ -44,11 +43,11 @@ public class PropertyUtilsExt extends PropertyUtils {
                     && type.getAnnotation(TypePropInherited.class).onlyProps();
             
             if (bAccess == BeanAccess.FIELD) {
-                for(c = type; c != null; c = c.getSuperclass()) {
+                for (c = type; c != null; c = c.getSuperclass()) {
                     var6 = c.getDeclaredFields();
                     var7 = var6.length;
-                
-                    for(var8 = 0; var8 < var7; ++var8) {
+                    
+                    for (var8 = 0; var8 < var7; ++var8) {
                         field = var6[var8];
                         
                         if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class))
@@ -70,14 +69,12 @@ public class PropertyUtilsExt extends PropertyUtils {
                             continue;
                         
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !properties.containsKey(name)) {
-                            if (Modifier.isPublic(modifiers)) {
-                                var property = new FieldPropertyExt(field, name);
-                                if (inlineComment != null && !inlineComment.isEmpty())
-                                    property.setInlineComment(inlineComment);
-                                if (blockComment != null && !blockComment.isEmpty())
-                                    property.setBlockComment(blockComment);
-                                properties.put(name, property);
-                            }
+                            var property = new FieldPropertyExt(field, name);
+                            if (inlineComment != null && !inlineComment.isEmpty())
+                                property.setInlineComment(inlineComment);
+                            if (blockComment != null && !blockComment.isEmpty())
+                                property.setBlockComment(blockComment);
+                            properties.put(name, property);
                         }
                     }
                 }
@@ -85,7 +82,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                 try {
                     PropertyDescriptor[] var12 = Introspector.getBeanInfo(type).getPropertyDescriptors();
                     
-                    for(var7 = 0; var7 < var12.length; ++var7) {
+                    for (var7 = 0; var7 < var12.length; ++var7) {
                         
                         PropertyDescriptor property = var12[var7];
                         Method readMethod = property.getReadMethod();
@@ -98,12 +95,12 @@ public class PropertyUtilsExt extends PropertyUtils {
                 } catch (IntrospectionException var11) {
                     throw new YAMLException(var11);
                 }
-            
-                for(c = type; c != null; c = c.getSuperclass()) {
+                
+                for (c = type; c != null; c = c.getSuperclass()) {
                     var6 = c.getDeclaredFields();
                     var7 = var6.length;
-                
-                    for(var8 = 0; var8 < var7; ++var8) {
+                    
+                    for (var8 = 0; var8 < var7; ++var8) {
                         field = var6[var8];
                         if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class)) {
                             properties.remove(field.getName());
@@ -149,7 +146,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                     }
                 }
             }
-        
+            
             if (properties.isEmpty() && inaccessableFieldsExist) {
                 throw new YAMLException("No JavaBean properties found in " + type.getName());
             } else {
@@ -162,4 +159,5 @@ public class PropertyUtilsExt extends PropertyUtils {
     private boolean isTransient(FeatureDescriptor fd) {
         return Boolean.TRUE.equals(fd.getValue("transient"));
     }
+    
 }

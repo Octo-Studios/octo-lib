@@ -61,9 +61,9 @@ public final class ConfigManager {
         var provider = getConfigProvider(location);
         
         Object object = config.prepareData();
-        var pattern = provider.createPattern(object);
     
         try {
+            var pattern = provider.createPattern(object);
             var data = config.getLoader().loadFiles(location, pattern, provider);
             provider.insert2ndStep(object, data);
             config.onLoadObject(object);

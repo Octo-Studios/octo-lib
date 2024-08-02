@@ -49,7 +49,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                     for(var8 = 0; var8 < var7; ++var8) {
                         field = var6[var8];
                         
-                        if (field.isAnnotationPresent(IgnoreProp.class))
+                        if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class))
                             continue;
                         
                         modifiers = field.getModifiers();

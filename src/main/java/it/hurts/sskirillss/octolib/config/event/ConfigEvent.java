@@ -32,9 +32,9 @@ public class ConfigEvent {
                 .forEach(a -> {
                     try {
                         Class<?> clazz = Class.forName(a.clazz().getClassName(), true, ConfigEvent.class.getClassLoader());
-                        var modId = clazz.getAnnotation(ConfigRegistration.class).modId();
+                        var dir = clazz.getAnnotation(ConfigRegistration.class).dir();
                         Arrays.stream(clazz.getFields()).filter(f -> Modifier.isStatic(f.getModifiers()))
-                                .forEach(f -> registerFieldConfig(f, modId));
+                                .forEach(f -> registerFieldConfig(f, dir));
                     } catch (ClassNotFoundException e) {
                         throw new RuntimeException(e);
                     }
@@ -59,7 +59,7 @@ public class ConfigEvent {
                 var octoConfig = fabric.getFirst().create(Cast.cast(a), value);
                 var name = fabric.getSecond().getName(Cast.cast(a), value);
                 
-                var location = ResourceLocation.fromNamespaceAndPath(modId, name);
+                String location = modId + "/" + name;
                 ConfigManager.registerConfig(location, octoConfig);
             }
         } catch (IllegalAccessException e) {

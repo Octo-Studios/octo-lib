@@ -21,17 +21,17 @@ import java.util.Map;
 
 public final class ConfigManager {
     
-    private static final HashMap<ResourceLocation, OctoConfig> CONFIG_MAP = new HashMap<>();
-    private static final HashMap<ResourceLocation, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
+    private static final HashMap<String, OctoConfig> CONFIG_MAP = new HashMap<>();
+    private static final HashMap<String, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
     private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FABRICS = new IdentityHashMap<>();
     public static final ConfigProvider BASE_PROVIDER;
     
-    private static ConfigProvider getConfigProvider(ResourceLocation resourceLocation) {
-        return CUSTOM_CONFIG_PROVIDERS.getOrDefault(resourceLocation, BASE_PROVIDER);
+    private static ConfigProvider getConfigProvider(String location) {
+        return CUSTOM_CONFIG_PROVIDERS.getOrDefault(location, BASE_PROVIDER);
     }
     
-    public static OctoConfig getConfig(ResourceLocation resourceLocation) {
-        return CONFIG_MAP.get(resourceLocation);
+    public static OctoConfig getConfig(String location) {
+        return CONFIG_MAP.get(location);
     }
     
     @Nullable
@@ -45,11 +45,11 @@ public final class ConfigManager {
         ANNOTATION_CONFIG_FABRICS.put(annotation, Pair.of(fabric,  nameGetter));
     }
     
-    public static void registerConfigProvider(ResourceLocation location, ConfigProvider provider) {
+    public static void registerConfigProvider(String location, ConfigProvider provider) {
         CUSTOM_CONFIG_PROVIDERS.put(location, provider);
     }
     
-    public static void registerConfig(ResourceLocation location, OctoConfig config) {
+    public static void registerConfig(String location, OctoConfig config) {
         CONFIG_MAP.put(location, config);
     }
     
@@ -57,26 +57,25 @@ public final class ConfigManager {
         CONFIG_MAP.forEach(ConfigManager::reload);
     }
     
-    private static void reload(ResourceLocation location, OctoConfig config) {
+    private static void reload(String location, OctoConfig config) {
         var provider = getConfigProvider(location);
-    
-        String filePath = location.getPath();
+        
         Object object = config.prepareData();
         var pattern = provider.createPattern(object);
     
         try {
-            var data = config.getLoader().loadFiles(filePath, pattern, provider);
+            var data = config.getLoader().loadFiles(location, pattern, provider);
             provider.insert2ndStep(object, data);
             config.onLoadObject(object);
         } catch (Exception e) {
-            OctoLib.LOGGER.error("Error occurs while " + location.getPath() + " config reload.");
+            OctoLib.LOGGER.error("Error occurs while " + location + " config reload.");
             e.printStackTrace();
         } finally {
-            config.getLoader().saveToFiles(filePath, Cast.cast(object), provider);
+            config.getLoader().saveToFiles(location, Cast.cast(object), provider);
         }
     }
     
-    public static void reload(ResourceLocation location) {
+    public static void reload(String location) {
         var config = CONFIG_MAP.get(location);
         reload(location, config);
     }

@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.HashMap;
 import java.util.Map;
 
-@ConfigRegistration(modId = OctoLib.MODID)
+@ConfigRegistration(dir = OctoLib.MODID)
 public class ConfigInit {
     public static final Map<Integer, TestConfig> CONFIGS = new HashMap<>();
 
@@ -15,7 +15,7 @@ public class ConfigInit {
         for (int i = 0; i < 10; i++) {
             TestConfig config = new TestConfig();
 
-            ConfigManager.registerConfig(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "test/entry_" + i), config);
+//            ConfigManager.registerConfig(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "test/entry_" + i), config);
 
             CONFIGS.put(i, config);
         }

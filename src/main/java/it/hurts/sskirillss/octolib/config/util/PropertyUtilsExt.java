@@ -4,6 +4,8 @@ import it.hurts.sskirillss.octolib.config.annotations.IgnoreProp;
 import it.hurts.sskirillss.octolib.config.annotations.Prop;
 import it.hurts.sskirillss.octolib.config.annotations.TypePropInherited;
 import it.hurts.sskirillss.octolib.config.util.properties.FieldPropertyExt;
+import it.hurts.sskirillss.octolib.config.util.properties.GenericPropertyExt;
+import it.hurts.sskirillss.octolib.config.util.properties.MethodPropertyExt;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.introspector.MethodProperty;
@@ -85,8 +87,9 @@ public class PropertyUtilsExt extends PropertyUtils {
                         
                         PropertyDescriptor property = var12[var7];
                         Method readMethod = property.getReadMethod();
+                        
                         if ((readMethod == null || !readMethod.getName().equals("getClass")) && !this.isTransient(property)) {
-                            properties.put(property.getName(), new MethodProperty(property));
+                            properties.put(property.getName(), new MethodPropertyExt(property));
                         }
                         
                     }
@@ -100,8 +103,10 @@ public class PropertyUtilsExt extends PropertyUtils {
                 
                     for(var8 = 0; var8 < var7; ++var8) {
                         field = var6[var8];
-                        if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class))
+                        if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class)) {
+                            properties.remove(field.getName());
                             continue;
+                        }
                         
                         String name = field.getName();
                         String inlineComment = null;
@@ -113,8 +118,18 @@ public class PropertyUtilsExt extends PropertyUtils {
                             name = settings.name() == null || settings.name().isEmpty() ? name : settings.name();
                             inlineComment = settings.inlineComment();
                             blockComment = settings.comment();
-                        } else if (onlyProps)
+                            
+                            if (properties.containsKey(name) && properties.get(name) instanceof GenericPropertyExt ext) {
+                                if (inlineComment != null && !inlineComment.isEmpty())
+                                    ext.setInlineComment(inlineComment);
+                                if (blockComment != null && !blockComment.isEmpty())
+                                    ext.setBlockComment(blockComment);
+                            }
+                            
+                        } else if (onlyProps) {
+                            properties.remove(name);
                             continue;
+                        }
                         
                         modifiers = field.getModifiers();
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {

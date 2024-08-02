@@ -34,8 +34,8 @@ public class SchemeInjector implements EntryInjector<ConfigEntry> {
     }
     
     protected CompoundEntry injectMapping(CompoundEntry pattern, CompoundEntry target) {
-        CompoundEntry result = pattern.getTag() == CfgTag.MAP ? target
-                : new DeconstructedObjectEntry(pattern.getTag());
+        CompoundEntry result = pattern.getTag() == CompoundEntry.COMPOUND_CFG_TAG ? target
+                : new DeconstructedObjectEntry(pattern.getTag(), pattern);
     
         for (var entry : pattern.entrySet()) {
             var key = entry.getKey();

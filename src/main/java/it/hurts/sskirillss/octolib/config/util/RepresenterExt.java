@@ -89,12 +89,8 @@ public class RepresenterExt extends Representer {
                         else
                             nodeValue.setTag(new Tag(nodeValue.getTag().getValue() + CfgTag.ENUM_POSTFIX));
                     }
-                } else {
-                    if (nodeId == NodeId.mapping && property.getType() == propertyValue.getClass() && !(propertyValue instanceof Map) && !nodeValue.getTag().equals(Tag.SET))
-                        nodeValue.setTag(Tag.MAP);
-                    
+                } else
                     this.checkGlobalTag(property, nodeValue, propertyValue);
-                }
             }
         }
     

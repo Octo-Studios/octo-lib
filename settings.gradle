@@ -1,9 +1,15 @@
 pluginManagement {
     repositories {
         maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://plugins.gradle.org/m2/"}
         maven { url "https://maven.architectury.dev/" }
-        maven { url "https://maven.neoforged.net/releases" }
+        maven { url "https://files.minecraftforge.net/maven/" }
         gradlePluginPortal()
     }
 }
+
+rootProject.name = 'octolib'
+
+include 'common'
+include 'fabric'
+include 'neoforge'
+include 'quilt'

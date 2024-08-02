@@ -18,10 +18,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ConfigManager {
     
-    private static final HashMap<String, OctoConfig> CONFIG_MAP = new HashMap<>();
+    private static final Map<String, OctoConfig> CONFIG_MAP = new ConcurrentHashMap<>();
     private static final HashMap<String, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
     private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FABRICS = new IdentityHashMap<>();
     public static final ConfigProvider BASE_PROVIDER;

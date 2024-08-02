@@ -83,6 +83,11 @@ public class ConstructorExt extends Constructor {
                  * Removed <code> have InstantiationException in case of abstract type
                  */
                 try {
+                    if (type.isAnonymousClass()) {
+                        node.setType(type.getSuperclass());
+                        return newInstance(ancestor, node, tryDefault);
+                    }
+                    
                     if (ancestor.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
                         java.lang.reflect.Constructor<?> c = type.getDeclaredConstructor();
                         c.setAccessible(true);

@@ -84,6 +84,7 @@ public class ConstructorExt extends Constructor {
                  */
                 try {
                     if (type.isAnonymousClass()) {
+                        node.setType(String.class);
                         node.setType(type.getSuperclass());
                         return newInstance(ancestor, node, tryDefault);
                     }

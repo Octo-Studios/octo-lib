@@ -7,9 +7,7 @@ import it.hurts.sskirillss.octolib.config.cfgbuilder.DeconstructedObjectEntry;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.NodeId;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.nodes.*;
 import org.yaml.snakeyaml.representer.Representer;
 
 public class ConfigEntryConverter {
@@ -71,6 +69,9 @@ public class ConfigEntryConverter {
             throw new NullPointerException("Represented object cannot be null.");
         
         var node = representer.represent(obj);
+    
+        if (node.getNodeId() == NodeId.anchor)
+            node = ((AnchorNode) node).getRealNode();
         
         if (node.getNodeId() == NodeId.scalar)
             throw new NullPointerException("Represented object cannot be a scalar.");
@@ -90,6 +91,9 @@ public class ConfigEntryConverter {
             throw new NullPointerException("Represented object cannot be null.");
         
         var node = representer.represent(obj);
+    
+        if (node.getNodeId() == NodeId.anchor)
+            node = ((AnchorNode) node).getRealNode();
         
         if (node.getNodeId() == NodeId.scalar)
             throw new NullPointerException("Represented object cannot be a scalar.");
@@ -102,14 +106,21 @@ public class ConfigEntryConverter {
     }
     
     public <T> T constructAs(ConfigEntry compound, Class<T> type) {
-        MappingNode node = (MappingNode) representer.represent(compound);
+        Node node = representer.represent(compound);
+        
+        if (node.getNodeId() == NodeId.anchor)
+            node = ((AnchorNode) node).getRealNode();
+        
         node.setTag(Tag.MAP);
         node.setType(type);
         return (T) constructor.constructObject(node);
     }
     
     public <T> T construct(ConfigEntry compound) {
-        MappingNode node = (MappingNode) representer.represent(compound);
+        Node node = representer.represent(compound);
+        if (node.getNodeId() == NodeId.anchor)
+            node = ((AnchorNode) node).getRealNode();
+        
         return (T) constructor.constructObject(node);
     }
     

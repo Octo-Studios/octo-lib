@@ -123,6 +123,7 @@ public class RepresenterExt extends Representer {
     
     @Override
     protected MappingNode representJavaBean(Set<Property> properties, Object javaBean) {
+        System.out.println(javaBean.getClass());
         if (removeTypes() && !classTags.containsKey(javaBean.getClass()))
             addClassTag(javaBean.getClass(), Tag.MAP);
         

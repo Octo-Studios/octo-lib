@@ -70,12 +70,14 @@ public class PropertyUtilsExt extends PropertyUtils {
                             continue;
                         
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !properties.containsKey(name)) {
-                            var property = new FieldPropertyExt(field, name);
-                            if (inlineComment != null && !inlineComment.isEmpty())
-                                property.setInlineComment(inlineComment);
-                            if (blockComment != null && !blockComment.isEmpty())
-                                property.setBlockComment(blockComment);
-                            properties.put(name, property);
+                            if (Modifier.isPublic(modifiers)) {
+                                var property = new FieldPropertyExt(field, name);
+                                if (inlineComment != null && !inlineComment.isEmpty())
+                                    property.setInlineComment(inlineComment);
+                                if (blockComment != null && !blockComment.isEmpty())
+                                    property.setBlockComment(blockComment);
+                                properties.put(name, property);
+                            }
                         }
                     }
                 }

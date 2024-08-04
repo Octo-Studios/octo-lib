@@ -2,17 +2,19 @@ package it.hurts.octostudios.octolib.modules.config;
 
 import com.mojang.datafixers.util.Pair;
 import it.hurts.octostudios.octolib.OctoLib;
-import it.hurts.octostudios.octolib.modules.config.annotations.registration.AnnotationConfigFabric;
+import it.hurts.octostudios.octolib.modules.config.annotations.registration.AnnotationConfigFactory;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.Config;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.ConfigNameGetter;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.ObjectConfig;
 import it.hurts.octostudios.octolib.modules.config.impl.*;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProviderBase;
+import it.hurts.octostudios.octolib.modules.config.util.ConfigUtils;
 import org.apache.logging.log4j.util.Cast;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -23,7 +25,7 @@ public final class ConfigManager {
     
     private static final Map<String, OctoConfig> CONFIG_MAP = new ConcurrentHashMap<>();
     private static final HashMap<String, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
-    private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FABRICS = new IdentityHashMap<>();
+    private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFactory<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FACTORIES = new IdentityHashMap<>();
     public static final ConfigProvider BASE_PROVIDER;
     
     private static ConfigProvider getConfigProvider(String location) {
@@ -35,18 +37,25 @@ public final class ConfigManager {
     }
     
     @Nullable
-    public static Pair<AnnotationConfigFabric<?>, ConfigNameGetter<?>> getConfigFabric(Class<? extends Annotation> clazz) {
-        return ANNOTATION_CONFIG_FABRICS.get(clazz);
+    public static Pair<AnnotationConfigFactory<?>, ConfigNameGetter<?>> getConfigFactory(Class<? extends Annotation> clazz) {
+        return ANNOTATION_CONFIG_FACTORIES.get(clazz);
     }
     
-    public static <T extends Annotation> void registerConfigFabric(Class<? extends T> annotation,
-                                                                   AnnotationConfigFabric<T> fabric,
-                                                                   ConfigNameGetter<T> nameGetter) {
-        ANNOTATION_CONFIG_FABRICS.put(annotation, Pair.of(fabric,  nameGetter));
+    public static <T extends Annotation> void registerConfigFactory(Class<? extends T> annotation,
+                                                                    AnnotationConfigFactory<T> fabric,
+                                                                    ConfigNameGetter<T> nameGetter) {
+        ANNOTATION_CONFIG_FACTORIES.put(annotation, Pair.of(fabric,  nameGetter));
     }
     
     public static void registerConfigProvider(String location, ConfigProvider provider) {
         CUSTOM_CONFIG_PROVIDERS.put(location, provider);
+    }
+    
+    public static void registerConfigPackage(Class<?> configPackage, String dir) {
+        for (var field : configPackage.getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers()))
+                ConfigUtils.registerFieldConfig(field, dir);
+        }
     }
     
     public static void registerConfig(String location, OctoConfig config) {
@@ -82,7 +91,7 @@ public final class ConfigManager {
     
     static {
         BASE_PROVIDER = ConfigProviderBase.getDefault(4);
-        registerConfigFabric(Config.class,
+        registerConfigFactory(Config.class,
                 (a, object) -> {
                     String name = a.value();
                     if (!OctoConfig.class.isAssignableFrom(object.getClass()))
@@ -91,7 +100,7 @@ public final class ConfigManager {
                     return (OctoConfig) object;
                 },
                 (a, object) -> a.value());
-        registerConfigFabric(ObjectConfig.class,
+        registerConfigFactory(ObjectConfig.class,
                 (a, object) -> {
                     String name = a.value();
                     return switch (a.type()) {

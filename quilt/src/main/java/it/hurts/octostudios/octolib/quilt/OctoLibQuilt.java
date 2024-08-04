@@ -1,4 +1,4 @@
-package it.hurts.octostudios.quilt;
+package it.hurts.octostudios.octolib.quilt;
 
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;

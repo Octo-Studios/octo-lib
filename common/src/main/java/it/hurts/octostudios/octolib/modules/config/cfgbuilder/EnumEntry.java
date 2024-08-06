@@ -6,7 +6,7 @@ import org.yaml.snakeyaml.util.EnumUtils;
 public class EnumEntry extends ScalarEntry {
     
     public EnumEntry(Enum<?> object) {
-        super(object, CfgTag.STR);
+        super(object, CfgTag.ENUM);
     }
     
     @Override
@@ -15,7 +15,7 @@ public class EnumEntry extends ScalarEntry {
             return this;
         
         try {
-            return new EnumEntry(EnumUtils.findEnumInsensitiveCase((Class<? extends Enum>) getData(), entry.getData().toString()));
+            return new EnumEntry(EnumUtils.findEnumInsensitiveCase((Class<? extends Enum>) getData().getClass(), entry.getData().toString()));
         } catch (RuntimeException e) {
             return this;
         }

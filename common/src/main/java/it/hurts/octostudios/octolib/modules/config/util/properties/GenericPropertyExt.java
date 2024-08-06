@@ -10,9 +10,32 @@ public class GenericPropertyExt extends GenericProperty {
     
     private String inlineComment;
     private String blockComment;
+    private Type genTypeOverride;
     
     public GenericPropertyExt(String name, Class<?> aClass, Type aType) {
         super(name, aClass, aType);
+    }
+    
+    public Type getGenTypeOverride() {
+        return genTypeOverride;
+    }
+    
+    public void setGenTypeOverride(Type genTypeOverride) {
+        this.genTypeOverride = genTypeOverride;
+    }
+    
+    @Override
+    public Class<?>[] getActualTypeArguments() {
+        if (genTypeOverride != null) {
+            Class<?> classType = (Class<?>) genTypeOverride;
+            if (classType.isArray()) {
+                var actualClasses = new Class<?>[1];
+                actualClasses[0] = getType().getComponentType();
+                return actualClasses;
+            }
+        }
+        
+        return super.getActualTypeArguments();
     }
     
     @Override

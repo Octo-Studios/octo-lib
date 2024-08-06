@@ -1,6 +1,7 @@
 package it.hurts.octostudios.octolib.modules.config.util;
 
 import it.hurts.octostudios.octolib.modules.config.annotations.IgnoreProp;
+import it.hurts.octostudios.octolib.modules.config.annotations.ParameterizedProp;
 import it.hurts.octostudios.octolib.modules.config.annotations.Prop;
 import it.hurts.octostudios.octolib.modules.config.annotations.TypePropInherited;
 import it.hurts.octostudios.octolib.modules.config.util.properties.FieldPropertyExt;
@@ -74,6 +75,9 @@ public class PropertyUtilsExt extends PropertyUtils {
                                 property.setInlineComment(inlineComment);
                             if (blockComment != null && !blockComment.isEmpty())
                                 property.setBlockComment(blockComment);
+                            
+                            if (field.isAnnotationPresent(ParameterizedProp.class))
+                                property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
                             properties.put(name, property);
                         }
                     }
@@ -123,6 +127,8 @@ public class PropertyUtilsExt extends PropertyUtils {
                                     ext.setInlineComment(inlineComment);
                                 if (blockComment != null && !blockComment.isEmpty())
                                     ext.setBlockComment(blockComment);
+                                if (field.isAnnotationPresent(ParameterizedProp.class))
+                                    ext.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
                             }
                             
                         } else if (onlyProps) {
@@ -138,6 +144,8 @@ public class PropertyUtilsExt extends PropertyUtils {
                                     property.setInlineComment(inlineComment);
                                 if (blockComment != null && !blockComment.isEmpty())
                                     property.setBlockComment(blockComment);
+                                if (field.isAnnotationPresent(ParameterizedProp.class))
+                                    property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
                                 properties.put(name, property);
                             } else {
                                 inaccessableFieldsExist = true;

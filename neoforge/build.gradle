@@ -32,6 +32,8 @@ repositories {
 dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
 
+    modImplementation "dev.architectury:architectury-neoforge:$rootProject.architectury_api_version"
+
     forgeRuntimeLibrary 'org.yaml:snakeyaml:2.2'
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }

@@ -31,7 +31,6 @@ dependencies {
 
     modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:$rootProject.quilted_fabric_api_version"
 
-    implementation 'org.yaml:snakeyaml:2.2'
     include 'org.yaml:snakeyaml:2.2'
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }

@@ -10,6 +10,4 @@ public final class OctoLibNeoForge {
     public OctoLibNeoForge() {
         OctoLib.init();
     }
-    
-    FMLCommonSetupEvent
 }

@@ -72,4 +72,25 @@ subprojects {
     assemble {
         dependsOn(collectJars)
     }
+
+    publishing {
+        repositories {
+            maven {
+                name = "octo"
+                url = "https://maven.octo-studios.com/releases"
+                credentials(PasswordCredentials)
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                groupId = group
+                artifactId = project.mod_id + "-" + project.name
+                version = version + "+" + project.minecraft_version
+                from components.java
+            }
+        }
+    }
 }

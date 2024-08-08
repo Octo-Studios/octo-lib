@@ -3,9 +3,6 @@ package it.hurts.octostudios.octolib.modules.config.loader;
 import it.hurts.octostudios.octolib.modules.config.cfgbuilder.ConfigEntry;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 
-import java.nio.file.Path;
-
-
 public interface IConfigFileLoader<U1, U2> {
     
     SolidConfigLoader<?> SOLID = new SolidConfigLoader<>();

@@ -60,6 +60,8 @@ public final class ConfigManager {
     
     public static void registerConfig(String location, OctoConfig config) {
         CONFIG_MAP.put(location, config);
+        
+        reload(location, config);
     }
     
     public static void reloadAll() {

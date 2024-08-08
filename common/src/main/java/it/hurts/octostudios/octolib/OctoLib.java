@@ -11,6 +11,5 @@ public final class OctoLib {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public static void init() {
-        LifecycleEvent.SETUP.register(ConfigManager::reloadAll);
     }
 }

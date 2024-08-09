@@ -10,15 +10,13 @@ import it.hurts.octostudios.octolib.modules.config.impl.*;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProviderBase;
 import it.hurts.octostudios.octolib.modules.config.util.ConfigUtils;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.util.Cast;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ConfigManager {
@@ -27,6 +25,10 @@ public final class ConfigManager {
     private static final HashMap<String, ConfigProvider> CUSTOM_CONFIG_PROVIDERS = new HashMap<>();
     private static final IdentityHashMap<Class<? extends Annotation>, Pair<AnnotationConfigFactory<?>, ConfigNameGetter<?>>> ANNOTATION_CONFIG_FACTORIES = new IdentityHashMap<>();
     public static final ConfigProvider BASE_PROVIDER;
+    
+    public static Set<String> getAllPaths() {
+        return CONFIG_MAP.keySet();
+    }
     
     private static ConfigProvider getConfigProvider(String location) {
         return CUSTOM_CONFIG_PROVIDERS.getOrDefault(location, BASE_PROVIDER);
@@ -60,8 +62,12 @@ public final class ConfigManager {
     
     public static void registerConfig(String location, OctoConfig config) {
         CONFIG_MAP.put(location, config);
-        
-        reload(location, config);
+    
+        try {
+            ConfigManager.reload(location);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
     
     public static void reloadAll() {
@@ -79,8 +85,8 @@ public final class ConfigManager {
             provider.insert2ndStep(object, data);
             config.onLoadObject(object);
         } catch (Exception e) {
-            OctoLib.LOGGER.error("Error occurs while " + location + " config reload.");
-            e.printStackTrace();
+            OctoLib.LOGGER.error("Error occurs while reading " + location + " config.");
+            throw new RuntimeException(e);
         } finally {
             config.getLoader().saveToFiles(location, Cast.cast(object), provider);
         }

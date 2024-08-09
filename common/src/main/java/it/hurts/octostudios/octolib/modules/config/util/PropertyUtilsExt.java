@@ -138,24 +138,21 @@ public class PropertyUtilsExt extends PropertyUtils {
                         
                         modifiers = field.getModifiers();
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
-                            if (Modifier.isPublic(modifiers)) {
-                                var property = new FieldPropertyExt(field, name);
-                                if (inlineComment != null && !inlineComment.isEmpty())
-                                    property.setInlineComment(inlineComment);
-                                if (blockComment != null && !blockComment.isEmpty())
-                                    property.setBlockComment(blockComment);
-                                if (field.isAnnotationPresent(ParameterizedProp.class))
-                                    property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
+                            var property = new FieldPropertyExt(field, name);
+                            if (inlineComment != null && !inlineComment.isEmpty())
+                                property.setInlineComment(inlineComment);
+                            if (blockComment != null && !blockComment.isEmpty())
+                                property.setBlockComment(blockComment);
+                            if (field.isAnnotationPresent(ParameterizedProp.class))
+                                property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
+                            if (!properties.containsKey(name) || Modifier.isPublic(modifiers))
                                 properties.put(name, property);
-                            } else {
-                                inaccessableFieldsExist = true;
-                            }
                         }
                     }
                 }
             }
             
-            if (properties.isEmpty() && inaccessableFieldsExist) {
+            if (properties.isEmpty()) {
                 throw new YAMLException("No JavaBean properties found in " + type.getName());
             } else {
                 this.propertiesCache.put(type, properties);

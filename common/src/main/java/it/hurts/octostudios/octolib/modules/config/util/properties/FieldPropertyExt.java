@@ -30,6 +30,7 @@ public class FieldPropertyExt extends GenericPropertyExt {
     
     public Object get(Object object) {
         try {
+            field.setAccessible(true);
             return this.field.get(object);
         } catch (Exception var3) {
             throw new YAMLException("Unable to access field " + this.field.getName() + " on object " + object + " : " + var3);

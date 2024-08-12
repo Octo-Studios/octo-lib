@@ -70,6 +70,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                             continue;
                         
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !properties.containsKey(name)) {
+                            field.setAccessible(true);
                             var property = new FieldPropertyExt(field, name);
                             if (inlineComment != null && !inlineComment.isEmpty())
                                 property.setInlineComment(inlineComment);
@@ -138,6 +139,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                         
                         modifiers = field.getModifiers();
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+                            field.setAccessible(true);
                             var property = new FieldPropertyExt(field, name);
                             if (inlineComment != null && !inlineComment.isEmpty())
                                 property.setInlineComment(inlineComment);

@@ -2,8 +2,8 @@ package it.hurts.octostudios.octolib.modules.config.util;
 
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
+import it.hurts.octostudios.octolib.modules.utils.Cast;
 import lombok.experimental.UtilityClass;
-import org.apache.logging.log4j.util.Cast;
 
 import java.lang.reflect.Field;
 

@@ -12,6 +12,7 @@ configurations {
         canBeResolved = true
         canBeConsumed = false
     }
+
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common

@@ -9,9 +9,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import it.hurts.octostudios.octolib.modules.config.impl.OctoConfig;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,12 +21,12 @@ public class ConfigPathArgumentType implements ArgumentType<ConfigPathArgumentTy
     
     private static final Collection<String> EXAMPLES = Arrays.asList("mod/config1", "mod/dir/config2");
     private static final DynamicCommandExceptionType INVALID_PATH_EXCEPTION = new DynamicCommandExceptionType((path) ->
-            Text.stringifiedTranslatable("argument.config.path.invalid", path));
+            Component.translatableEscape("argument.config.path.invalid", path));
     
     public ConfigPathArgumentType() {
     }
     
-    public static ConfigPathArgumentType.OctoConfigArgument getConfigArgument(CommandContext<ServerCommandSource> context, String name) {
+    public static ConfigPathArgumentType.OctoConfigArgument getConfigArgument(CommandContext<CommandSourceStack> context, String name) {
         return context.getArgument(name, OctoConfigArgument.class);
     }
     
@@ -43,7 +43,7 @@ public class ConfigPathArgumentType implements ArgumentType<ConfigPathArgumentTy
     }
     
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(ConfigManager.getAllPaths(), builder);
+        return SharedSuggestionProvider.suggest(ConfigManager.getAllPaths(), builder);
     }
     
     public Collection<String> getExamples() {

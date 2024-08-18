@@ -10,7 +10,6 @@ import it.hurts.octostudios.octolib.modules.config.impl.*;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProviderBase;
 import it.hurts.octostudios.octolib.modules.config.util.ConfigUtils;
-import net.minecraft.text.Text;
 import org.apache.logging.log4j.util.Cast;
 import org.jetbrains.annotations.Nullable;
 

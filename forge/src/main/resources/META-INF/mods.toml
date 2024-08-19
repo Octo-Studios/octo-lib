@@ -19,17 +19,16 @@ side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "minecraft"
+mandatory = true
 type = "required"
-versionRange = "[1.20,)"
+versionRange = "[1.20.1,1.21)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "architectury"
+mandatory = true
 type = "required"
 versionRange = "[9.2.14,)"
 ordering = "AFTER"
 side = "BOTH"
-
-[[mixins]]
-config = "${mod_id}.mixins.json"

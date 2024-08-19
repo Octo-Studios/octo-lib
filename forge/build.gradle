@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    neoForge "net.neoforged:forge:$rootProject.minecraft_version-$rootProject.neoforge_version"
+    forge "net.neoforged:forge:$rootProject.minecraft_version-$rootProject.neoforge_version"
 
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
 
@@ -39,7 +39,7 @@ dependencies {
     forgeRuntimeLibrary 'org.yaml:snakeyaml:2.2'
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
+    shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 }
 
 def resourceTargets = ['META-INF/mods.toml']

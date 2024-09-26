@@ -28,10 +28,8 @@ subprojects {
 
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-        mappings loom.layered {
-            it.mappings("net.fabricmc:yarn:$rootProject.yarn_mappings:v2")
-            it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$rootProject.yarn_mappings_patch_neoforge_version")
-        }
+
+        mappings loom.officialMojangMappings()
 
         implementation 'org.yaml:snakeyaml:2.2'
 
@@ -53,24 +51,6 @@ subprojects {
 
     tasks.withType(JavaCompile).configureEach {
         it.options.release = 21
-    }
-
-    tasks.register('collectJars', Copy) {
-        subprojects {
-            def ignoredProjects = ['common'];
-
-            if (!ignoredProjects.contains(project.name)) {
-                def remapJar = project.tasks.named('remapJar')
-
-                dependsOn remapJar
-                from remapJar
-                into 'build/libs'
-            }
-        }
-    }
-
-    assemble {
-        dependsOn(collectJars)
     }
 
     publishing {

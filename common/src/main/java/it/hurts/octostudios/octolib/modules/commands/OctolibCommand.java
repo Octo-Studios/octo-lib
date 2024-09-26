@@ -4,6 +4,11 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.MinecraftServer;
@@ -13,12 +18,12 @@ import net.minecraft.text.Text;
 
 public class OctolibCommand {
     
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(CommandManager.literal("octolib").requires(s -> s.hasPermissionLevel(2))
-                .then(CommandManager.literal("config")
-                        .then(CommandManager.literal("reload")
-                                .then(CommandManager.literal("all")
-                                        .executes(context -> {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
+        dispatcher.register(Commands.literal("octolib").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("config")
+                        .then(Commands.literal("reload")
+                                .then(Commands.literal("all")
+                                        .executes(conComponent -> {
                                             int counter = 0;
                                             boolean isAdmin = context.getSource().hasPermissionLevel(4);
                                             
@@ -29,22 +34,24 @@ public class OctolibCommand {
                                                     counter++;
                                                 } catch (RuntimeException e) {
                                                     e.printStackTrace();
-                                                    context.getSource().sendError(Text.literal("Error occurs while reloading config by path ")
-                                                            .append(Text.literal("\"" + path + "\"")));
+                                                    conComponent.getSource().sendFailure(Component.literal("Error occurs while reload config by path ")
+                                                            .append(Component.literal("\"" + path + "\"")));
+                                                    
+                                                    return 0;
                                                 }
                                             }
     
-                                            context.getSource().sendMessage(Text.literal(counter + " configs have been reloaded successfully"));
+                                            conComponent.getSource().sendSystemMessage(Component.literal(counter + " configs reload successfully"));
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(CommandManager.argument("path", StringArgumentType.string())
-                                        .suggests((c, b) -> CommandSource.suggestMatching(ConfigManager.getAllPaths().stream().map(s -> "\"" + s + "\""), b))
+                                .then(Commands.argument("path", StringArgumentType.string())
+                                        .suggests((c, b) -> SharedSuggestionProvider.suggest(ConfigManager.getAllPaths(), b))
                                         .executes(c -> {
                                             var path = StringArgumentType.getString(c, "path");
                                             boolean isAdmin = c.getSource().hasPermissionLevel(4);
                                             
                                             if (!ConfigManager.getAllPaths().contains(path)) {
-                                                c.getSource().sendError(Text.literal("Config by path \"" + path + "\" does not exist"));
+                                                c.getSource().sendFailure(Component.literal("Config by path \"" + path + "\" does not exist"));
                                                 return 0;
                                             }
                                             
@@ -59,8 +66,8 @@ public class OctolibCommand {
                                                 c.getSource().sendMessage(Text.literal("Config with path \"" + path + "\" has been reloaded successfully"));
                                             } catch (RuntimeException e) {
                                                 e.printStackTrace();
-                                                c.getSource().sendError(Text.literal("Error occurs while reloading config by path ")
-                                                        .append(Text.literal("\"" + path + "\"")));
+                                                c.getSource().sendFailure(Component.literal("Error occurs while reloading config by path ")
+                                                        .append(Component.literal("\"" + path + "\"")));
                                                 
                                                 return 0;
                                             }

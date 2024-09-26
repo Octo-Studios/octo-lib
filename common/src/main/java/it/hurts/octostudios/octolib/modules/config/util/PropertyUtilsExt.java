@@ -148,7 +148,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                             if (field.isAnnotationPresent(ParameterizedProp.class))
                                 property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
                             if (!properties.containsKey(name) || Modifier.isPublic(modifiers))
-                                properties.put(name, property);
+                                properties.replace(name, property);
                         }
                     }
                 }

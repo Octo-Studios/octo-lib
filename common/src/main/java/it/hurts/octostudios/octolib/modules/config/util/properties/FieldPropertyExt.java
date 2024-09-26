@@ -1,6 +1,5 @@
 package it.hurts.octostudios.octolib.modules.config.util.properties;
 
-import it.hurts.octostudios.octolib.modules.config.annotations.ParameterizedProp;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.util.ArrayUtils;
 

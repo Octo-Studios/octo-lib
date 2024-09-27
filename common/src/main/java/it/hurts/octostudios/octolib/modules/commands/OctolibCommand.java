@@ -9,12 +9,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 
 public class OctolibCommand {
     
@@ -25,7 +19,7 @@ public class OctolibCommand {
                                 .then(Commands.literal("all")
                                         .executes(conComponent -> {
                                             int counter = 0;
-                                            boolean isAdmin = context.getSource().hasPermissionLevel(4);
+                                            boolean isAdmin = conComponent.getSource().hasPermission(4);
                                             
                                             for (var path : ConfigManager.getAllPaths()) {
                                                 try {
@@ -48,7 +42,7 @@ public class OctolibCommand {
                                         .suggests((c, b) -> SharedSuggestionProvider.suggest(ConfigManager.getAllPaths(), b))
                                         .executes(c -> {
                                             var path = StringArgumentType.getString(c, "path");
-                                            boolean isAdmin = c.getSource().hasPermissionLevel(4);
+                                            boolean isAdmin = c.getSource().hasPermission(4);
                                             
                                             if (!ConfigManager.getAllPaths().contains(path)) {
                                                 c.getSource().sendFailure(Component.literal("Config by path \"" + path + "\" does not exist"));
@@ -63,7 +57,7 @@ public class OctolibCommand {
                                                         ConfigManager.syncConfig(path, c.getSource().getServer());
                                                 }
                                                 
-                                                c.getSource().sendMessage(Text.literal("Config with path \"" + path + "\" has been reloaded successfully"));
+                                                c.getSource().sendSystemMessage(Component.literal("Config with path \"" + path + "\" has been reloaded successfully"));
                                             } catch (RuntimeException e) {
                                                 e.printStackTrace();
                                                 c.getSource().sendFailure(Component.literal("Error occurs while reloading config by path ")

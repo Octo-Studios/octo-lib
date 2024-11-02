@@ -4,8 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "TrailRenderMixin"
   ],
   "mixins": [
+    "XPTestMixin"
   ],
   "injectors": {
     "defaultRequire": 1

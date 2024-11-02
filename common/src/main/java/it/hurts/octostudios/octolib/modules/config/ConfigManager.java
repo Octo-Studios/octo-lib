@@ -1,7 +1,6 @@
 package it.hurts.octostudios.octolib.modules.config;
 
 import com.mojang.datafixers.util.Pair;
-import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.AnnotationConfigFactory;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.Config;
@@ -13,8 +12,9 @@ import it.hurts.octostudios.octolib.modules.config.network.SyncConfigPacket;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProviderBase;
 import it.hurts.octostudios.octolib.modules.config.util.ConfigUtils;
+import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.util.Cast;
 import org.jetbrains.annotations.Nullable;
 
@@ -148,11 +148,11 @@ public final class ConfigManager {
         new SyncConfigPacket(path).sendToAll(server);
     }
     
-    public static void syncConfig(ServerPlayerEntity player, String path) {
+    public static void syncConfig(ServerPlayer player, String path) {
         new SyncConfigPacket(path).sendTo(player);
     }
     
-    public static void syncConfigs(ServerPlayerEntity player) {
+    public static void syncConfigs(ServerPlayer player) {
         for (var path : SERVER_CONFIGS)
             syncConfig(player, path);
     }

@@ -4,7 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
-import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import static it.hurts.octostudios.octolib.modules.network.OctolibNetwork.SYNC_SHOP;
 
@@ -13,9 +13,9 @@ public class SyncConfigPacket extends BaseS2CMessage {
     private final String configPath;
     private final String configFile;
     
-    public SyncConfigPacket(RegistryByteBuf buf) {
-        this.configPath = buf.readString();
-        this.configFile = buf.readString();
+    public SyncConfigPacket(RegistryFriendlyByteBuf buf) {
+        this.configPath = buf.readUtf();
+        this.configFile = buf.readUtf();
     }
     
     public SyncConfigPacket(String configPath) {
@@ -29,9 +29,9 @@ public class SyncConfigPacket extends BaseS2CMessage {
     }
     
     @Override
-    public void write(RegistryByteBuf buf) {
-        buf.writeString(configPath);
-        buf.writeString(configFile);
+    public void write(RegistryFriendlyByteBuf buf) {
+        buf.writeUtf(configPath);
+        buf.writeUtf(configFile);
     }
     
     @Override

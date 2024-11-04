@@ -99,7 +99,7 @@ public interface TrailProvider {
             prev = pos;
         }
         
-        if (partialPoses.size() > 1) {
+        if (partialPoses.size() > 1 && maxSize() == partialPoses.size()) {
             int i  = partialPoses.size() - 1;
             partialPoses.set(i, partialPoses.get(i).add(
                     partialPoses.get(i - 1).subtract(partialPoses.get(i)).scale(partial / (double) frequency())));

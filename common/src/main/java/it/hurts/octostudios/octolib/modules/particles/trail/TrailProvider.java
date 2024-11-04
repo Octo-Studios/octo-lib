@@ -91,12 +91,18 @@ public interface TrailProvider {
             Vec3 pos = iterator.next().subtract(matrixTranslation);
             Vec3 partialVec = prev;
 
-            if (buffer.size() == maxSize())
-                partialVec = pos.add(prev.subtract(pos).scale(partial / (double) frequency()));
+//            if (buffer.size() == maxSize())
+//                partialVec = pos.add(prev.subtract(pos).scale(partial / (double) frequency()));
 
             partialPoses.add(partialVec);
 
             prev = pos;
+        }
+        
+        if (partialPoses.size() > 1) {
+            int i  = partialPoses.size() - 1;
+            partialPoses.set(i, partialPoses.get(i).add(
+                    partialPoses.get(i - 1).subtract(partialPoses.get(i)).scale(partial / (double) frequency())));
         }
 
 //        float deathPartial = (segmentsDisappearingSpeed - streakable.ticksBeforeDeath() % segmentsDisappearingSpeed) - 1 + pTicks;

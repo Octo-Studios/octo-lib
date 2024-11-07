@@ -2,6 +2,7 @@ package it.hurts.octostudios.octolib.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -34,6 +35,14 @@ public class VectorUtils {
 
     public static Vec3 parse(Entity entity) {
         return new Vec3(entity.position().x, entity.position().y, entity.position().z);
+    }
+    
+    public static Vec3 catmullromVec(float f, Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4) {
+        return new Vec3(
+                Mth.catmullrom(f, (float) v1.x, (float) v2.x, (float) v3.x, (float) v4.x),
+                Mth.catmullrom(f, (float) v1.y, (float) v2.y, (float) v3.y, (float) v4.y),
+                Mth.catmullrom(f, (float) v1.z, (float) v2.z, (float) v3.z, (float) v4.z)
+        );
     }
 
     public static Vec3 rotate(Vec3 v, Vec3 axis, double angle) {

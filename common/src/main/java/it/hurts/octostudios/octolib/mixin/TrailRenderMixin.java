@@ -1,16 +1,14 @@
 package it.hurts.octostudios.octolib.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailManager;
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
+import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
+import it.hurts.octostudios.octolib.modules.particles.trail.OctoRenderManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,7 +38,6 @@ public abstract class TrailRenderMixin {
 
     @Unique
     private void render(DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2) {
-
         Vec3 vec3 = camera.getPosition();
         double d = vec3.x();
         double e = vec3.y();
@@ -51,13 +48,13 @@ public abstract class TrailRenderMixin {
         float f = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         var player = Minecraft.getInstance().player;
-        for (TrailProvider trail : TrailManager.getTrails()) {
-            if (player == null || player.getPosition(f).subtract(trail.getPointPosition(f)).length() > trail.maxRenderDistance())
+        for (RenderProvider trail : OctoRenderManager.getProviders()) {
+            if (player == null || player.getPosition(f).subtract(trail.getRenderPosition(f)).length() > trail.getMaxRenderDistance())
                 checkPoseStack(poseStack);
-            var position = trail.getPointPosition(f);
+            var position = trail.getRenderPosition(f);
             poseStack.pushPose();
             poseStack.translate(position.x - d, position.y - e, position.z - g);
-            trail.renderTrail(f, poseStack, bufferSource);
+            trail.render(f, poseStack, bufferSource);
             poseStack.popPose();
         }
         bufferSource.endBatch();

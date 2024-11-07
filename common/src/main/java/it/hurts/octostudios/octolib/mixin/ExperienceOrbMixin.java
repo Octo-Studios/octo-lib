@@ -1,8 +1,7 @@
 package it.hurts.octostudios.octolib.mixin;
 
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailManager;
+import it.hurts.octostudios.octolib.modules.particles.trail.OctoRenderManager;
 import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -18,50 +17,51 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Implements(@Interface(iface = TrailProvider.class, prefix = "i$"))
 @Mixin(ExperienceOrb.class)
 public abstract class ExperienceOrbMixin extends Entity {
+    
     public ExperienceOrbMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
     }
-
+    
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V")
     public void init(EntityType<? extends ExperienceOrb> entityType, Level level, CallbackInfo ci) {
         if (!level.isClientSide)
             return;
-
-        TrailManager.registerTrail((TrailProvider) this);
+        
+        OctoRenderManager.registerTrail((TrailProvider) this);
     }
-
-    public Vec3 i$getPointPosition(float f) {
-        var position = position();
+    
+    public Vec3 i$getRenderPosition(float f) {
         var yOff = 0.175F;
-
-        return new Vec3(
-                Mth.lerp(f, xo, position.x),
-                Mth.lerp(f, yo + yOff, position.y + yOff),
-                Mth.lerp(f, zo, position.z)
-        );
+        
+        return getPosition(f).add(0, yOff, 0);
     }
-
-    public int i$maxSize() {
+    
+    public int i$getMaxSize() {
         return 5;
     }
-
+    
     public boolean i$isAlive() {
         return super.isAlive();
     }
-
-    public int i$fadeIn() {
+    
+    public int i$getFadeInColor() {
         return 0x8066ff00;
     }
-
-    public int i$fadeOut() {
+    
+    public int i$getFadeOutColor() {
         return 0x80d9ff00;
     }
-
-    public int i$frequency() {
+    
+    public int i$getBufferTickInterval() {
         return 1;
     }
-
-    public double i$width() {
+    
+    public double i$getRadius() {
         return 0.075;
     }
+    
+    public double i$getMinDistanceDelta() {
+        return 0.003;
+    }
+    
 }

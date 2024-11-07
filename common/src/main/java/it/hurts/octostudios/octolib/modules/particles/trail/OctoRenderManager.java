@@ -1,20 +1,20 @@
 package it.hurts.octostudios.octolib.modules.particles.trail;
 
+import it.hurts.octostudios.octolib.modules.particles.RenderBuffer;
+import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleEngine;
 
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Queue;
 
-public class TrailManager {
+public class OctoRenderManager {
     
     static long lastTick = 0;
     @Getter
-    static Queue<TrailProvider> trails = new ArrayDeque<>();
-    static IdentityHashMap<TrailProvider, TrailBuffer> map = new IdentityHashMap<>();
+    static Queue<RenderProvider<?, ?>> providers = new ArrayDeque<>();
+    static IdentityHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new IdentityHashMap<>();
     
     public static void clientTick(ClientLevel level) {
         long time = level.getDayTime();
@@ -23,31 +23,29 @@ public class TrailManager {
             return;
         lastTick = time;
         
-        var iterator = trails.iterator();
+        var iterator = providers.iterator();
         while (iterator.hasNext()) {
             var p = iterator.next();
             
-            if (!p.isAlive() && p.shouldBeRemoved()) {
+            if (!p.isAlive()) {
                 map.remove(p);
                 iterator.remove();
                 return;
             }
             
-            if (time % p.frequency() == 0) {
-                TrailBuffer buffer = map.get(p);
-                if (p.isAlive()) buffer.write(p.getPointPosition(Minecraft.getInstance()
-                        .getTimer().getGameTimeDeltaTicks()));
-                else buffer.remove();
+            if (time % p.getBufferTickInterval() == 0) {
+                RenderBuffer buffer = map.get(p);
+                buffer.tick(p);
             }
         }
     }
     
-    public static TrailBuffer getOrCreateBuffer(TrailProvider trailProvider) {
-        if (map.containsKey(trailProvider))
-            return map.get(trailProvider);
+    public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> B getOrCreateBuffer(P provider) {
+        if (map.containsKey(provider))
+            return (B) map.get(provider);
         
-        var buffer = trailProvider.createBuffer();
-        map.put(trailProvider, buffer);
+        var buffer = provider.createBuffer();
+        map.put(provider, buffer);
         return buffer;
     }
     
@@ -55,7 +53,7 @@ public class TrailManager {
         if (map.containsKey(trailProvider))
             return;
         
-        trails.add(trailProvider);
+        providers.add(trailProvider);
         map.put(trailProvider, trailProvider.createBuffer());
     }
     

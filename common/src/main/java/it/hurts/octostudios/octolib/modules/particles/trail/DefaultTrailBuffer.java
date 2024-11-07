@@ -25,11 +25,6 @@ public class DefaultTrailBuffer implements TrailBuffer {
     }
     
     @Override
-    public int maxSize() {
-        return maxSize;
-    }
-    
-    @Override
     public int size() {
         return points.size();
     }

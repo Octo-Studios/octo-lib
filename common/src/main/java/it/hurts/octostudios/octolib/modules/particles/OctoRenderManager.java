@@ -1,9 +1,9 @@
-package it.hurts.octostudios.octolib.modules.particles.trail;
+package it.hurts.octostudios.octolib.modules.particles;
 
-import it.hurts.octostudios.octolib.modules.particles.RenderBuffer;
-import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
+import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
 import lombok.Getter;
 import net.minecraft.client.multiplayer.ClientLevel;
+import org.apache.logging.log4j.util.Cast;
 
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
@@ -26,15 +26,15 @@ public class OctoRenderManager {
         var iterator = providers.iterator();
         while (iterator.hasNext()) {
             var p = iterator.next();
+            RenderBuffer buffer = getOrCreateBuffer(Cast.cast(p));
             
-            if (!p.isAlive()) {
+            if (!p.shouldRender(Cast.cast(buffer))) {
                 map.remove(p);
                 iterator.remove();
                 return;
             }
             
-            if (time % p.getBufferTickInterval() == 0) {
-                RenderBuffer buffer = map.get(p);
+            if (time % p.getUpdateFrequency() == 0) {
                 buffer.tick(p);
             }
         }

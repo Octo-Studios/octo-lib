@@ -7,7 +7,7 @@ import it.hurts.octostudios.octolib.modules.ConfigTest;
 import it.hurts.octostudios.octolib.modules.commands.OctolibCommand;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import it.hurts.octostudios.octolib.modules.config.event.ConfigJoinEvent;
-import it.hurts.octostudios.octolib.modules.particles.trail.OctoRenderManager;
+import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -14,9 +14,9 @@ public interface RenderProvider<P extends RenderProvider<P, B>, B extends Render
         return 64;
     };
     
-    boolean isAlive();
+    boolean shouldRender(B buffer);
     
-    int getBufferTickInterval();
+    int getUpdateFrequency();
     
     B createBuffer();
     

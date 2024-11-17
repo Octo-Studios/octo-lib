@@ -2,7 +2,7 @@ package it.hurts.octostudios.octolib.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
-import it.hurts.octostudios.octolib.modules.particles.trail.OctoRenderManager;
+import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;

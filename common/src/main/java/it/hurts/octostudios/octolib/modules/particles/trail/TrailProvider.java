@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.util.ColorUtils;
 import it.hurts.octostudios.octolib.util.TesselatorUtils;
@@ -36,22 +37,33 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
                     .createCompositeState(false));
     
     default TrailBuffer createBuffer() {
-        return new DefaultTrailBuffer(getMaxSize());
+        return new DefaultTrailBuffer(getMaxPoints());
     }
     
-    int getMaxSize();
+    @Override
+    default boolean shouldRender(TrailBuffer buffer) {
+        return isAlive() || (!disappearAfterDeath() && buffer.size() != 0);
+    }
+    
+    boolean isAlive();
+    
+    default boolean disappearAfterDeath() {
+        return false;
+    }
+    
+    int getMaxPoints();
     
     int getFadeInColor();
     
     int getFadeOutColor();
     
-    double getRadius();
+    double getTrailSize();
     
     default int getInterpolationPoints() {
         return 1;
     }
     
-    default double getMinDistanceDelta() {
+    default double getMinSpeed() {
         return 0;
     }
     
@@ -68,14 +80,14 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         
         long time = world.getGameTime();
         
-        int segments = getMaxSize();
+        int segments = getMaxPoints();
         
-        if (segments <= 0 || getBufferTickInterval() <= 0)
+        if (segments <= 0 || getUpdateFrequency() <= 0)
             return;
         
         List<Vec3> partialPoses = new ArrayList<>();
         
-        float partial = (int) (time % getBufferTickInterval()) + pTicks;
+        float partial = (int) (time % getUpdateFrequency()) + pTicks;
         
         TrailBuffer buffer = OctoRenderManager.getOrCreateBuffer(this);
         List<Vec3> points = new ArrayList<>();
@@ -99,10 +111,11 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
             partialPoses.addAll(points);
         
         
-        if (points.size() > 1 && getMaxSize() + 1 == points.size()) {
+        if (points.size() > 1 && getMaxPoints() + 1 == points.size()) {
             int i = partialPoses.size() - 1;
             partialPoses.set(i, partialPoses.get(i).add(
-                    partialPoses.get(i - 1).subtract(partialPoses.get(i)).scale(partial / (double) getBufferTickInterval())));
+                    partialPoses.get(i - 1).subtract(partialPoses.get(i)).scale(partial / (double) getUpdateFrequency()
+                    * (double) getInterpolationPoints())));
         }
 
 //        float deathPartial = (segmentsDisappearingSpeed - streakable.ticksBeforeDeath() % segmentsDisappearingSpeed) - 1 + pTicks;
@@ -121,7 +134,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
                     : vec1.cross(Y_VEC).normalize();
             double len = 1 - (i - 1) / (float) partialPoses.size();
             crossVecs[i - 1][0] = notScaled.normalize()
-                    .scale(getRadius() * len);
+                    .scale(getTrailSize() * len);
             Vec3 axis = partialPoses.get(i - 1).subtract(partialPoses.get(i));
             crossVecs[i - 1][1] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 120).normalize().scale(crossVecs[i - 1][0].length());
             crossVecs[i - 1][2] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 240).normalize().scale(crossVecs[i - 1][0].length());

@@ -1,8 +1,8 @@
 package it.hurts.octostudios.octolib.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
+import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -20,13 +20,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LevelRenderer.class)
 public abstract class TrailRenderMixin {
     
-    
     @Shadow
     @Final
     private RenderBuffers renderBuffers;
 
     @Shadow
     protected abstract void checkPoseStack(PoseStack poseStack);
+    
     // net.minecraft.client.renderer.RenderBuffers.bufferSource
     // Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
     @Inject(method = "renderLevel",

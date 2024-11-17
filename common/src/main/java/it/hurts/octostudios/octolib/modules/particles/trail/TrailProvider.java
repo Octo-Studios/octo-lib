@@ -1,9 +1,7 @@
 package it.hurts.octostudios.octolib.modules.particles.trail;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.util.ColorUtils;
@@ -12,8 +10,6 @@ import it.hurts.octostudios.octolib.util.VectorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -21,20 +17,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static it.hurts.octostudios.octolib.util.TesselatorUtils.TRAIL_RENDER_TYPE;
 import static it.hurts.octostudios.octolib.util.VectorUtils.Y_VEC;
-import static net.minecraft.client.renderer.RenderStateShard.LEQUAL_DEPTH_TEST;
-import static net.minecraft.client.renderer.RenderStateShard.LIGHTNING_TRANSPARENCY;
 
 public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer> {
-    
-    RenderType TRAIL_RENDER_TYPE = RenderType.create("octoparticle_trail", DefaultVertexFormat.POSITION_COLOR,
-            VertexFormat.Mode.QUADS, 256, false, false,
-            RenderType.CompositeState.builder()
-                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                    .setOutputState(RenderStateShard.OutputStateShard.MAIN_TARGET)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .createCompositeState(false));
     
     default TrailBuffer createBuffer() {
         return new DefaultTrailBuffer(getMaxPoints());

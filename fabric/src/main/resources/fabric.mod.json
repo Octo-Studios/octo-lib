@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "octolib",
   "version": "${mod_version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
@@ -11,11 +11,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "it.hurts.octostudios.${mod_id}.fabric.OctoLibFabric"
     ]
   },
   "mixins": [
-    "${mod_id}.mixins.json"
+    "octolib.mixins.json"
   ],
   "depends": {
     "minecraft": "~1.21",

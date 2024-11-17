@@ -1,12 +1,28 @@
 package it.hurts.octostudios.octolib.util;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.awt.*;
 
+import static net.minecraft.client.renderer.RenderStateShard.LEQUAL_DEPTH_TEST;
+import static net.minecraft.client.renderer.RenderStateShard.LIGHTNING_TRANSPARENCY;
+
 public class TesselatorUtils {
+    
+    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("octoparticle_trail", DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS, 256, false, false,
+            RenderType.CompositeState.builder()
+                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                    .setOutputState(RenderStateShard.OutputStateShard.MAIN_TARGET)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .createCompositeState(false));
     
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,
                                              float pos2Y, float pos2Z, float pos3X, float pos3Y, float pos3Z, float pos4X, float pos4Y,

@@ -4,10 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "TrailRenderMixin"
   ],
   "mixins": [
-    "AbstractArrowMixin",
-    "ExperienceOrbMixin"
   ],
   "injectors": {
     "defaultRequire": 1

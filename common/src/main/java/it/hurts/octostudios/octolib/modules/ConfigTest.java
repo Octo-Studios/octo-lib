@@ -14,6 +14,7 @@ public class ConfigTest {
     public static class ConfigA {
         
         String a = "It's a config";
+        int lol = 109;
         
     }
 }

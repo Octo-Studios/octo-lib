@@ -7,6 +7,7 @@ import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.util.ColorUtils;
 import it.hurts.octostudios.octolib.util.TesselatorUtils;
 import it.hurts.octostudios.octolib.util.VectorUtils;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -77,6 +78,10 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
     default int getTrailInterpolationPoints() {
         return 1;
     }
+    
+    default Vec3 getPointRenderOffset(int pointIndex) {
+        return new Vec3(0, 0, 0);
+    }
 
     @Override
     @Deprecated
@@ -105,8 +110,12 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         TrailBuffer buffer = OctoRenderManager.getOrCreateBuffer(this);
         List<Vec3> points = new ArrayList<>();
         points.add(new Vec3(0, 0, 0));
+        
         buffer.forEach(p -> points.add(p.subtract(matrixTranslation)));
-
+        for (int i = 0; i < points.size(); i++) {
+            points.set(i, points.get(i).add(getPointRenderOffset(i)));
+        }
+        
         if (points.size() > 2) {
             for (int i = 0; i < points.size() - 1; i++) {
                 var p0 = i == 0 ? points.getFirst() : points.get(i - 1);

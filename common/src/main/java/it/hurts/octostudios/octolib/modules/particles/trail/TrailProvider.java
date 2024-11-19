@@ -78,7 +78,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         return 1;
     }
     
-    default List<Vec3> getTrailRenderPositions(List<Vec3> points) {
+    default List<Vec3> getTrailRenderPositions(List<Vec3> points, float pTicks) {
         return points;
     }
 
@@ -111,7 +111,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         points.add(new Vec3(0, 0, 0));
         
         for (Vec3 vec3 : buffer) points.add(vec3.subtract(matrixTranslation));
-        points = getTrailRenderPositions(points);
+        points = getTrailRenderPositions(points, pTicks);
         
         if (points.size() > 2) {
             for (int i = 0; i < points.size() - 1; i++) {

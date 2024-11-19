@@ -10,7 +10,7 @@ public interface RenderProvider<P extends RenderProvider<P, B>, B extends Render
     
     void render(float pTicks, PoseStack poseStack, MultiBufferSource bufferSourceList);
     
-    default double getMaxRenderDistance() {
+    default double getRenderDistance() {
         return 64;
     };
     

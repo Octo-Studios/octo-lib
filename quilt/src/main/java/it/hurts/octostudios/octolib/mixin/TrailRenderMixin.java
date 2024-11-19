@@ -49,7 +49,7 @@ public abstract class TrailRenderMixin {
 
         var player = Minecraft.getInstance().player;
         for (RenderProvider trail : OctoRenderManager.getProviders()) {
-            if (player == null || player.getPosition(f).subtract(trail.getRenderPosition(f)).length() > trail.getMaxRenderDistance())
+            if (player == null || player.getPosition(f).subtract(trail.getRenderPosition(f)).length() > trail.getRenderDistance())
                 checkPoseStack(poseStack);
             var position = trail.getRenderPosition(f);
             poseStack.pushPose();

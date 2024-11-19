@@ -6,8 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "AbstractArrowMixin",
-    "ExperienceOrbMixin"
   ],
   "injectors": {
     "defaultRequire": 1

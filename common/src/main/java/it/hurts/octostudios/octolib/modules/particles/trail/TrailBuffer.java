@@ -15,15 +15,15 @@ public interface TrailBuffer extends Iterable<Vec3>, RenderBuffer<TrailProvider,
     @Override
     default void tick(TrailProvider provider) {
         var iterator = iterator();
-        var position = provider.getRenderPosition(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks());
+        var position = provider.getTrailPosition(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks());
         
-        if (!provider.isAlive()) {
+        if (!provider.isTrailAlive()) {
             remove();
             return;
         }
         
         boolean farEnough = (!iterator.hasNext()
-                || iterator.next().distanceTo(position) >= provider.getMinSpeed() / (float) provider.getUpdateFrequency());
+                || iterator.next().distanceTo(position) >= provider.getTrailMinSpeed() / (float) provider.getTrailUpdateFrequency());
        
         if (farEnough)
             write(position);

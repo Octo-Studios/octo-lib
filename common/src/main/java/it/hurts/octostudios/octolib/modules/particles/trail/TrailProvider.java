@@ -79,7 +79,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         return 1;
     }
     
-    default Vec3 getPointRenderOffset(int pointIndex) {
+    default Vec3 getPointRenderOffset(int pointIndex, Vec3 relativePosition) {
         return new Vec3(0, 0, 0);
     }
 
@@ -113,7 +113,8 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         
         buffer.forEach(p -> points.add(p.subtract(matrixTranslation)));
         for (int i = 0; i < points.size(); i++) {
-            points.set(i, points.get(i).add(getPointRenderOffset(i)));
+            var p = points.get(i);
+            points.set(i, p.add(getPointRenderOffset(i, p)));
         }
         
         if (points.size() > 2) {

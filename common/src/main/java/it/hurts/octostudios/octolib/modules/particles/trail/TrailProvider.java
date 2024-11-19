@@ -148,12 +148,11 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
             Vec3 pos1 = partialPoses.get(i - 1);
             Vec3 pos2 = partialPoses.get(i);
             Vec3 vec1 = pos2.subtract(pos1);
-            Vec3 notScaled = vec1.normalize().equals(new Vec3(0, 1, 0))
-                    ? vec1.add(0.0001, 0, 0).cross(Y_VEC)
-                    : vec1.cross(Y_VEC).normalize();
+            Vec3 vec1n = vec1.normalize();
+            Vec3 notScaled = Math.abs(vec1n.x) + Math.abs(vec1n.z) < 0.05
+                    ? vec1.add(0.05, 0, 0).cross(Y_VEC) : vec1.cross(Y_VEC);
             double len = 1 - (i - 1) / (float) partialPoses.size();
-            crossVecs[i - 1][0] = notScaled.normalize()
-                    .scale(getTrailScale() * len);
+            crossVecs[i - 1][0] = notScaled.normalize().scale(getTrailScale() * len);
             Vec3 axis = partialPoses.get(i - 1).subtract(partialPoses.get(i));
             crossVecs[i - 1][1] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 120).normalize().scale(crossVecs[i - 1][0].length());
             crossVecs[i - 1][2] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 240).normalize().scale(crossVecs[i - 1][0].length());

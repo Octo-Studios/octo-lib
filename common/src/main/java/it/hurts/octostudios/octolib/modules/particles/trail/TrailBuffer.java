@@ -18,7 +18,7 @@ public interface TrailBuffer extends Iterable<Vec3>, RenderBuffer<TrailProvider,
         
         if (!provider.isTrailAlive() || !provider.isTrailGrowing()) {
             write(position);
-        } else
+        } else if (size() > 0)
             remove();
     }
     

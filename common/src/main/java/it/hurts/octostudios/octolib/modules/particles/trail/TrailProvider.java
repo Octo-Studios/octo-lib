@@ -57,6 +57,10 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
     int getTrailUpdateFrequency();
 
     boolean isTrailAlive();
+    
+    default boolean isTrailGrowing() {
+        return true;
+    }
 
     default boolean disappearAfterDeath() {
         return false;
@@ -72,10 +76,6 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
 
     default int getTrailInterpolationPoints() {
         return 1;
-    }
-
-    default double getTrailMinSpeed() {
-        return 0;
     }
 
     @Override
@@ -187,17 +187,14 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
             if (i == crossVecs.length - 1 || crossVecs[i + 1][0] == null) {
                 Vec3 pos11 = partialPoses.get(i).add(crossVecs[i][0]);
                 Vec3 pos12 = partialPoses.get(i).add(crossVecs[i][1]);
-                Vec3 pos13 = partialPoses.get(i).add(crossVecs[i][0].scale(-1));
-                Vec3 pos14 = partialPoses.get(i).add(crossVecs[i][1].scale(-1));
+                Vec3 pos13 = partialPoses.get(i).add(crossVecs[i][2]);
                 Vec3 pos2 = partialPoses.get(i + 1);
-
-                TesselatorUtils.drawQuadGradient(tes, matrix4f, (float) pos12.x, (float) pos12.y, (float) pos12.z,
-                        (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos13.x, (float) pos13.y, (float) pos13.z, c1, c2);
+                
                 TesselatorUtils.drawQuadGradient(tes, matrix4f, (float) pos11.x, (float) pos11.y, (float) pos11.z, (float) pos2.x, (float) pos2.y,
                         (float) pos2.z, (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos12.x, (float) pos12.y, (float) pos12.z, c1, c2);
+                TesselatorUtils.drawQuadGradient(tes, matrix4f, (float) pos12.x, (float) pos12.y, (float) pos12.z, (float) pos2.x, (float) pos2.y,
+                        (float) pos2.z, (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos13.x, (float) pos13.y, (float) pos13.z, c1, c2);
                 TesselatorUtils.drawQuadGradient(tes, matrix4f, (float) pos13.x, (float) pos13.y, (float) pos13.z, (float) pos2.x, (float) pos2.y,
-                        (float) pos2.z, (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos14.x, (float) pos14.y, (float) pos14.z, c1, c2);
-                TesselatorUtils.drawQuadGradient(tes, matrix4f, (float) pos14.x, (float) pos14.y, (float) pos14.z, (float) pos2.x, (float) pos2.y,
                         (float) pos2.z, (float) pos2.x, (float) pos2.y, (float) pos2.z, (float) pos11.x, (float) pos11.y, (float) pos11.z, c1, c2);
             } else {
 

@@ -49,12 +49,12 @@ public class OctoRenderManager {
         return buffer;
     }
     
-    public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> void registerProvider(P trailProvider) {
-        if (map.containsKey(trailProvider))
+    public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> void registerProvider(P provider) {
+        if (map.containsKey(provider))
             return;
         
-        providers.add(trailProvider);
-        map.put(trailProvider, trailProvider.createBuffer());
+        providers.add(provider);
+        map.put(provider, provider.createBuffer());
     }
     
 }

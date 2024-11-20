@@ -6,11 +6,12 @@ import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-@EventBusSubscriber
+@EventBusSubscriber(value = Dist.CLIENT)
 public class LevelRenderEvents {
     
     @SubscribeEvent

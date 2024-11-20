@@ -25,16 +25,17 @@ public class EntityMixin implements TrailProvider {
 
         OctoRenderManager.registerProvider(this);
     }
-    
+
+    @Override
     public List<Vec3> getTrailRenderPositions(List<Vec3> points, float partialTicks) {
         if (points.isEmpty())
             return points;
-        
+
         var entity = (ItemEntity) (Object) this;
         var index = 0;
-        
+
         points.set(index, points.get(index).add(0, Mth.sin((entity.getAge()) / 10F + entity.bobOffs), 0F));
-        
+
         return points;
     }
 

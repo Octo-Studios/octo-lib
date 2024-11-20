@@ -11,6 +11,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
+      "it.hurts.octostudios.${mod_id}.fabric.OctoLibFabric"
+    ],
+    "client": [
+      "it.hurts.octostudios.${mod_id}.fabric.OctoLibFabricClient"
     ]
   },
   "mixins": [

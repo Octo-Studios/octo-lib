@@ -12,6 +12,9 @@
     "entrypoints": {
       "init": [
         "it.hurts.octostudios.${mod_id}.quilt.OctoLibQuilt"
+      ],
+      "client": [
+        "it.hurts.octostudios.${mod_id}.quilt.OctoLibQuiltClient"
       ]
     },
     "depends": [

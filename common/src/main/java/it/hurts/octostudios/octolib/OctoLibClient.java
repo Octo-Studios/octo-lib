@@ -11,23 +11,12 @@ import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class OctoLib {
-    public static final String MODID = "octolib";
-
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
-
+public final class OctoLibClient {
     public static void init() {
-        registerCommands();
         registerEvents();
-        
-        ConfigManager.registerConfigPackage(ConfigTest.class, "octotest");
     }
     
     private static void registerEvents() {
-        PlayerEvent.PLAYER_JOIN.register(new ConfigJoinEvent());
-    }
-    
-    private static void registerCommands() {
-        CommandRegistrationEvent.EVENT.register(OctolibCommand::register);
+        ClientTickEvent.CLIENT_LEVEL_PRE.register(OctoRenderManager::clientTick);
     }
 }

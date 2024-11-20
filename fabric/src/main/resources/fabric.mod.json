@@ -14,7 +14,8 @@
     ]
   },
   "mixins": [
-    "octolib.mixins.json"
+    "octolib-common.mixins.json",
+    "octolib-fabric.mixins.json"
   ],
   "depends": {
     "minecraft": "~1.21",

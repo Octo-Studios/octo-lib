@@ -34,6 +34,7 @@
     ]
   },
   "mixin": [
-    "${mod_id}.mixin.json"
+    "${mod_id}-common.mixin.json",
+    "${mod_id}-quilt.mixin.json"
   ]
 }

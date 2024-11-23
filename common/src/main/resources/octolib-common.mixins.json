@@ -4,9 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "ParticleEngineMixin",
+    "ParticleMixin"
   ],
   "mixins": [
-    "EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

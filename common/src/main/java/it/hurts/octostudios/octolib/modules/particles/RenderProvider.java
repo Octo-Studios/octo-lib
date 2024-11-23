@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
 
-public interface RenderProvider<P extends RenderProvider<P, B>, B extends RenderBuffer<P, B>> {
+public interface  RenderProvider<P extends RenderProvider<P, B>, B extends RenderBuffer<P, B>> {
     
     Vec3 getRenderPosition(float partialTick);
     

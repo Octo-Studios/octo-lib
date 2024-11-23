@@ -8,13 +8,14 @@ import org.apache.logging.log4j.util.Cast;
 import java.util.ArrayDeque;
 import java.util.IdentityHashMap;
 import java.util.Queue;
+import java.util.WeakHashMap;
 
 public class OctoRenderManager {
     
     static long lastTick = 0;
     @Getter
     static Queue<RenderProvider<?, ?>> providers = new ArrayDeque<>();
-    static IdentityHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new IdentityHashMap<>();
+    static WeakHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new WeakHashMap<>();
     
     public static void clientTick(ClientLevel level) {
         long time = level.getDayTime();
@@ -31,7 +32,7 @@ public class OctoRenderManager {
             if (!p.shouldRender(Cast.cast(buffer))) {
                 map.remove(p);
                 iterator.remove();
-                return;
+                continue;
             }
             
             if (time % p.getUpdateFrequency() == 0) {
@@ -52,7 +53,7 @@ public class OctoRenderManager {
     public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> void registerProvider(P provider) {
         if (map.containsKey(provider))
             return;
-        
+
         providers.add(provider);
         map.put(provider, provider.createBuffer());
     }

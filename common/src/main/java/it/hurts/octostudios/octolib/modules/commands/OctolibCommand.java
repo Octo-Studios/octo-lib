@@ -23,8 +23,16 @@ public class OctolibCommand {
                                             
                                             for (var path : ConfigManager.getAllPaths()) {
                                                 try {
-                                                    if (isAdmin || !ConfigManager.isServerConfig(path))
+                                                    if (ConfigManager.isServerConfig(path)) {
+                                                        if (isAdmin) {
+                                                            ConfigManager.reload(path);
+                                                            ConfigManager.syncConfig(path, conComponent.getSource().getServer());
+                                                        } else
+                                                            conComponent.getSource().sendFailure(
+                                                                    Component.literal("You have not permission to reload config."));
+                                                    } else {
                                                         ConfigManager.reload(path);
+                                                    }
                                                     counter++;
                                                 } catch (RuntimeException e) {
                                                     e.printStackTrace();
@@ -51,10 +59,15 @@ public class OctolibCommand {
                                             
                                             try {
                                                 
-                                                if (isAdmin || !ConfigManager.isServerConfig(path)) {
-                                                    ConfigManager.reload(path);
-                                                    if (ConfigManager.isServerConfig(path))
+                                                if (ConfigManager.isServerConfig(path)) {
+                                                    if (isAdmin) {
+                                                        ConfigManager.reload(path);
                                                         ConfigManager.syncConfig(path, c.getSource().getServer());
+                                                    } else
+                                                        c.getSource().sendFailure(
+                                                                Component.literal("You have not permission to reload config."));
+                                                } else {
+                                                    ConfigManager.reload(path);
                                                 }
                                                 
                                                 c.getSource().sendSystemMessage(Component.literal("Config with path \"" + path + "\" has been reloaded successfully"));

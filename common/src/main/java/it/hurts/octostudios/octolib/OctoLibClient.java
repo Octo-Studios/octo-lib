@@ -1,6 +1,8 @@
 package it.hurts.octostudios.octolib;
 
+import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 
 public final class OctoLibClient {
@@ -10,5 +12,6 @@ public final class OctoLibClient {
     
     private static void registerEvents() {
         ClientTickEvent.CLIENT_LEVEL_PRE.register(OctoRenderManager::clientTick);
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(p -> ConfigManager.reloadAll());
     }
 }

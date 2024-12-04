@@ -24,7 +24,7 @@ public final class OctoLib {
     
     private static void registerEvents() {
         PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncConfigs);
-        PlayerEvent.PLAYER_QUIT.register(ConfigManager::syncConfigs);
+        PlayerEvent.PLAYER_QUIT.register(p -> ConfigManager.reloadAll());
     }
     
     private static void registerCommands() {

@@ -1,14 +1,27 @@
 package it.hurts.octostudios.octolib.modules.network;
 
-import dev.architectury.networking.simple.MessageType;
-import dev.architectury.networking.simple.SimpleNetworkManager;
-import it.hurts.octostudios.octolib.OctoLib;
+import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import it.hurts.octostudios.octolib.modules.config.network.SyncConfigPacket;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class OctolibNetwork {
     
-    private static final SimpleNetworkManager NET = SimpleNetworkManager.create(OctoLib.MODID);
+    public static void init() {
+        registerS2C(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC, SyncConfigPacket::handle);
+    }
     
-    public static final MessageType SYNC_SHOP = NET.registerS2C("sync_config", SyncConfigPacket::new);
+    private static  <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> type,
+            StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            NetworkManager.NetworkReceiver<T> receiver) {
+        if (Platform.getEnvironment() == Env.CLIENT) {
+            NetworkManager.registerReceiver(NetworkManager.s2c(), type, codec, receiver);
+        } else {
+            NetworkManager.registerS2CPayloadType(type, codec);
+        }
+    }
     
 }

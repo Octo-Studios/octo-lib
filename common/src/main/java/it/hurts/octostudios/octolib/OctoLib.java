@@ -7,6 +7,7 @@ import it.hurts.octostudios.octolib.modules.ConfigTest;
 import it.hurts.octostudios.octolib.modules.commands.OctolibCommand;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import it.hurts.octostudios.octolib.modules.config.event.ConfigJoinEvent;
+import it.hurts.octostudios.octolib.modules.network.OctolibNetwork;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ public final class OctoLib {
     public static void init() {
         registerCommands();
         registerEvents();
+        OctolibNetwork.init();
         
         ConfigManager.registerConfigPackage(ConfigTest.class, "octotest");
     }

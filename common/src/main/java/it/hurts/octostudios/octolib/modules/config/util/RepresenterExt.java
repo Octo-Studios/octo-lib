@@ -32,7 +32,7 @@ public class RepresenterExt extends Representer {
         MappingNode node = new MappingNode(tag, value, flowStyle);
         this.representedObjects.put(this.objectToRepresent, node);
         DumperOptions.FlowStyle bestStyle = DumperOptions.FlowStyle.FLOW;
-    
+
         Node nodeKey;
         Node nodeValue;
         for(Iterator<?> var7 = mapping.entrySet().iterator(); var7.hasNext(); value.add(new NodeTuple(nodeKey, nodeValue))) {

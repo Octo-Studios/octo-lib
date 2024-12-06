@@ -147,6 +147,7 @@ public final class ConfigManager {
         var config = getConfig(location);
         
         Object object = config.prepareData();
+        System.out.println(stringData);
         StringReader reader = new StringReader(stringData);
         
         try {
@@ -169,10 +170,10 @@ public final class ConfigManager {
         
         Object object = config.prepareData();
         
-        StringWriter reader = new StringWriter();
-        provider.save(reader, object);
+        StringWriter writer = new StringWriter();
+        provider.save(writer, object);
         
-        return reader.toString();
+        return writer.toString();
     }
     
     public static void syncConfig(String path, MinecraftServer server) {

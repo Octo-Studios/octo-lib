@@ -147,7 +147,6 @@ public final class ConfigManager {
         var config = getConfig(location);
         
         Object object = config.prepareData();
-        System.out.println(stringData);
         StringReader reader = new StringReader(stringData);
         
         try {

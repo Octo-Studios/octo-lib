@@ -73,7 +73,7 @@ public class RepresenterExt extends Representer {
     
     @Override
     protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
-        ScalarNode nodeKey = (ScalarNode) this.representData(property.getName());
+        Node nodeKey = this.representData(property.getName());
         boolean hasAlias = this.representedObjects.containsKey(propertyValue);
         
         Node nodeValue = this.representData(propertyValue);

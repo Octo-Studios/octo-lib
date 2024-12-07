@@ -20,7 +20,7 @@ public final class OctoLib {
         registerEvents();
         OctolibNetwork.init();
         
-        ConfigManager.registerConfigPackage(ConfigTest.class, "octotest");
+//        ConfigManager.registerConfigPackage(ConfigTest.class, "octotest");
     }
     
     private static void registerEvents() {

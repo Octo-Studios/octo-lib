@@ -123,7 +123,7 @@ public final class ConfigManager {
         CONFIG_MAP.forEach(ConfigManager::reload);
     }
     
-    private static void reload(String location, OctoConfig config, boolean saveToFile) {
+    private static synchronized void reload(String location, OctoConfig config, boolean saveToFile) {
         var provider = getConfigProvider(location);
         
         Object object = config.prepareData();
@@ -142,7 +142,7 @@ public final class ConfigManager {
         }
     }
     
-    public static void reloadStringConfig(String stringData, String location, boolean saveToFile) {
+    public static synchronized void reloadStringConfig(String stringData, String location, boolean saveToFile) {
         var provider = getConfigProvider(location);
         var config = getConfig(location);
         
@@ -163,7 +163,7 @@ public final class ConfigManager {
         }
     }
     
-    public static String saveAsString(String location) {
+    public static synchronized String saveAsString(String location) {
         var provider = getConfigProvider(location);
         var config = getConfig(location);
         

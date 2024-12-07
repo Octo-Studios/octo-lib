@@ -14,7 +14,7 @@ public class SyncConfigPacket implements CustomPacketPayload {
     private final String configFile;
     
     public static final CustomPacketPayload.Type<SyncConfigPacket> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "altar_multiplier_sync"));
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "config_sync"));
     
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncConfigPacket> STREAM_CODEC =
             CustomPacketPayload.codec(SyncConfigPacket::write, SyncConfigPacket::new);

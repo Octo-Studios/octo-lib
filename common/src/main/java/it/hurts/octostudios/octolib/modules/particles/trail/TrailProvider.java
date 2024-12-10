@@ -108,7 +108,9 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
         
         TrailBuffer buffer = OctoRenderManager.getOrCreateBuffer(this);
         List<Vec3> points = new ArrayList<>();
-        points.add(new Vec3(0, 0, 0));
+        
+        if (isTrailAlive())
+            points.add(new Vec3(0, 0, 0));
         
         for (Vec3 vec3 : buffer) points.add(vec3.subtract(matrixTranslation));
         points = getTrailRenderPositions(points, pTicks);

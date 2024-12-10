@@ -1,9 +1,7 @@
 package it.hurts.octostudios.octolib;
 
-import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import it.hurts.octostudios.octolib.modules.ConfigTest;
 import it.hurts.octostudios.octolib.modules.commands.OctolibCommand;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import it.hurts.octostudios.octolib.modules.network.OctolibNetwork;

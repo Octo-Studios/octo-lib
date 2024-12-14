@@ -18,7 +18,7 @@ public class OctoRenderManager {
     static WeakHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new WeakHashMap<>();
     
     public static void clientTick(ClientLevel level) {
-        long time = level.getDayTime();
+        long time = level.getGameTime();
         
         if (time == lastTick)
             return;

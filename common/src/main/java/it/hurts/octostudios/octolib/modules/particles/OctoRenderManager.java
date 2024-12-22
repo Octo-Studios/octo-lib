@@ -1,12 +1,11 @@
 package it.hurts.octostudios.octolib.modules.particles;
 
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
 import lombok.Getter;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import org.apache.logging.log4j.util.Cast;
 
 import java.util.ArrayDeque;
-import java.util.IdentityHashMap;
 import java.util.Queue;
 import java.util.WeakHashMap;
 
@@ -16,6 +15,11 @@ public class OctoRenderManager {
     @Getter
     static Queue<RenderProvider<?, ?>> providers = new ArrayDeque<>();
     static WeakHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new WeakHashMap<>();
+    
+    public static void worldExit(LocalPlayer player) {
+        map.clear();
+        providers.clear();
+    }
     
     public static void clientTick(ClientLevel level) {
         long time = level.getGameTime();

@@ -1,5 +1,6 @@
 package it.hurts.octostudios.octolib.fabric.mixin;
 
+import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
@@ -31,8 +32,8 @@ public abstract class TrailRenderMixin {
     // Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
     @Inject(method = "renderLevel",
             at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/particle/ParticleEngine;render(Lnet/minecraft/client/renderer/LightTexture;Lnet/minecraft/client/Camera;F)V"))
-    public void render(DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;addParticlesPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/LightTexture;FLnet/minecraft/client/renderer/FogParameters;)V"))
+    public void render(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         render(deltaTracker, bl, camera, gameRenderer, lightTexture, matrix4f, matrix4f2);
     }
 

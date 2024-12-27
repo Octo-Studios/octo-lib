@@ -14,7 +14,7 @@ public interface TrailBuffer extends Iterable<Vec3>, RenderBuffer<TrailProvider,
     
     @Override
     default void tick(TrailProvider provider) {
-        var position = provider.getTrailPosition(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks());
+        var position = provider.getTrailPosition(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks());
         
         if (provider.isTrailAlive() && provider.isTrailGrowing()) {
             write(position);

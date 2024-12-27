@@ -32,9 +32,9 @@ public abstract class TrailRenderMixin {
     // Lnet/minecraft/client/renderer/RenderBuffers;bufferSource()Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
     @Inject(method = "renderLevel",
             at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;addParticlesPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/LightTexture;FLnet/minecraft/client/renderer/FogParameters;)V"))
-    public void render(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
-        render(deltaTracker, bl, camera, gameRenderer, lightTexture, matrix4f, matrix4f2);
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;addParticlesPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/Camera;FLnet/minecraft/client/renderer/FogParameters;)V"))
+    public void render(GraphicsResourceAllocator graphicsResourceAllocator, DeltaTracker deltaTracker, boolean bl, Camera camera, GameRenderer gameRenderer, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
+        render(deltaTracker, bl, camera, gameRenderer, null, matrix4f, matrix4f2);
     }
 
     @Unique

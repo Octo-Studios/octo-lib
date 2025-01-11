@@ -7,9 +7,11 @@ import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
 import it.hurts.octostudios.octolib.util.ColorUtils;
 import it.hurts.octostudios.octolib.util.TesselatorUtils;
 import it.hurts.octostudios.octolib.util.VectorUtils;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -79,7 +81,12 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
     }
     
     default List<Vec3> getTrailRenderPositions(List<Vec3> points, float pTicks) {
-        return points;
+        if (points.size() < 3) return points;
+        List<Vec3> interpolated = new ArrayList<>(List.of(points.get(0)));
+        for (int i = 1; i < points.size()-2; i++) {
+            interpolated.add(points.get(i+1).lerp(points.get(i), pTicks));
+        }
+        return interpolated;
     }
     
     @Override
@@ -156,8 +163,8 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
             double len = 1 - (i - 1) / (float) partialPoses.size();
             crossVecs[i - 1][0] = notScaled.normalize().scale(getTrailScale() * len);
             Vec3 axis = partialPoses.get(i - 1).subtract(partialPoses.get(i));
-            crossVecs[i - 1][1] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 93).normalize().scale(crossVecs[i - 1][0].length());
-            crossVecs[i - 1][2] = VectorUtils.rotate(crossVecs[i - 1][0], axis, -93).normalize().scale(crossVecs[i - 1][0].length());
+            crossVecs[i - 1][1] = VectorUtils.rotate(crossVecs[i - 1][0], axis, 100).normalize().scale(crossVecs[i - 1][0].length());
+            crossVecs[i - 1][2] = VectorUtils.rotate(crossVecs[i - 1][0], axis, -100).normalize().scale(crossVecs[i - 1][0].length());
         }
 
 //        if (streak.getSegments() > segments) {

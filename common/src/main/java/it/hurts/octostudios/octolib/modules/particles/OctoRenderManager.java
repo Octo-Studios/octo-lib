@@ -1,5 +1,6 @@
 package it.hurts.octostudios.octolib.modules.particles;
 
+import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import lombok.Getter;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -19,6 +20,7 @@ public class OctoRenderManager {
     public static void worldExit(LocalPlayer player) {
         map.clear();
         providers.clear();
+        ConfigManager.reloadAll();
     }
     
     public static void clientTick(ClientLevel level) {

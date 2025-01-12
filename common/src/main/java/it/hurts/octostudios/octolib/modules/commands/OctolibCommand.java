@@ -19,10 +19,20 @@ public class OctolibCommand {
                                 .then(Commands.literal("all")
                                         .executes(conComponent -> {
                                             int counter = 0;
+                                            boolean isAdmin = conComponent.getSource().hasPermission(4);
                                             
                                             for (var path : ConfigManager.getAllPaths()) {
                                                 try {
-                                                    ConfigManager.reload(path);
+                                                    if (ConfigManager.isServerConfig(path)) {
+                                                        if (isAdmin) {
+                                                            ConfigManager.reload(path);
+                                                            ConfigManager.syncConfig(path, conComponent.getSource().getServer());
+                                                        } else
+                                                            conComponent.getSource().sendFailure(
+                                                                    Component.literal("You have not permission to reload config."));
+                                                    } else {
+                                                        ConfigManager.reload(path);
+                                                    }
                                                     counter++;
                                                 } catch (RuntimeException e) {
                                                     e.printStackTrace();
@@ -40,6 +50,7 @@ public class OctolibCommand {
                                         .suggests((c, b) -> SharedSuggestionProvider.suggest(ConfigManager.getAllPaths(), b))
                                         .executes(c -> {
                                             var path = StringArgumentType.getString(c, "path");
+                                            boolean isAdmin = c.getSource().hasPermission(4);
                                             
                                             if (!ConfigManager.getAllPaths().contains(path)) {
                                                 c.getSource().sendFailure(Component.literal("Config by path \"" + path + "\" does not exist"));
@@ -47,7 +58,19 @@ public class OctolibCommand {
                                             }
                                             
                                             try {
-                                                ConfigManager.reload(path);
+
+                                                if (ConfigManager.isServerConfig(path)) {
+                                                    if (isAdmin) {
+                                                        ConfigManager.reload(path);
+                                                        ConfigManager.syncConfig(path, c.getSource().getServer());
+                                                    } else
+                                                        c.getSource().sendFailure(
+                                                                Component.literal("You have not permission to reload config."));
+                                                } else {
+                                                    ConfigManager.reload(path);
+                                                }
+
+                                                c.getSource().sendSystemMessage(Component.literal("Config with path \"" + path + "\" has been reloaded successfully"));
                                             } catch (RuntimeException e) {
                                                 e.printStackTrace();
                                                 c.getSource().sendFailure(Component.literal("Error occurs while reloading config by path ")

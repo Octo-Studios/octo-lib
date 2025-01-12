@@ -33,23 +33,21 @@ public class PropertyUtilsExt extends PropertyUtils {
             return this.propertiesCache.get(type);
         } else {
             Map<String, Property> properties = new LinkedHashMap<>();
-            boolean inaccessableFieldsExist = false;
+
             Class<?> c;
-            Field[] var6;
-            int var7;
-            int var8;
+            Field[] fields;
             Field field;
             int modifiers;
+
             boolean onlyProps = type.isAnnotationPresent(TypePropInherited.class)
                     && type.getAnnotation(TypePropInherited.class).onlyProps();
             
             if (bAccess == BeanAccess.FIELD) {
                 for (c = type; c != null; c = c.getSuperclass()) {
-                    var6 = c.getDeclaredFields();
-                    var7 = var6.length;
+                    fields = c.getDeclaredFields();
                     
-                    for (var8 = 0; var8 < var7; ++var8) {
-                        field = var6[var8];
+                    for (Field value : fields) {
+                        field = value;
                         
                         if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class))
                             continue;
@@ -70,6 +68,7 @@ public class PropertyUtilsExt extends PropertyUtils {
                             continue;
                         
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && !properties.containsKey(name)) {
+                            field.setAccessible(true);
                             var property = new FieldPropertyExt(field, name);
                             if (inlineComment != null && !inlineComment.isEmpty())
                                 property.setInlineComment(inlineComment);
@@ -78,17 +77,17 @@ public class PropertyUtilsExt extends PropertyUtils {
                             
                             if (field.isAnnotationPresent(ParameterizedProp.class))
                                 property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
+
                             properties.put(name, property);
                         }
                     }
                 }
             } else {
                 try {
-                    PropertyDescriptor[] var12 = Introspector.getBeanInfo(type).getPropertyDescriptors();
+                    PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type).getPropertyDescriptors();
                     
-                    for (var7 = 0; var7 < var12.length; ++var7) {
+                    for (PropertyDescriptor property : descriptors) {
                         
-                        PropertyDescriptor property = var12[var7];
                         Method readMethod = property.getReadMethod();
                         
                         if ((readMethod == null || !readMethod.getName().equals("getClass")) && !this.isTransient(property)) {
@@ -101,11 +100,11 @@ public class PropertyUtilsExt extends PropertyUtils {
                 }
                 
                 for (c = type; c != null; c = c.getSuperclass()) {
-                    var6 = c.getDeclaredFields();
-                    var7 = var6.length;
+                    fields = c.getDeclaredFields();
                     
-                    for (var8 = 0; var8 < var7; ++var8) {
-                        field = var6[var8];
+                    for (Field value : fields) {
+                        field = value;
+
                         if (field.isSynthetic() || field.isEnumConstant() || field.isAnnotationPresent(IgnoreProp.class)) {
                             properties.remove(field.getName());
                             continue;
@@ -138,13 +137,18 @@ public class PropertyUtilsExt extends PropertyUtils {
                         
                         modifiers = field.getModifiers();
                         if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+                            field.setAccessible(true);
+
                             var property = new FieldPropertyExt(field, name);
                             if (inlineComment != null && !inlineComment.isEmpty())
                                 property.setInlineComment(inlineComment);
+
                             if (blockComment != null && !blockComment.isEmpty())
                                 property.setBlockComment(blockComment);
+
                             if (field.isAnnotationPresent(ParameterizedProp.class))
                                 property.setGenTypeOverride(field.getAnnotation(ParameterizedProp.class).value());
+
                             if (!properties.containsKey(name) || Modifier.isPublic(modifiers))
                                 properties.put(name, property);
                         }

@@ -14,4 +14,8 @@ public interface OctoConfig {
         return IConfigFileLoader.SOLID;
     };
     
+    default ConfigSide getSide() {
+        return ConfigSide.SERVER;
+    }
+
 }

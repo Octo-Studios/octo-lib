@@ -1,6 +1,5 @@
 package it.hurts.octostudios.octolib.modules.config.util.properties;
 
-import it.hurts.octostudios.octolib.modules.config.annotations.ParameterizedProp;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.util.ArrayUtils;
 
@@ -30,6 +29,7 @@ public class FieldPropertyExt extends GenericPropertyExt {
     
     public Object get(Object object) {
         try {
+            field.setAccessible(true);
             return this.field.get(object);
         } catch (Exception var3) {
             throw new YAMLException("Unable to access field " + this.field.getName() + " on object " + object + " : " + var3);

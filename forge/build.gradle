@@ -12,7 +12,6 @@ configurations {
         canBeResolved = true
         canBeConsumed = false
     }
-
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
@@ -23,15 +22,8 @@ configurations {
     }
 }
 
-repositories {
-    maven {
-        name = 'NeoForged'
-        url = 'https://maven.neoforged.net/releases'
-    }
-}
-
 dependencies {
-    forge "net.neoforged:forge:$rootProject.minecraft_version-$rootProject.neoforge_version"
+    forge "net.minecraftforge:forge:$rootProject.forge_version"
 
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
 
@@ -63,5 +55,5 @@ shadowJar {
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
+    inputFile.set shadowJar.archiveFile
 }

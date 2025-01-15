@@ -11,6 +11,8 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.*;
 
 @Getter
@@ -79,17 +81,17 @@ public class ConfigProviderBase implements ConfigProvider {
     }
     
     @Override
-    public void save(FileWriter writer, Object config) {
+    public void save(Writer writer, Object config) {
         yamlConverted.dump(config, writer);
     }
     
     @Override
-    public void saveAll(FileWriter writer, Iterator<?> config) {
+    public void saveAll(Writer writer, Iterator<?> config) {
         yamlConverted.dumpAll(config, writer);
     }
     
     @Override
-    public Object load(FileReader reader, CompoundEntry pattern) {
+    public Object load(Reader reader, CompoundEntry pattern) {
         var compound = yamlConverted.loadAs(reader, CompoundEntry.class);
         if (compound == null)
             return configEntryConverter.construct(pattern);
@@ -98,7 +100,7 @@ public class ConfigProviderBase implements ConfigProvider {
     }
     
     @Override
-    public <T> List<T> loadAll(FileReader reader, Iterator<CompoundEntry> patternIterator) {
+    public <T> List<T> loadAll(Reader reader, Iterator<CompoundEntry> patternIterator) {
         Iterable<Object> objects = yamlConverted.loadAll(reader);
         ArrayList<T> list = new ArrayList<>();
         for (var object : objects) {

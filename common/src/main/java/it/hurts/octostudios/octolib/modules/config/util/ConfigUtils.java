@@ -2,7 +2,7 @@ package it.hurts.octostudios.octolib.modules.config.util;
 
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
-import it.hurts.octostudios.octolib.modules.utils.Cast;
+import it.hurts.octostudios.octolib.util.Cast;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;

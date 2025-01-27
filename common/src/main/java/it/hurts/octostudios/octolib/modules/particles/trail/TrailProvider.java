@@ -122,17 +122,17 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
 
         if (points.size() > 2) {
             for (int i = 0; i < points.size() - 1; i++) {
-                var p0 = i == 0 ? points.getFirst() : points.get(i - 1);
+                var p0 = i == 0 ? points.get(0) : points.get(i - 1);
                 var p1 = points.get(i);
                 var p2 = points.get(i + 1);
-                var p3 = i == points.size() - 2 ? points.getLast() : points.get(i + 2);
+                var p3 = i == points.size() - 2 ? points.get(points.size() - 1) : points.get(i + 2);
 
                 partialPoses.add(p1);
                 float p = (getTrailInterpolationPoints() + 1);
                 for (float f = p; f < 1; f += 1f / p)
                     partialPoses.add(VectorUtils.catmullromVec(f, p0, p1, p2, p3));
             }
-            partialPoses.add(points.getLast());
+            partialPoses.add(points.get(points.size() - 1));
         } else
             partialPoses.addAll(points);
 

@@ -1,6 +1,8 @@
 package it.hurts.octostudios.octolib.modules.config;
 
 import com.mojang.datafixers.util.Pair;
+import dev.architectury.networking.NetworkManager;
+import io.netty.buffer.Unpooled;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.AnnotationConfigFactory;
 import it.hurts.octostudios.octolib.modules.config.annotations.registration.Config;
@@ -11,11 +13,13 @@ import it.hurts.octostudios.octolib.modules.config.impl.ConfigSide;
 import it.hurts.octostudios.octolib.modules.config.impl.FileSpreadConfig;
 import it.hurts.octostudios.octolib.modules.config.impl.OctoConfig;
 import it.hurts.octostudios.octolib.modules.config.impl.OctoConfigBase;
+import it.hurts.octostudios.octolib.modules.config.network.SyncConfigPacket;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProvider;
 import it.hurts.octostudios.octolib.modules.config.provider.ConfigProviderBase;
 import it.hurts.octostudios.octolib.modules.config.util.ConfigUtils;
 import it.hurts.octostudios.octolib.modules.network.OctolibNetwork;
 import it.hurts.octostudios.octolib.util.Cast;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
@@ -175,8 +179,10 @@ public final class ConfigManager {
     }
 
     public static void syncConfig(String path, MinecraftServer server) {
-        server.getPlayerList().getPlayers().forEach(player ->
-                OctolibNetwork.sendSyncConfigPacket(player, path));
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        SyncConfigPacket packet = new SyncConfigPacket(path);
+        packet.write(buf);
+        NetworkManager.sendToPlayers(server.getPlayerList().getPlayers(), SyncConfigPacket.ID, buf);
     }
 
     public static void syncConfig(ServerPlayer player, String path) {

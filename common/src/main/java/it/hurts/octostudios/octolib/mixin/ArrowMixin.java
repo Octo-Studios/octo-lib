@@ -34,13 +34,18 @@ public class ArrowMixin implements TrailProvider {
     }
 
     @Override
+    public boolean isTrailGrowing() {
+        return ((Arrow) (Object) this).getDeltaMovement().length() > 0;
+    }
+
+    @Override
     public int getTrailMaxLength() {
         return 10;
     }
 
     @Override
     public int getTrailFadeInColor() {
-        return 0xFF0000FF;
+        return 0x000000FF;
     }
 
     @Override

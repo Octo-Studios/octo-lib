@@ -2,8 +2,9 @@ package it.hurts.octostudios.octolib.mixin;
 
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,16 +12,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Arrow.class)
+@Mixin(ExperienceOrb.class)
 public class ArrowMixin implements TrailProvider {
-    @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("TAIL"))
+    @Inject(method = "<init>*", at = @At("RETURN"))
     public void aaa(EntityType entityType, Level level, CallbackInfo ci) {
-        OctoRenderManager.registerProvider(this);
+        if (level.isClientSide())
+            OctoRenderManager.registerProvider(this);
     }
 
     @Override
     public Vec3 getTrailPosition(float partialTick) {
-        return ((Arrow) (Object) this).getPosition(partialTick);
+        return ((Entity) (Object) this).getPosition(partialTick);
     }
 
     @Override
@@ -30,12 +32,14 @@ public class ArrowMixin implements TrailProvider {
 
     @Override
     public boolean isTrailAlive() {
-        return ((Arrow) (Object) this).isAlive();
+        return ((Entity) (Object) this).isAlive();
     }
 
     @Override
     public boolean isTrailGrowing() {
-        return ((Arrow) (Object) this).getDeltaMovement().length() > 0;
+        var entity = ((Entity) (Object) this);
+
+        return entity.tickCount > 0 && entity.getDeltaMovement().length() > 0;
     }
 
     @Override

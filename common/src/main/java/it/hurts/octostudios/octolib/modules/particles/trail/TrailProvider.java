@@ -22,15 +22,7 @@ import static it.hurts.octostudios.octolib.util.VectorUtils.Y_VEC;
 public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer> {
     @Override
     default TrailBuffer createBuffer() {
-        var length = getTrailMaxLength();
-        var pos = getTrailPosition(0);
-
-        var buffer = new DefaultTrailBuffer(length);
-
-        for (int i = 0; i < length; i++)
-            buffer.write(pos);
-
-        return buffer;
+        return new DefaultTrailBuffer(getTrailMaxLength());
     }
 
     @Override
@@ -86,15 +78,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
     }
 
     default List<Vec3> getTrailRenderPositions(List<Vec3> points, float pTicks) {
-        if (points.size() < 3)
-            return points;
-
-        var interpolated = new ArrayList<>(List.of(points.getFirst()));
-
-        for (int i = 1; i < points.size() - 2; i++)
-            interpolated.add(points.get(i + 1).lerp(points.get(i), pTicks));
-
-        return interpolated;
+        return points;
     }
 
     @Override

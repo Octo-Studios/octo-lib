@@ -3,7 +3,10 @@ package it.hurts.octostudios.octolib.modules.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
+import it.hurts.octostudios.octolib.modules.config.network.TestScreenPacket;
+import it.hurts.octostudios.octolib.modules.network.OctolibNetwork;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -14,6 +17,11 @@ public class OctolibCommand {
     
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("octolib").requires(s -> s.hasPermission(2))
+                .then(Commands.literal("testScreen")
+                        .executes(component -> {
+                            NetworkManager.sendToPlayer(component.getSource().getPlayer(), new TestScreenPacket());
+                            return Command.SINGLE_SUCCESS;
+                        }))
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
                                 .then(Commands.literal("all")

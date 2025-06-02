@@ -49,7 +49,6 @@ public class TesselatorUtils {
             tes.addVertex(pos2X, pos2Y, pos2Z).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
             tes.addVertex(pos1X, pos1Y, pos1Z).setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         }
-        
     }
 
     /* public static void drawQuad(BufferBuilder tes, IIcon icon, double pos1X, double pos1Y, double pos1Z, double pos2X,

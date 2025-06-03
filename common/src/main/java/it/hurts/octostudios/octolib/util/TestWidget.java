@@ -12,6 +12,7 @@ public class TestWidget extends AbstractWidget {
     private double cX;
     private double cY;
     public Easing easing;
+    private Animator animator;
 
     public TestWidget(int x, int y, Easing easing) {
         super(x, y, 8, 8, Component.literal(easing.name()));
@@ -22,13 +23,13 @@ public class TestWidget extends AbstractWidget {
     protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float partialTick) {
         float actualPartialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(cX+this.getX(), cY+this.getY(), 0);
+        guiGraphics.pose().translate(cX + this.getX(), cY + this.getY(), 0);
         guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), 0xffffffff);
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX(), this.getY(), 0);
-        guiGraphics.renderOutline(-2, -12, 112, this.getHeight()+14, 0x50ffffff);
+        guiGraphics.renderOutline(-2, -12, 112, this.getHeight() + 14, 0x50ffffff);
         guiGraphics.pose().scale(0.75f, 1, 1);
         guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), 0, -10, 0x50ffffff, true);
         guiGraphics.pose().popPose();
@@ -49,17 +50,15 @@ public class TestWidget extends AbstractWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        AnimatorSystem.addAnimator("testWidget"+easing.name(), new Animator(easing, 0, 100, 0.75,
-                this::setCurrentX,
-                () -> {
-                    AnimatorSystem.addAnimator("testWidget"+easing.name(), new Animator(easing, 100, 0, 0.75,
-                            this::setCurrentX,
-                            () -> {
+        if (animator != null) {
+            animator.stop();
+        }
 
-                            }
-                    ));
-                }
-                ));
+        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX)
+                .sleep(0.5)
+                .addNext(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+                .start();
+
         super.onClick(mouseX, mouseY);
     }
 }

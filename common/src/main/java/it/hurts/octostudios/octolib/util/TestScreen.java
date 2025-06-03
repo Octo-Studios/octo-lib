@@ -71,7 +71,15 @@ public class TestScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(mouseX, mouseY, button);
+        boolean result = super.mouseClicked(mouseX, mouseY, button);
+        if (!result) {
+            for (GuiEventListener g : this.children()) {
+                if (g instanceof TestWidget widget) {
+                    widget.onClick(mouseX, mouseY);
+                }
+            }
+        }
+        return result;
     }
 
     @Override

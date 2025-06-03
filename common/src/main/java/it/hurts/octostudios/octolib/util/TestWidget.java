@@ -54,12 +54,12 @@ public class TestWidget extends AbstractWidget {
         }
 
         this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX)
-                .sleep(0.5)
+                .sleep(0.25)
+                .then(new Animator(easing, 0, 20, 0.75, this::setCurrentY))
+                .sleep(0.25)
                 .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
-                .sleep(0.5)
-                .then(new Animator(easing, 0, 100, 0.75, this::setCurrentX))
-                .sleep(0.5)
-                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+                .sleep(0.25)
+                .then(new Animator(easing, 20, 0, 0.75, this::setCurrentY))
                 .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
                 .start();
 

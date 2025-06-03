@@ -24,7 +24,7 @@ public class TestScreen extends Screen {
             this.addRenderableWidget(new TestWidget(x, y, easing));
             y += 30;
 
-            if (y + 20 > this.height) {
+            if (y + 30 > this.height) {
                 x += 120;
                 y = 16;
             }
@@ -34,24 +34,6 @@ public class TestScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-//        if (down) {
-//            ticker--;
-//        } else {
-//            ticker++;
-//        }
-//
-//        ticker = Mth.clamp(ticker, 0, 20);
-//
-//        double delta = ticker / 20d;
-//        for (GuiEventListener r : this.children()) {
-//            if (r instanceof TestWidget widget) {
-//                if (down) {
-//                    widget.setCurrentX((int) (widget.easing.flipped(delta) * 100));
-//                } else {
-//                    widget.setCurrentX((int) (widget.easing.apply(delta) * 100));
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -72,7 +54,7 @@ public class TestScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean result = super.mouseClicked(mouseX, mouseY, button);
-        if (!result) {
+        if (!result && button == 1) {
             for (GuiEventListener g : this.children()) {
                 if (g instanceof TestWidget widget) {
                     widget.onClick(mouseX, mouseY);

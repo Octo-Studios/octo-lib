@@ -3,7 +3,6 @@ package it.hurts.octostudios.octolib.util;
 import it.hurts.octostudios.octolib.AnimatorSystem;
 import lombok.Getter;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.AnimalArmorItem;
 
 import java.util.function.Consumer;
 
@@ -45,10 +44,10 @@ public class Animator {
 
         long elapsedMillis = System.currentTimeMillis() - this.startTimestamp;
         double t = Math.min((double) elapsedMillis / durationMillis, 1.0);
-        double easedT = easing.apply(t);
-        double currentValue = Mth.lerp(easedT, startValue, endValue);
 
-        if (onUpdate != null) {
+        if (onUpdate != null && startValue != endValue) {
+            double easedT = easing.apply(t);
+            double currentValue = Mth.lerp(easedT, startValue, endValue);
             onUpdate.accept(currentValue);
         }
 
@@ -84,14 +83,18 @@ public class Animator {
         isFinished = true;
     }
 
-    public Animator sleep(double durationInSeconds) {
-        return this.addNext(new Animator(Easing.LINEAR, 0, 0, durationInSeconds, d -> {}, () -> {}));
-    }
-
-    public Animator addNext(Animator nextAnimator) {
+    public Animator then(Animator nextAnimator) {
         nextAnimator.prevAnimator = this;
         this.nextAnimator = nextAnimator;
         return this.nextAnimator;
+    }
+
+    public Animator sleep(double durationInSeconds) {
+        return this.then(new Animator(Easing.LINEAR, 0, 0, durationInSeconds, d -> {}, () -> {}));
+    }
+
+    public Animator callback(Runnable callback) {
+        return this.then(new Animator(Easing.LINEAR, 0, 0, 0, d -> {}, callback));
     }
 
     private void switchToNext() {

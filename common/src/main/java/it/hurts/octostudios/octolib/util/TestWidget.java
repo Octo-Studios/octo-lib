@@ -1,12 +1,11 @@
 package it.hurts.octostudios.octolib.util;
 
-import it.hurts.octostudios.octolib.AnimatorSystem;
+import it.hurts.octostudios.octolib.OctoLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 
 public class TestWidget extends AbstractWidget {
     private double cX;
@@ -56,7 +55,12 @@ public class TestWidget extends AbstractWidget {
 
         this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX)
                 .sleep(0.5)
-                .addNext(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+                .sleep(0.5)
+                .then(new Animator(easing, 0, 100, 0.75, this::setCurrentX))
+                .sleep(0.5)
+                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+                .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
                 .start();
 
         super.onClick(mouseX, mouseY);

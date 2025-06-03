@@ -16,6 +16,9 @@ public class Animator {
     @Getter
     private boolean isFinished = false;
 
+    @Getter
+    private boolean isRunning = false;
+
     private Consumer<Double> onUpdate;
     private Runnable onComplete;
 
@@ -44,6 +47,7 @@ public class Animator {
 
         long elapsedMillis = System.currentTimeMillis() - this.startTimestamp;
         double t = Math.min((double) elapsedMillis / durationMillis, 1.0);
+        this.isRunning = true;
 
         if (onUpdate != null && startValue != endValue) {
             double easedT = easing.apply(t);
@@ -57,7 +61,7 @@ public class Animator {
             }
 
             if (this.nextAnimator == null) {
-                isFinished = true;
+                this.stop();
             } else {
                 this.switchToNext();
             }
@@ -79,8 +83,8 @@ public class Animator {
     }
 
     public void stop() {
-        startTimestamp = System.currentTimeMillis();
         isFinished = true;
+        this.isRunning = false;
     }
 
     public Animator then(Animator nextAnimator) {

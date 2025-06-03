@@ -12,10 +12,12 @@ public class TestWidget extends AbstractWidget {
     private double cY;
     public Easing easing;
     private Animator animator;
+    private Animator hoverAnimator;
 
     public TestWidget(int x, int y, Easing easing) {
         super(x, y, 8, 8, Component.literal(easing.name()));
         this.easing = easing;
+        this.hoverAnimator = new Animator(Easing.EASE_IN_OUT_CUBIC, 0, -3, 0.25, this::setCurrentY);
     }
 
     @Override
@@ -48,12 +50,23 @@ public class TestWidget extends AbstractWidget {
     }
 
     @Override
+    public boolean isHovered() {
+        boolean hovered = super.isHovered();
+
+        if (hovered && !this.hoverAnimator.isRunning()) {
+            //this.hoverAnimator.start();
+        }
+
+        return hovered;
+    }
+
+    @Override
     public void onClick(double mouseX, double mouseY) {
         if (animator != null) {
             animator.stop();
         }
 
-        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX)
+        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX, () -> OctoLib.LOGGER.info("test callback"))
                 .sleep(0.25)
                 .then(new Animator(easing, 0, 20, 0.75, this::setCurrentY))
                 .sleep(0.25)

@@ -1,5 +1,7 @@
 package it.hurts.octostudios.octolib;
 
+import dev.architectury.event.Event;
+import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
@@ -12,5 +14,6 @@ public final class OctoLibClient {
     private static void registerEvents() {
         ClientTickEvent.CLIENT_LEVEL_PRE.register(OctoRenderManager::clientTick);
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(OctoRenderManager::worldExit);
+        ClientGuiEvent.RENDER_PRE.register(OctoRenderManager::clientRenderTick);
     }
 }

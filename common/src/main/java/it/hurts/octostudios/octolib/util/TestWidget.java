@@ -1,5 +1,6 @@
 package it.hurts.octostudios.octolib.util;
 
+import it.hurts.octostudios.octolib.AnimatorSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -8,10 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 public class TestWidget extends AbstractWidget {
-    private int cX;
-    private int cY;
-    private int oX;
-    private int oY;
+    private double cX;
+    private double cY;
     public Easing easing;
 
     public TestWidget(int x, int y, Easing easing) {
@@ -22,11 +21,8 @@ public class TestWidget extends AbstractWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float partialTick) {
         float actualPartialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
-        float x = Mth.lerp(actualPartialTick, oX, cX) + this.getX();
-        float y = Mth.lerp(actualPartialTick, oY, cY) + this.getY();
-
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().translate(cX+this.getX(), cY+this.getY(), 0);
         guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), 0xffffffff);
         guiGraphics.pose().popPose();
 
@@ -43,13 +39,27 @@ public class TestWidget extends AbstractWidget {
 
     }
 
-    public void setCurrentX(int x) {
-        this.oX = this.cX;
+    public void setCurrentX(double x) {
         this.cX = x;
     }
 
-    public void setCurrentY(int y) {
-        this.oY = this.cY;
+    public void setCurrentY(double y) {
         this.cY = y;
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        AnimatorSystem.addAnimator("testWidget"+easing.name(), new Animator(easing, 0, 100, 0.75,
+                this::setCurrentX,
+                () -> {
+                    AnimatorSystem.addAnimator("testWidget"+easing.name(), new Animator(easing, 100, 0, 0.75,
+                            this::setCurrentX,
+                            () -> {
+
+                            }
+                    ));
+                }
+                ));
+        super.onClick(mouseX, mouseY);
     }
 }

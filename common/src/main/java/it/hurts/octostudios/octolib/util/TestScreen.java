@@ -34,24 +34,24 @@ public class TestScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        if (down) {
-            ticker--;
-        } else {
-            ticker++;
-        }
-
-        ticker = Mth.clamp(ticker, 0, 20);
-
-        double delta = ticker / 20d;
-        for (GuiEventListener r : this.children()) {
-            if (r instanceof TestWidget widget) {
-                if (down) {
-                    widget.setCurrentX((int) (widget.easing.flipped(delta) * 100));
-                } else {
-                    widget.setCurrentX((int) (widget.easing.apply(delta) * 100));
-                }
-            }
-        }
+//        if (down) {
+//            ticker--;
+//        } else {
+//            ticker++;
+//        }
+//
+//        ticker = Mth.clamp(ticker, 0, 20);
+//
+//        double delta = ticker / 20d;
+//        for (GuiEventListener r : this.children()) {
+//            if (r instanceof TestWidget widget) {
+//                if (down) {
+//                    widget.setCurrentX((int) (widget.easing.flipped(delta) * 100));
+//                } else {
+//                    widget.setCurrentX((int) (widget.easing.apply(delta) * 100));
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -71,7 +71,6 @@ public class TestScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        down = !down;
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

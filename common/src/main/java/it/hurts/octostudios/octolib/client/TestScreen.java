@@ -35,7 +35,7 @@ public class TestScreen extends Screen {
         }
 
         this.addRenderableWidget(new Button.Builder(Component.literal("test"), button -> ShakeSystem.startShake((Shakeable) button,
-                new ShakeData(new Vector2f(4f,4f), new Vector2f(6.78f, 4.24f), 2)
+                new ShakeData(new Vector2f(4f,4f), new Vector2f(6,12), 0.5)
                 ))
                 .size(100, 20)
                 .pos((int) (this.width/2f), (int) (this.height/2f))

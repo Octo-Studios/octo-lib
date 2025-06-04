@@ -16,8 +16,10 @@ public class Animator {
     private boolean isRunning = false;
     private Consumer<Double> onUpdate;
     private Runnable onComplete;
+
     private Animator nextAnimator;
     private Animator prevAnimator;
+    private Animator rootAnimator;
 
     public Animator(Easing easing, double startValue, double endValue, double durationSeconds,
                     Consumer<Double> onUpdate, Runnable onComplete) {
@@ -27,6 +29,7 @@ public class Animator {
         this.durationMillis = (long) (durationSeconds * 1000);
         this.onUpdate = onUpdate != null ? onUpdate : v -> {};
         this.onComplete = onComplete != null ? onComplete : () -> {};
+        this.rootAnimator = this;
     }
 
     public Animator(Easing easing, double startValue, double endValue,
@@ -36,6 +39,7 @@ public class Animator {
 
     public Animator then(Animator next) {
         next.prevAnimator = this;
+        next.rootAnimator = this.rootAnimator;
         this.nextAnimator = next;
         return next;
     }
@@ -49,10 +53,7 @@ public class Animator {
     }
 
     public Animator start() {
-        Animator root = this;
-        while (root.prevAnimator != null) {
-            root = root.prevAnimator;
-        }
+        Animator root = this.rootAnimator;
 
         if (root.durationMillis == 0) {
             root.onComplete.run();
@@ -94,18 +95,13 @@ public class Animator {
             nextAnimator.isRunning = true;
             AnimatorSystem.addAnimator(nextAnimator);
         }
-        // break the link to help GC
-        if (nextAnimator != null) {
-            nextAnimator.prevAnimator = null;
-            this.nextAnimator = null;
-        }
     }
 
     public void stop() {
         isFinished = true;
         isRunning = false;
 
-        if (prevAnimator != null) {
+        if (prevAnimator != null && this.rootAnimator != this) {
             prevAnimator.stop();
         }
     }
@@ -113,7 +109,7 @@ public class Animator {
     public void reset() {
         onUpdate.accept(startValue);
 
-        if (prevAnimator != null) {
+        if (prevAnimator != null && this.rootAnimator != this) {
             prevAnimator.reset();
         }
     }
@@ -121,7 +117,7 @@ public class Animator {
     public void pause() {
         isRunning = false;
 
-        if (prevAnimator != null) {
+        if (prevAnimator != null && this.rootAnimator != this) {
             prevAnimator.pause();
         }
     }
@@ -133,7 +129,7 @@ public class Animator {
             isRunning = true;
         }
 
-        if (prevAnimator != null) {
+        if (prevAnimator != null && this.rootAnimator != this) {
             prevAnimator.resume();
         }
     }

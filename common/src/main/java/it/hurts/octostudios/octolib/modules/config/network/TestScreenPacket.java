@@ -2,8 +2,7 @@ package it.hurts.octostudios.octolib.modules.config.network;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
-import it.hurts.octostudios.octolib.modules.config.ConfigManager;
-import it.hurts.octostudios.octolib.util.TestScreen;
+import it.hurts.octostudios.octolib.client.TestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

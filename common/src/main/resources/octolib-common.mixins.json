@@ -4,9 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "AbstractWidgetMixin",
+    "ScreenMixin"
   ],
   "mixins": [
-
   ],
   "injectors": {
     "defaultRequire": 1

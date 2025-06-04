@@ -1,8 +1,10 @@
-package it.hurts.octostudios.octolib.util;
+package it.hurts.octostudios.octolib.client;
 
-import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.animator.Animator;
 import it.hurts.octostudios.octolib.client.animator.Easing;
+import it.hurts.octostudios.octolib.client.shake.ShakeData;
+import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
+import it.hurts.octostudios.octolib.client.shake.Shakeable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -64,21 +66,23 @@ public class TestWidget extends AbstractWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (animator != null) {
-            this.setCurrentX(0);
-            this.setCurrentY(0);
-            animator.stop();
-        }
+//        if (animator != null) {
+//            this.setCurrentX(0);
+//            this.setCurrentY(0);
+//            animator.stop();
+//        }
+//
+//        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX, () -> OctoLib.LOGGER.info("test callback"))
+//                .sleep(0.25)
+//                .then(new Animator(easing, 0, 20, 0.75, this::setCurrentY))
+//                .sleep(0.25)
+//                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
+//                .sleep(0.25)
+//                .then(new Animator(easing, 20, 0, 0.75, this::setCurrentY))
+//                .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
+//                .start();
 
-        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX, () -> OctoLib.LOGGER.info("test callback"))
-                .sleep(0.25)
-                .then(new Animator(easing, 0, 20, 0.75, this::setCurrentY))
-                .sleep(0.25)
-                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
-                .sleep(0.25)
-                .then(new Animator(easing, 20, 0, 0.75, this::setCurrentY))
-                .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
-                .start();
+        ShakeSystem.startShake((Shakeable) this, new ShakeData(3f, 10f, 1).withTimeEasing(this.easing));
 
         super.onClick(mouseX, mouseY);
     }

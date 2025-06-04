@@ -1,11 +1,16 @@
-package it.hurts.octostudios.octolib.util;
+package it.hurts.octostudios.octolib.client;
 
 import it.hurts.octostudios.octolib.client.animator.Easing;
+import it.hurts.octostudios.octolib.client.shake.ShakeData;
+import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
+import it.hurts.octostudios.octolib.client.shake.Shakeable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.joml.Vector2f;
 
 public class TestScreen extends Screen {
     private int ticker;
@@ -28,6 +33,14 @@ public class TestScreen extends Screen {
                 y = 16;
             }
         }
+
+        this.addRenderableWidget(new Button.Builder(Component.literal("test"), button -> ShakeSystem.startShake((Shakeable) button,
+                new ShakeData(new Vector2f(4f,4f), new Vector2f(6.78f, 4.24f), 2)
+                ))
+                .size(100, 20)
+                .pos((int) (this.width/2f), (int) (this.height/2f))
+                .build()
+        );
     }
 
     @Override
@@ -59,6 +72,8 @@ public class TestScreen extends Screen {
                     widget.onClick(mouseX, mouseY);
                 }
             }
+        } else if (!result && button == 0) {
+            ShakeSystem.startShake((Shakeable) this, new ShakeData(3f, 10f, 1));
         }
         return result;
     }

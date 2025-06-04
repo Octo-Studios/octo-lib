@@ -2,6 +2,7 @@ package it.hurts.octostudios.octolib.modules.particles;
 
 import dev.architectury.event.EventResult;
 import it.hurts.octostudios.octolib.client.animator.AnimatorSystem;
+import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import lombok.Getter;
 import net.minecraft.client.DeltaTracker;
@@ -54,6 +55,7 @@ public class OctoRenderManager {
 
     public static EventResult clientRenderTick(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, DeltaTracker deltaTracker) {
         AnimatorSystem.updateAll();
+        ShakeSystem.updateAll();
         return EventResult.pass();
     }
 

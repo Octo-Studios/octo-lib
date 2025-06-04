@@ -11,7 +11,7 @@ public class TestWidget extends AbstractWidget {
     private double cX;
     private double cY;
     public Easing easing;
-    private Animator animator;
+    public Animator animator;
     private Animator hoverAnimator;
 
     public TestWidget(int x, int y, Easing easing) {
@@ -63,6 +63,8 @@ public class TestWidget extends AbstractWidget {
     @Override
     public void onClick(double mouseX, double mouseY) {
         if (animator != null) {
+            this.setCurrentX(0);
+            this.setCurrentY(0);
             animator.stop();
         }
 

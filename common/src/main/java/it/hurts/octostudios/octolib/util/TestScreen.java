@@ -66,6 +66,17 @@ public class TestScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public void onClose() {
+        for (GuiEventListener g : this.children()) {
+            if (g instanceof TestWidget widget && widget.animator != null) {
+                widget.animator.stop();
+            }
+        }
+
+        super.onClose();
     }
 }

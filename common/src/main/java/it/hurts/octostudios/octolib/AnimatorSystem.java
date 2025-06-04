@@ -4,36 +4,42 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.util.internal.ConcurrentSet;
 import it.hurts.octostudios.octolib.util.Animator;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AnimatorSystem {
-    private static final Queue<Animator> ANIMATOR_SET = new ConcurrentLinkedQueue<>();
+    private static final Queue<Animator> ACTIVE_ANIMATORS = new ConcurrentLinkedQueue<>();
 
     public static Animator addAnimator(Animator animator) {
-        assertThread();
-        ANIMATOR_SET.add(animator);
+        if (!RenderSystem.isOnRenderThread()) {
+            throw new IllegalStateException("AnimatorSystem must be called on render thread");
+        }
+        ACTIVE_ANIMATORS.add(animator);
         return animator;
     }
 
     public static void updateAll() {
-        assertThread();
-        for (Animator animator : ANIMATOR_SET) {
-            animator.update();
+        if (!RenderSystem.isOnRenderThread()) {
+            throw new IllegalStateException("AnimatorSystem must be called on render thread");
         }
-        ANIMATOR_SET.removeIf(Animator::isFinished);
+
+        Iterator<Animator> it = ACTIVE_ANIMATORS.iterator();
+        while (it.hasNext()) {
+            Animator anim = it.next();
+            anim.update();
+            if (anim.isFinished()) {
+                it.remove();
+            }
+        }
     }
 
     public static void clear() {
-        assertThread();
-        ANIMATOR_SET.clear();
-    }
-
-    private static void assertThread() {
         if (!RenderSystem.isOnRenderThread()) {
-            throw new IllegalStateException("AnimatorSystem called from the wrong thread");
+            throw new IllegalStateException("AnimatorSystem must be called on render thread");
         }
+        ACTIVE_ANIMATORS.clear();
     }
 }

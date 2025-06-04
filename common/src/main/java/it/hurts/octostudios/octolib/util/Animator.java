@@ -10,106 +10,134 @@ public class Animator {
     private Easing easing;
     private double startValue;
     private double endValue;
-    private long startTimestamp;
     private long durationMillis;
-
+    private long startTimestamp;
     @Getter
     private boolean isFinished = false;
-
     @Getter
     private boolean isRunning = false;
-
     private Consumer<Double> onUpdate;
     private Runnable onComplete;
-
-    @Getter
     private Animator nextAnimator;
-    @Getter
     private Animator prevAnimator;
 
-    public Animator(Easing easing, double startValue, double endValue, double durationInSeconds, Consumer<Double> onUpdate, Runnable onComplete) {
+    public Animator(Easing easing, double startValue, double endValue, double durationSeconds,
+                    Consumer<Double> onUpdate, Runnable onComplete) {
         this.easing = easing;
         this.startValue = startValue;
         this.endValue = endValue;
-        this.durationMillis = (long) (durationInSeconds * 1000);
-        this.onUpdate = onUpdate;
-        this.onComplete = onComplete;
+        this.durationMillis = (long) (durationSeconds * 1000);
+        this.onUpdate = onUpdate != null ? onUpdate : v -> {};
+        this.onComplete = onComplete != null ? onComplete : () -> {};
     }
 
-    public Animator(Easing easing, double startValue, double endValue, double durationInSeconds, Consumer<Double> onUpdate) {
-        this(easing, startValue, endValue, durationInSeconds, onUpdate, () -> {});
+    public Animator(Easing easing, double startValue, double endValue,
+                    double durationSeconds, Consumer<Double> onUpdate) {
+        this(easing, startValue, endValue, durationSeconds, onUpdate, null);
     }
 
-    public void update() {
-        if (isFinished) {
-            return;
-        }
+    public Animator then(Animator next) {
+        next.prevAnimator = this;
+        this.nextAnimator = next;
+        return next;
+    }
 
-        long elapsedMillis = System.currentTimeMillis() - this.startTimestamp;
-        double t = Math.min((double) elapsedMillis / durationMillis, 1.0);
-        this.isRunning = true;
+    public Animator sleep(double seconds) {
+        return then(new Animator(Easing.LINEAR, 0, 0, seconds, v -> {}, () -> {}));
+    }
 
-        if (onUpdate != null && startValue != endValue) {
-            double easedT = easing.apply(t);
-            double currentValue = Mth.lerp(easedT, startValue, endValue);
-            onUpdate.accept(currentValue);
-        }
-
-        if (t >= 1.0) {
-            if (onComplete != null) {
-                onComplete.run();
-            }
-
-            if (this.nextAnimator == null) {
-                this.stop();
-            } else {
-                this.switchToNext();
-            }
-        }
+    public Animator callback(Runnable callback) {
+        return then(new Animator(Easing.LINEAR, 0, 0, 0, v -> {}, callback));
     }
 
     public Animator start() {
-        Animator nextTest = this;
-        while (true) {
-            if (nextTest.getPrevAnimator() == null) {
-                nextTest.startTimestamp = System.currentTimeMillis();
-                nextTest.isFinished = false;
-                AnimatorSystem.addAnimator(nextTest);
-                return nextTest;
-            }
+        Animator root = this;
+        while (root.prevAnimator != null) {
+            root = root.prevAnimator;
+        }
 
-            nextTest = nextTest.getPrevAnimator();
+        if (root.durationMillis == 0) {
+            root.onComplete.run();
+            if (root.nextAnimator != null) {
+                root.nextAnimator.start();
+            }
+        } else {
+            root.startTimestamp = System.currentTimeMillis();
+            root.isFinished = false;
+            root.isRunning = true;
+            AnimatorSystem.addAnimator(root);
+        }
+
+        return this;
+    }
+
+
+    public void update() {
+        if (isFinished || !isRunning) return;
+
+        long elapsed = System.currentTimeMillis() - startTimestamp;
+        double t = Math.min((double) elapsed / durationMillis, 1.0);
+        double easedT = easing.apply(t);
+        double current = startValue + (endValue - startValue) * easedT;
+        onUpdate.accept(current);
+
+        if (t >= 1.0) {
+            finish();
+        }
+    }
+
+    private void finish() {
+        isFinished = true;
+        isRunning = false;
+        onComplete.run();
+        if (nextAnimator != null) {
+            nextAnimator.startTimestamp = System.currentTimeMillis();
+            nextAnimator.isFinished = false;
+            nextAnimator.isRunning = true;
+            AnimatorSystem.addAnimator(nextAnimator);
+        }
+        // break the link to help GC
+        if (nextAnimator != null) {
+            nextAnimator.prevAnimator = null;
+            this.nextAnimator = null;
         }
     }
 
     public void stop() {
         isFinished = true;
-        this.isRunning = false;
+        isRunning = false;
+
+        if (prevAnimator != null) {
+            prevAnimator.stop();
+        }
     }
 
-    public Animator then(Animator nextAnimator) {
-        nextAnimator.prevAnimator = this;
-        this.nextAnimator = nextAnimator;
-        return this.nextAnimator;
+    public void reset() {
+        onUpdate.accept(startValue);
+
+        if (prevAnimator != null) {
+            prevAnimator.reset();
+        }
     }
 
-    public Animator sleep(double durationInSeconds) {
-        return this.then(new Animator(Easing.LINEAR, 0, 0, durationInSeconds, d -> {}, () -> {}));
+    public void pause() {
+        isRunning = false;
+
+        if (prevAnimator != null) {
+            prevAnimator.pause();
+        }
     }
 
-    public Animator callback(Runnable callback) {
-        return this.then(new Animator(Easing.LINEAR, 0, 0, 0, d -> {}, callback));
+    public void resume() {
+        if (!isFinished && !isRunning) {
+            long elapsed = System.currentTimeMillis() - startTimestamp;
+            startTimestamp = System.currentTimeMillis() - elapsed;
+            isRunning = true;
+        }
+
+        if (prevAnimator != null) {
+            prevAnimator.resume();
+        }
     }
 
-    private void switchToNext() {
-        this.easing = this.nextAnimator.easing;
-        this.startValue = this.nextAnimator.startValue;
-        this.endValue = this.nextAnimator.endValue;
-        this.startTimestamp = System.currentTimeMillis();
-        this.durationMillis = this.nextAnimator.durationMillis;
-        this.isFinished = this.nextAnimator.isFinished;
-        this.onUpdate = this.nextAnimator.onUpdate;
-        this.onComplete = this.nextAnimator.onComplete;
-        this.nextAnimator = this.nextAnimator.nextAnimator;
-    }
 }

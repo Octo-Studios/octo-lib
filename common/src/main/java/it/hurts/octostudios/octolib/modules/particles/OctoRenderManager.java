@@ -1,13 +1,10 @@
 package it.hurts.octostudios.octolib.modules.particles;
 
 import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.ClientTickEvent;
-import it.hurts.octostudios.octolib.AnimatorSystem;
-import it.hurts.octostudios.octolib.OctoLib;
+import it.hurts.octostudios.octolib.client.animator.AnimatorSystem;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import lombok.Getter;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;

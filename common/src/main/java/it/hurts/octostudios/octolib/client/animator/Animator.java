@@ -1,8 +1,6 @@
-package it.hurts.octostudios.octolib.util;
+package it.hurts.octostudios.octolib.client.animator;
 
-import it.hurts.octostudios.octolib.AnimatorSystem;
 import lombok.Getter;
-import net.minecraft.util.Mth;
 
 import java.util.function.Consumer;
 

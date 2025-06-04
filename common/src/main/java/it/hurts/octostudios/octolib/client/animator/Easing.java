@@ -1,4 +1,4 @@
-package it.hurts.octostudios.octolib.util;
+package it.hurts.octostudios.octolib.client.animator;
 
 import java.util.function.Function;
 

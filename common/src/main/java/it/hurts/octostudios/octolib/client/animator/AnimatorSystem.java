@@ -1,13 +1,9 @@
-package it.hurts.octostudios.octolib;
+package it.hurts.octostudios.octolib.client.animator;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.netty.util.internal.ConcurrentSet;
-import it.hurts.octostudios.octolib.util.Animator;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AnimatorSystem {

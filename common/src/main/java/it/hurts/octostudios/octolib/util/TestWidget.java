@@ -1,6 +1,8 @@
 package it.hurts.octostudios.octolib.util;
 
 import it.hurts.octostudios.octolib.OctoLib;
+import it.hurts.octostudios.octolib.client.animator.Animator;
+import it.hurts.octostudios.octolib.client.animator.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;

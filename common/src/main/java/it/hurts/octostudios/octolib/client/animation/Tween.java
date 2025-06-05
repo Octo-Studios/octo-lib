@@ -29,7 +29,6 @@ public class Tween {
     boolean started = false;
     @Getter
     boolean running = true;
-    @Getter
     boolean dead = false;
     @Getter
     boolean valid = false;

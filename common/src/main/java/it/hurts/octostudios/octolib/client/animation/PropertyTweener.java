@@ -2,7 +2,6 @@ package it.hurts.octostudios.octolib.client.animation;
 
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
-import lombok.Setter;
 
 import java.lang.reflect.Field;
 
@@ -14,14 +13,12 @@ public class PropertyTweener extends Tweener {
     private Object finalValue;
     private Object deltaValue;
     private double duration;
-    private TransitionType transType;
+    private TransitionType transitionType;
     private EaseType easeType;
     private Runnable customMethod;
-    @Setter
     private double delay = 0;
     boolean doContinue = true;
     boolean doContinueDelayed = false;
-    @Setter
     boolean relative = false;
 
     protected PropertyTweener(Object target, String field, Object to, double duration) {
@@ -81,7 +78,7 @@ public class PropertyTweener extends Tweener {
         double time = Math.min(elapsedTime - delay, duration);
         if (time < duration) {
 //            if (customMethod.isValid())
-            setField(target, field, tween.interpolateVariable(initialValue, deltaValue, time, duration, transType, easeType));
+            setField(target, field, tween.interpolateVariable(initialValue, deltaValue, time, duration, transitionType, easeType));
             return true;
         }
 
@@ -94,12 +91,43 @@ public class PropertyTweener extends Tweener {
     @Override
     public void setTween(Tween tween) {
         super.setTween(tween);
-        if (transType == null) {
-            transType = tween.getDefaultTransition();
+        if (transitionType == null) {
+            transitionType = tween.getDefaultTransition();
         }
         if (easeType == null) {
             easeType = tween.getDefaultEase();
         }
+    }
+
+    public PropertyTweener asRelative() {
+        this.relative = true;
+        return this;
+    }
+
+    public PropertyTweener setTransitionType(TransitionType transitionType) {
+        this.transitionType = transitionType;
+        return this;
+    }
+
+    public PropertyTweener setEaseType(EaseType easeType) {
+        this.easeType = easeType;
+        return this;
+    }
+
+    public PropertyTweener setDelay(double delay) {
+        this.delay = delay;
+        return this;
+    }
+
+    public PropertyTweener fromCurrent() {
+        this.doContinue = false;
+        return this;
+    }
+
+    public PropertyTweener from(Object value) {
+        initialValue = value;
+        doContinue = false;
+        return this;
     }
 
     private static Object getField(Object object, String field) {

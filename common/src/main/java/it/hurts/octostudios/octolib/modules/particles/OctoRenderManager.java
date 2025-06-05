@@ -1,11 +1,12 @@
 package it.hurts.octostudios.octolib.modules.particles;
 
 import dev.architectury.event.EventResult;
-import it.hurts.octostudios.octolib.client.animator.AnimatorSystem;
+import it.hurts.octostudios.octolib.client.animation.TweenSystem;
 import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import lombok.Getter;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -54,12 +55,12 @@ public class OctoRenderManager {
     }
 
     public static EventResult clientRenderTick(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, DeltaTracker deltaTracker) {
-        AnimatorSystem.updateAll();
         ShakeSystem.updateAll();
+        double dt = Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
+        TweenSystem.updateAll(dt);
+
         return EventResult.pass();
     }
-
-
 
     public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> B getOrCreateBuffer(P provider) {
         if (map.containsKey(provider))

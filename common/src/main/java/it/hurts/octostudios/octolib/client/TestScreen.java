@@ -1,16 +1,12 @@
 package it.hurts.octostudios.octolib.client;
 
-import it.hurts.octostudios.octolib.client.animator.Easing;
-import it.hurts.octostudios.octolib.client.shake.ShakeData;
-import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
-import it.hurts.octostudios.octolib.client.shake.Shakeable;
+import it.hurts.octostudios.octolib.client.animation.EaseType;
+import it.hurts.octostudios.octolib.client.animation.TransitionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.joml.Vector2f;
 
 public class TestScreen extends Screen {
     private int ticker;
@@ -24,23 +20,17 @@ public class TestScreen extends Screen {
     protected void init() {
         int x = 8;
         int y = 16;
-        for (Easing easing : Easing.values()) {
-            this.addRenderableWidget(new TestWidget(x, y, easing));
-            y += 30;
+        for (TransitionType transitionType : TransitionType.values()) {
+            for (EaseType easeType : EaseType.values()) {
+                this.addRenderableWidget(new TestWidget(x, y, transitionType, easeType));
+                y += 30;
 
-            if (y + 30 > this.height) {
-                x += 120;
-                y = 16;
+                if (y + 30 > this.height) {
+                    x += 120;
+                    y = 16;
+                }
             }
         }
-
-        this.addRenderableWidget(new Button.Builder(Component.literal("test"), button -> ShakeSystem.startShake((Shakeable) button,
-                new ShakeData(new Vector2f(4f,4f), new Vector2f(6,12), 0.5)
-                ))
-                .size(100, 20)
-                .pos((int) (this.width/2f), (int) (this.height/2f))
-                .build()
-        );
     }
 
     @Override
@@ -72,8 +62,6 @@ public class TestScreen extends Screen {
                     widget.onClick(mouseX, mouseY);
                 }
             }
-        } else if (!result && button == 0) {
-            ShakeSystem.startShake((Shakeable) this, new ShakeData(3f, 10f, 1));
         }
         return result;
     }
@@ -85,11 +73,11 @@ public class TestScreen extends Screen {
 
     @Override
     public void onClose() {
-        for (GuiEventListener g : this.children()) {
-            if (g instanceof TestWidget widget && widget.animator != null) {
-                widget.animator.stop();
-            }
-        }
+//        for (GuiEventListener g : this.children()) {
+//            if (g instanceof TestWidget widget && widget.animator != null) {
+//                widget.animator.stop();
+//            }
+//        }
 
         super.onClose();
     }

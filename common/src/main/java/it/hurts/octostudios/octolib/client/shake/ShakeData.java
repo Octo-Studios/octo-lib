@@ -1,8 +1,6 @@
 package it.hurts.octostudios.octolib.client.shake;
 
-import it.hurts.octostudios.octolib.client.animator.Easing;
 import lombok.Getter;
-import net.minecraft.util.Mth;
 import org.joml.Vector2f;
 
 import java.util.Random;
@@ -10,7 +8,6 @@ import java.util.Random;
 public class ShakeData {
     private final Vector2f amplitude;
     private final Vector2f frequency;
-    private Easing timeRatioFunction = Easing.LINEAR;
 
     private long durationMillis;
     private long startTimestamp;
@@ -48,7 +45,7 @@ public class ShakeData {
 
         long elapsedTime = (now - startTimestamp);
         float t = (float) Math.min((double) elapsedTime / durationMillis, 1.0);
-        float easedT = 1 - (float) this.timeRatioFunction.apply(t);
+        float easedT = 1 - t;
 
         if (t >= 1f) {
             this.isFinished = true;
@@ -59,10 +56,5 @@ public class ShakeData {
         float offsetY = amplitude.y() * (float) Math.sin(seed * Math.PI + elapsedTime/1000f * frequency.y() * 2 * Math.PI) * easedT;
 
         return new Vector2f(offsetX, offsetY);
-    }
-
-    public ShakeData withTimeEasing(Easing easing) {
-        this.timeRatioFunction = easing;
-        return this;
     }
 }

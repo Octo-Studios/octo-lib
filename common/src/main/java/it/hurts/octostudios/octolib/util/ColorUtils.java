@@ -1,5 +1,7 @@
 package it.hurts.octostudios.octolib.util;
 
+import net.minecraft.util.Mth;
+
 import java.awt.*;
 
 public class ColorUtils {
@@ -28,4 +30,23 @@ public class ColorUtils {
         return new Color(blendedRed, blendedGreen, blendedBlue, blendedAlpha);
     }
 
+    public static Color add(Color c1, Color c2) {
+        int r = clamp(c1.getRed()   + c2.getRed());
+        int g = clamp(c1.getGreen() + c2.getGreen());
+        int b = clamp(c1.getBlue()  + c2.getBlue());
+        int a = clamp(c1.getAlpha() + c2.getAlpha());
+        return new Color(r, g, b, a);
+    }
+
+    public static Color subtract(Color c1, Color c2) {
+        int r = clamp(c1.getRed()   - c2.getRed());
+        int g = clamp(c1.getGreen() - c2.getGreen());
+        int b = clamp(c1.getBlue()  - c2.getBlue());
+        int a = clamp(c1.getAlpha() - c2.getAlpha());
+        return new Color(r, g, b, a);
+    }
+
+    private static int clamp(int value) {
+        return Mth.clamp(value, 0, 255);
+    }
 }

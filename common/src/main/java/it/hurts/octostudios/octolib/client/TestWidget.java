@@ -1,11 +1,8 @@
 package it.hurts.octostudios.octolib.client;
 
-import it.hurts.octostudios.octolib.OctoLib;
-import it.hurts.octostudios.octolib.client.animator.Animator;
-import it.hurts.octostudios.octolib.client.animator.Easing;
-import it.hurts.octostudios.octolib.client.shake.ShakeData;
-import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
-import it.hurts.octostudios.octolib.client.shake.Shakeable;
+import it.hurts.octostudios.octolib.client.animation.EaseType;
+import it.hurts.octostudios.octolib.client.animation.TransitionType;
+import it.hurts.octostudios.octolib.client.animation.Tween;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -13,16 +10,16 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
 public class TestWidget extends AbstractWidget {
-    private double cX;
-    private double cY;
-    public Easing easing;
-    public Animator animator;
-    private Animator hoverAnimator;
+    public double cX;
+    public double cY;
+    public TransitionType transitionType;
+    public EaseType easeType;
+    public Tween tween;
 
-    public TestWidget(int x, int y, Easing easing) {
-        super(x, y, 8, 8, Component.literal(easing.name()));
-        this.easing = easing;
-        this.hoverAnimator = new Animator(Easing.EASE_IN_OUT_CUBIC, 0, -3, 0.25, this::setCurrentY);
+    public TestWidget(int x, int y, TransitionType transitionType, EaseType easeType) {
+        super(x, y, 8, 8, Component.literal(easeType.name()+"_"+transitionType.name()));
+        this.transitionType = transitionType;
+        this.easeType = easeType;
     }
 
     @Override
@@ -57,11 +54,6 @@ public class TestWidget extends AbstractWidget {
     @Override
     public boolean isHovered() {
         boolean hovered = super.isHovered();
-
-        if (hovered && !this.hoverAnimator.isRunning()) {
-            //this.hoverAnimator.start();
-        }
-
         return hovered;
     }
 
@@ -69,26 +61,36 @@ public class TestWidget extends AbstractWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (animator != null) {
-            this.setCurrentX(0);
-            this.setCurrentY(0);
-            animator.stop();
+//        if (animator != null) {
+//            this.setCurrentX(0);
+//            this.setCurrentY(0);
+//            animator.stop();
+//        }
+
+//        this.animator = new OldAnimator(easing, 0, 100, 0.75, this::setCurrentX, () -> OctoLib.LOGGER.info("test callback"))
+//                .sleep(0.25)
+//                .then(new OldAnimator(easing, 0, 20, 0.75, this::setCurrentY))
+//                .sleep(0.25)
+//                .then(new OldAnimator(easing, 100, 0, 0.75, this::setCurrentX))
+//                .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
+//                .start();
+//
+//        ShakeSystem.startShake((Shakeable) this,
+//                new ShakeData(0.25f, 1f, 5)
+//                        .withTimeEasing(this.easing)
+//        );
+//
+        if (tween != null) {
+            tween.kill();
         }
 
-        this.animator = new Animator(easing, 0, 100, 0.75, this::setCurrentX, () -> OctoLib.LOGGER.info("test callback"))
-                .sleep(0.25)
-                .then(new Animator(easing, 0, 20, 0.75, this::setCurrentY))
-                .sleep(0.25)
-                .then(new Animator(easing, 100, 0, 0.75, this::setCurrentX))
-                .sleep(0.25)
-                .then(new Animator(easing, 20, 0, 0.75, this::setCurrentY))
-                .callback(() -> OctoLib.LOGGER.info("This callback was sent by the {} widget!", this.easing.name()))
-                .start();
+        tween = Tween.create().setTransitionType(transitionType).setEase(easeType).setLoops(-1);
+        //tween.tweenProperty(this, "cX", 100, 1);
+        tween.tweenProperty(this, "cY", 20, 0.5);
+        tween.tweenProperty(this, "cY", 0, 0.5);
+//        tween.tweenProperty(this, "cX", 0, 1);
+//        tween.tweenProperty(this, "cY", 0, 0.5);
 
-        ShakeSystem.startShake((Shakeable) this,
-                new ShakeData(0.25f, 1f, 5)
-                        .withTimeEasing(this.easing)
-        );
 
         super.onClick(mouseX, mouseY);
     }

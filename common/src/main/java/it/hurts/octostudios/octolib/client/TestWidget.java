@@ -11,16 +11,20 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.awt.Color;
 
 public class TestWidget extends AbstractWidget {
     public Vector2f position = new Vector2f();
-    public Color color = Color.WHITE;
+    public Vector3f color = new Vector3f(1f,1f,1f);
 
     public TransitionType transitionType;
     public EaseType easeType;
     public Tween tween;
+
+    public Tween hoverTween;
+    private boolean hasHovered = false;
 
     public TestWidget(int x, int y, TransitionType transitionType, EaseType easeType) {
         super(x, y, 8, 8, Component.literal(easeType.name() + "_" + transitionType.name()));
@@ -31,9 +35,11 @@ public class TestWidget extends AbstractWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float partialTick) {
         float actualPartialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        Color actualColor = new Color(color.x, color.y, color.z, 1f);
+
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(position.x + this.getX() + test, position.y + this.getY(), 0);
-        guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), color.getRGB());
+        guiGraphics.pose().translate(position.x + this.getX(), position.y + this.getY(), 0);
+        guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), actualColor.getRGB());
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
@@ -52,10 +58,27 @@ public class TestWidget extends AbstractWidget {
     @Override
     public boolean isHovered() {
         boolean hovered = super.isHovered();
+
+        if (hovered && !hasHovered) {
+            hasHovered = true;
+            if (hoverTween != null) {
+                hoverTween.kill();
+            }
+
+            hoverTween = Tween.create().setTransitionType(TransitionType.QUAD).setEase(EaseType.EASE_IN_OUT);
+            hoverTween.tweenProperty(this, "color", new Vector3f(0f, 1f, 1f), 0.15);
+        } else if (!hovered && hasHovered) {
+            hasHovered = false;
+            if (hoverTween != null) {
+                hoverTween.kill();
+            }
+
+            hoverTween = Tween.create().setTransitionType(TransitionType.QUAD).setEase(EaseType.EASE_IN_OUT);
+            hoverTween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.15);
+        }
+
         return hovered;
     }
-
-    private double test;
 
     @Override
     public void onClick(double mouseX, double mouseY) {
@@ -75,10 +98,10 @@ public class TestWidget extends AbstractWidget {
 //                .from(Color.GREEN)
 //                .setTransitionType(TransitionType.LINEAR);
 
-        tween.tweenProperty(this, "color", Color.WHITE, 0.5).from(Color.GREEN);
+        tween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.5).from(new Vector3f(0f, 1f, 0f));
         tween.parallel().tweenProperty(this, "position", new Vector2f(10, 10), 0.5);
         tween.tweenInterval(0.5);
-        tween.tweenProperty(this, "color", Color.WHITE, 0.5).from(Color.RED);
+        tween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.5).from(new Vector3f(1f, 0f, 0f));
         tween.parallel().tweenProperty(this, "position", new Vector2f(0, 0), 0.5);
         tween.tweenInterval(0.5);
 

@@ -28,6 +28,7 @@ public class Tween {
     @Getter
     boolean ignoreTimeScale = false;
 
+    @Getter
     boolean started = false;
     @Getter
     boolean running = true;
@@ -41,6 +42,7 @@ public class Tween {
         if (tweeners.isEmpty()) {
             dead = true;
             OctoLib.LOGGER.warn("Tween without commands, aborting.");
+            return;
         }
 
         for (Tweener tweener : tweeners.get(currentStep)) {

@@ -19,10 +19,10 @@ public class ColorUtils {
         int bBlue = b.getBlue();
         int bAlpha = b.getAlpha();
 
-        int blendedRed = (int) ((1 - t) * aRed + t * bRed);
-        int blendedGreen = (int) ((1 - t) * aGreen + t * bGreen);
-        int blendedBlue = (int) ((1 - t) * aBlue + t * bBlue);
-        int blendedAlpha = (int) ((1 - t) * aAlpha + t * bAlpha);
+        int blendedRed = Mth.lerpInt((float) t, aRed, bRed);
+        int blendedGreen = Mth.lerpInt((float) t, aGreen, bGreen);
+        int blendedBlue = Mth.lerpInt((float) t, aBlue, bBlue);
+        int blendedAlpha = Mth.lerpInt((float) t, aAlpha, bAlpha);
 
         return new Color(blendedRed, blendedGreen, blendedBlue, blendedAlpha);
     }

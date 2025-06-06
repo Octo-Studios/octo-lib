@@ -1,6 +1,8 @@
 package it.hurts.octostudios.octolib.client.animation;
 
 import it.hurts.octostudios.octolib.OctoLib;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
 import lombok.Getter;
 
@@ -56,7 +58,7 @@ public class Tween {
     }
 
     protected void append(Tweener tweener) {
-        tweener.tween = this;
+        tweener.setTween(this);
 
         if (parallelEnabled) {
             currentStep = Math.max(currentStep, 0);
@@ -230,9 +232,20 @@ public class Tween {
         return AnimationUtils.lerp(initialValue, added, runEquation(transitionType, easeType, time, 0.0, 1.0, duration));
     }
 
-    public PropertyTweener tweenProperty(Object target, String property, Object to, double duration) {
-        PropertyTweener tweener = new PropertyTweener(target, property, to, duration);
-        tweener.setTween(this);
+    public PropertyTweener tweenProperty(Object target, String property, Object to, double durationInSeconds) {
+        PropertyTweener tweener = new PropertyTweener(target, property, to, durationInSeconds);
+        this.append(tweener);
+        return tweener;
+    }
+    
+    public IntervalTweener tweenInterval(double durationInSeconds) {
+        IntervalTweener tweener = new IntervalTweener(durationInSeconds);
+        this.append(tweener);
+        return tweener;
+    }
+
+    public RunnableTweener tweenRunnable(Runnable runnable) {
+        RunnableTweener tweener = new RunnableTweener(runnable);
         this.append(tweener);
         return tweener;
     }

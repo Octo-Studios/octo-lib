@@ -1,16 +1,20 @@
 package it.hurts.octostudios.octolib.client;
 
-import it.hurts.octostudios.octolib.client.animation.EaseType;
-import it.hurts.octostudios.octolib.client.animation.TransitionType;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.joml.Vector2d;
 
 public class TestScreen extends Screen {
     private int ticker;
     private boolean down;
+
+    public Vector2d squeeze = new Vector2d(1,1);
 
     public TestScreen() {
         super(Component.empty());
@@ -40,6 +44,11 @@ public class TestScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(this.width/2f, this.height/2f, 0);
+        guiGraphics.pose().scale((float) this.squeeze.x, (float) this.squeeze.y, 1);
+        guiGraphics.pose().translate(-this.width/2f, -this.height/2f, 0);
+
         super.render(guiGraphics, i, j, f);
         guiGraphics.drawString(
                 Minecraft.getInstance().font,
@@ -51,6 +60,8 @@ public class TestScreen extends Screen {
                 String.valueOf(f),
                 this.width - Minecraft.getInstance().font.width(String.valueOf(f)) - 4,
                 this.height - 10, 0xffffffff, true);
+
+        guiGraphics.pose().popPose();
     }
 
     @Override
@@ -62,6 +73,14 @@ public class TestScreen extends Screen {
                     widget.onClick(mouseX, mouseY);
                 }
             }
+        } else if (!result && button == 0) {
+            //this.squeeze = new Vector2d(1,1);
+
+            var tween = Tween.create().setTransitionType(TransitionType.SINE).setParallel(true);
+            tween.tweenProperty(this.squeeze, "y", 0.9, 0.15).setEaseType(EaseType.EASE_OUT);
+            tween.tweenProperty(this.squeeze, "x", 0.9, 0.15).setEaseType(EaseType.EASE_IN);
+            tween.tweenProperty(this.squeeze, "y", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_OUT);
+            tween.tweenProperty(this.squeeze, "x", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_IN);
         }
         return result;
     }

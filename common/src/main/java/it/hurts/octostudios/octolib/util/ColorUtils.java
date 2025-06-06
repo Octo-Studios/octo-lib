@@ -6,11 +6,8 @@ import java.awt.*;
 
 public class ColorUtils {
 
-    public static Color blend(Color a, Color b, double percentA) {
-
-        if (percentA < 0 || percentA > 1) {
-            throw new IllegalArgumentException("Percent must be between 0 amd 1.");
-        }
+    public static Color blend(Color a, Color b, double t) {
+        t = Mth.clamp(t, 0, 1);
 
         int aRed = a.getRed();
         int aGreen = a.getGreen();
@@ -22,10 +19,10 @@ public class ColorUtils {
         int bBlue = b.getBlue();
         int bAlpha = b.getAlpha();
 
-        int blendedRed = (int) ((1 - percentA) * aRed + percentA * bRed);
-        int blendedGreen = (int) ((1 - percentA) * aGreen + percentA * bGreen);
-        int blendedBlue = (int) ((1 - percentA) * aBlue + percentA * bBlue);
-        int blendedAlpha = (int) ((1 - percentA) * aAlpha + percentA * bAlpha);
+        int blendedRed = (int) ((1 - t) * aRed + t * bRed);
+        int blendedGreen = (int) ((1 - t) * aGreen + t * bGreen);
+        int blendedBlue = (int) ((1 - t) * aBlue + t * bBlue);
+        int blendedAlpha = (int) ((1 - t) * aAlpha + t * bAlpha);
 
         return new Color(blendedRed, blendedGreen, blendedBlue, blendedAlpha);
     }

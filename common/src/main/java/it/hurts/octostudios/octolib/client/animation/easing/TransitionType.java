@@ -1,4 +1,4 @@
-package it.hurts.octostudios.octolib.client.animation;
+package it.hurts.octostudios.octolib.client.animation.easing;
 
 import java.util.function.Function;
 

@@ -1,18 +1,20 @@
 package it.hurts.octostudios.octolib.client.animation;
 
 import it.hurts.octostudios.octolib.OctoLib;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
 
 import java.lang.reflect.Field;
 
 public class PropertyTweener extends Tweener {
-    private Object target;
-    private String field;
+    private final Object target;
+    private final String field;
     private Object initialValue;
     private Object baseFinalValue;
     private Object finalValue;
     private Object deltaValue;
-    private double duration;
+    private final double duration;
     private TransitionType transitionType;
     private EaseType easeType;
     private Runnable customMethod;
@@ -21,7 +23,7 @@ public class PropertyTweener extends Tweener {
     boolean doContinueDelayed = false;
     boolean relative = false;
 
-    protected PropertyTweener(Object target, String field, Object to, double duration) {
+    PropertyTweener(Object target, String field, Object to, double duration) {
         this.target = target;
         this.field = field;
         this.initialValue = getField(target, field);

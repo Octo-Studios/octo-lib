@@ -1,10 +1,12 @@
 package it.hurts.octostudios.octolib.util;
 
-import it.hurts.octostudios.octolib.client.animation.Interpolator;
+import it.hurts.octostudios.octolib.client.animation.easing.Interpolator;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -24,6 +26,15 @@ public class AnimationUtils {
     public static final Interpolator<Vec3> VEC3 = register(Vec3.class, Vec3::lerp);
     public static final Interpolator<Vector2d> VECTOR2D = register(Vector2d.class, Vector2d::lerp);
     public static final Interpolator<Vector3d> VECTOR3D = register(Vector3d.class, Vector3d::lerp);
+    public static final Interpolator<Vector2f> VECTOR2F = register(Vector2f.class, (from, to, t) -> new Vector2f(
+            FLOAT.lerp(from.x, to.x, t),
+            FLOAT.lerp(from.y, to.y, t)
+    ));
+    public static final Interpolator<Vector3f> VECTOR3F = register(Vector3f.class, (from, to, t) -> new Vector3f(
+            FLOAT.lerp(from.x, to.x, t),
+            FLOAT.lerp(from.y, to.y, t),
+            FLOAT.lerp(from.z, to.z, t)
+    ));
 
     private static final Map<Class<?>, BinaryOperator<?>> ADD_REGISTRY = new HashMap<>();
     private static final Map<Class<?>, BinaryOperator<?>> SUBTRACT_REGISTRY = new HashMap<>();
@@ -49,6 +60,12 @@ public class AnimationUtils {
 
         registerAdd(Vector3d.class, (a, b) -> new Vector3d(a.x + b.x, a.y + b.y, a.z + b.z));
         registerSubtract(Vector3d.class, (a, b) -> new Vector3d(a.x - b.x, a.y - b.y, a.z - b.z));
+
+        registerAdd(Vector2f.class, (a, b) -> new Vector2f(a.x + b.x, a.y + b.y));
+        registerSubtract(Vector2f.class, (a, b) -> new Vector2f(a.x - b.x, a.y - b.y));
+
+        registerAdd(Vector3f.class, (a, b) -> new Vector3f(a.x + b.x, a.y + b.y, a.z + b.z));
+        registerSubtract(Vector3f.class, (a, b) -> new Vector3f(a.x - b.x, a.y - b.y, a.z - b.z));
     }
 
     @SuppressWarnings("unchecked")

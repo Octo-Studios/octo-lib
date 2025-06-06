@@ -166,6 +166,7 @@ public class Tween {
         if (!started) {
             if (tweeners.isEmpty()) {
                 OctoLib.LOGGER.warn("Tween started with no tweeners :(");
+                return false;
             }
 
             currentStep = 0;

@@ -156,6 +156,7 @@ public class PropertyTweener extends Tweener {
                 }
 
                 currentField = object.getClass().getDeclaredField(s);
+                currentField.setAccessible(true);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException("Attempted to tween a nonexistent field: " + s);
             } catch (IllegalAccessException e) {

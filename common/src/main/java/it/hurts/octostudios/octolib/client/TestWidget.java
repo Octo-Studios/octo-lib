@@ -16,8 +16,8 @@ import org.joml.Vector3f;
 import java.awt.Color;
 
 public class TestWidget extends AbstractWidget {
-    public Vector2f position = new Vector2f();
-    public Vector3f color = new Vector3f(1f,1f,1f);
+    private Vector2f position = new Vector2f();
+    private Vector3f color = new Vector3f(1f,1f,1f);
 
     public TransitionType transitionType;
     public EaseType easeType;

@@ -77,10 +77,10 @@ public class TestScreen extends Screen {
             //this.squeeze = new Vector2d(1,1);
 
             var tween = Tween.create().setTransitionType(TransitionType.SINE).setParallel(true);
-            tween.tweenProperty(this.squeeze, "y", 0.9, 0.15).setEaseType(EaseType.EASE_OUT);
-            tween.tweenProperty(this.squeeze, "x", 0.9, 0.15).setEaseType(EaseType.EASE_IN);
-            tween.tweenProperty(this.squeeze, "y", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_OUT);
-            tween.tweenProperty(this.squeeze, "x", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_IN);
+            tween.tweenProperty(this, "squeeze.y", 0.9, 0.15).setEaseType(EaseType.EASE_OUT);
+            tween.tweenProperty(this, "squeeze.x", 0.9, 0.15).setEaseType(EaseType.EASE_IN);
+            tween.tweenProperty(this, "squeeze.y", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_OUT);
+            tween.tweenProperty(this, "squeeze.x", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_IN);
         }
         return result;
     }

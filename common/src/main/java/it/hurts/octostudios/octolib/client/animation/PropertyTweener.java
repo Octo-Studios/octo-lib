@@ -4,12 +4,14 @@ import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
+import lombok.SneakyThrows;
+import oshi.util.tuples.Pair;
 
 import java.lang.reflect.Field;
 
 public class PropertyTweener extends Tweener {
     private final Object target;
-    private final String field;
+    private final String[] field;
     private Object initialValue;
     private Object baseFinalValue;
     private Object finalValue;
@@ -25,8 +27,8 @@ public class PropertyTweener extends Tweener {
 
     PropertyTweener(Object target, String field, Object to, double duration) {
         this.target = target;
-        this.field = field;
-        this.initialValue = getField(target, field);
+        this.field = field.split("\\.");
+        this.initialValue = getField(target, this.field);
         this.baseFinalValue = to;
         this.finalValue = baseFinalValue;
         this.duration = duration;
@@ -132,27 +134,35 @@ public class PropertyTweener extends Tweener {
         return this;
     }
 
-    private static Object getField(Object object, String field) {
-        String fieldPath = object.getClass().getName() + "." + field;
-        try {
-            Field objField = object.getClass().getDeclaredField(field);
-            return objField.get(object);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("Attempted to tween a nonexistent field: " + fieldPath);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Illegal Access: " + fieldPath);
-        }
+    @SneakyThrows
+    private static Object getField(Object object, String[] field) {
+        Pair<Object, Field> finalField = getFinalField(object, field);
+        return finalField.getB().get(finalField.getA());
     }
 
-    private static void setField(Object object, String field, Object value) {
-        String fieldPath = object.getClass().getName() + "." + field;
-        try {
-            Field objField = object.getClass().getDeclaredField(field);
-            objField.set(object, value);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("Attempted to tween a nonexistent field: " + fieldPath);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Illegal Access: " + fieldPath);
+    @SneakyThrows
+    private static void setField(Object object, String[] field, Object value) {
+        Pair<Object, Field> finalField = getFinalField(object, field);
+        finalField.getB().set(finalField.getA(), value);
+    }
+
+    private static Pair<Object, Field> getFinalField(Object object, String[] field) {
+        Field currentField = null;
+
+        for (String s : field) {
+            try {
+                if (currentField != null) {
+                    object = currentField.get(object);
+                }
+
+                currentField = object.getClass().getDeclaredField(s);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException("Attempted to tween a nonexistent field: " + s);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+        return new Pair<>(object, currentField);
     }
 }

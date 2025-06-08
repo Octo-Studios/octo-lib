@@ -3,6 +3,7 @@ package it.hurts.octostudios.octolib.client;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.animation.Tween;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -16,6 +17,7 @@ import java.awt.Color;
 public class TestWidget extends AbstractWidget {
     private Vector2f position = new Vector2f();
     private Vector2f scale = new Vector2f(1, 1);
+    @Setter
     private Vector3f color = new Vector3f(1f,1f,1f);
 
     public TransitionType transitionType;
@@ -102,10 +104,10 @@ public class TestWidget extends AbstractWidget {
 //                .from(Color.GREEN)
 //                .setTransitionType(TransitionType.LINEAR);
 
-        tween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.5).from(new Vector3f(0f, 1f, 0f)).setTransitionType(TransitionType.LINEAR);
+        tween.tweenMethod(color -> this.setColor((Vector3f) color), new Vector3f(0f, 1f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
         tween.parallel().tweenProperty(this, "position", new Vector2f(10, 10), 0.5);
         tween.tweenInterval(0.5);
-        tween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.5).from(new Vector3f(1f, 0f, 0f)).setTransitionType(TransitionType.LINEAR);
+        tween.tweenMethod(color -> this.setColor((Vector3f) color), new Vector3f(1f, 0f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
         tween.parallel().tweenProperty(this, "position", new Vector2f(0, 0), 0.5);
         tween.tweenInterval(0.5);
 

@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Tween {
     private final List<List<Tweener>> tweeners = new ArrayList<>();
@@ -249,6 +250,12 @@ public class Tween {
 
     public RunnableTweener tweenRunnable(Runnable runnable) {
         RunnableTweener tweener = new RunnableTweener(runnable);
+        this.append(tweener);
+        return tweener;
+    }
+
+    public MethodTweener tweenMethod(Consumer<Object> method, Object from, Object to, double duration) {
+        MethodTweener tweener = new MethodTweener(method, from, to, duration);
         this.append(tweener);
         return tweener;
     }

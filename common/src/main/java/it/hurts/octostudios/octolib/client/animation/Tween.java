@@ -236,6 +236,11 @@ public class Tween {
         return AnimationUtils.lerp(initialValue, added, runEquation(transitionType, easeType, time, 0.0, 1.0, duration));
     }
 
+    /**
+     *
+     * @deprecated not actually deprecated, but probably don't use... uses reflection and has its own limitations
+     */
+    @Deprecated
     public <T> PropertyTweener<T> tweenProperty(Object target, String property, T to, double durationInSeconds) {
         PropertyTweener<T> tweener = new PropertyTweener<>(target, property, to, durationInSeconds);
         this.append(tweener);

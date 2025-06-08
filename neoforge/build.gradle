@@ -28,12 +28,24 @@ repositories {
         name = 'NeoForged'
         url = 'https://maven.neoforged.net/releases'
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+
 }
 
 dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
 
     modImplementation "dev.architectury:architectury-neoforge:$rootProject.architectury_api_version"
+    implementation "curse.maven:spark-361579:6225208"
 
     include 'org.yaml:snakeyaml:2.2'
     forgeRuntimeLibrary 'org.yaml:snakeyaml:2.2'

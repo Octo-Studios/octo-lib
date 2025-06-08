@@ -135,19 +135,20 @@ public class PropertyTweener extends Tweener {
     }
 
     @SneakyThrows
-    private static Object getField(Object object, String[] field) {
+    public static Object getField(Object object, String[] field) {
         Pair<Object, Field> finalField = getFinalField(object, field);
         return finalField.getB().get(finalField.getA());
     }
 
     @SneakyThrows
-    private static void setField(Object object, String[] field, Object value) {
+    public static void setField(Object object, String[] field, Object value) {
         Pair<Object, Field> finalField = getFinalField(object, field);
         finalField.getB().set(finalField.getA(), value);
     }
 
     private static Pair<Object, Field> getFinalField(Object object, String[] field) {
         Field currentField = null;
+        boolean isStatic = object instanceof Class<?>;
 
         for (String s : field) {
             try {
@@ -155,6 +156,11 @@ public class PropertyTweener extends Tweener {
                     object = currentField.get(object);
                 }
 
+                if (isStatic) {
+                    currentField = ((Class<?>) object).getDeclaredField(s);
+                    currentField.setAccessible(true);
+                    continue;
+                }
                 currentField = object.getClass().getDeclaredField(s);
                 currentField.setAccessible(true);
             } catch (NoSuchFieldException e) {

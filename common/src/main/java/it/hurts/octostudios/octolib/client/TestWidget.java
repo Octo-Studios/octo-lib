@@ -1,7 +1,5 @@
 package it.hurts.octostudios.octolib.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.animation.Tween;
@@ -17,6 +15,7 @@ import java.awt.Color;
 
 public class TestWidget extends AbstractWidget {
     private Vector2f position = new Vector2f();
+    private Vector2f scale = new Vector2f(1, 1);
     private Vector3f color = new Vector3f(1f,1f,1f);
 
     public TransitionType transitionType;
@@ -39,6 +38,11 @@ public class TestWidget extends AbstractWidget {
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(position.x + this.getX(), position.y + this.getY(), 0);
+
+        guiGraphics.pose().translate(this.width/2f, this.height/2f, 0);
+        guiGraphics.pose().scale(scale.x, scale.y, 1);
+        guiGraphics.pose().translate(-this.width/2f, -this.height/2f, 0);
+
         guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), actualColor.getRGB());
         guiGraphics.pose().popPose();
 
@@ -65,16 +69,16 @@ public class TestWidget extends AbstractWidget {
                 hoverTween.kill();
             }
 
-            hoverTween = Tween.create().setTransitionType(TransitionType.QUAD).setEase(EaseType.EASE_IN_OUT);
-            hoverTween.tweenProperty(this, "color", new Vector3f(0f, 1f, 1f), 0.15);
+            hoverTween = Tween.create().setTransitionType(TransitionType.QUART).setEase(EaseType.EASE_OUT);
+            hoverTween.tweenProperty(this, "scale", new Vector2f(1.25f, 1.25f), 0.2);
         } else if (!hovered && hasHovered) {
             hasHovered = false;
             if (hoverTween != null) {
                 hoverTween.kill();
             }
 
-            hoverTween = Tween.create().setTransitionType(TransitionType.QUAD).setEase(EaseType.EASE_IN_OUT);
-            hoverTween.tweenProperty(this, "color", new Vector3f(1f, 1f, 1f), 0.15);
+            hoverTween = Tween.create().setTransitionType(TransitionType.QUART).setEase(EaseType.EASE_OUT);
+            hoverTween.tweenProperty(this, "scale", new Vector2f(1f, 1f), 0.2);
         }
 
         return hovered;

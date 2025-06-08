@@ -54,12 +54,10 @@ public class OctoRenderManager {
         }
     }
 
-    public static EventResult clientRenderTick(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, DeltaTracker deltaTracker) {
+    public static void clientRenderTick() {
         ShakeSystem.updateAll();
         double dt = Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
         TweenSystem.updateAll(dt);
-
-        return EventResult.pass();
     }
 
     public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> B getOrCreateBuffer(P provider) {

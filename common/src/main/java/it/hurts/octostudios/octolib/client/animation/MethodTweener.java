@@ -2,20 +2,19 @@ package it.hurts.octostudios.octolib.client.animation;
 
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
-import it.hurts.octostudios.octolib.modules.config.cfgbuilder.ObjectEntry;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
 
 import java.util.function.Consumer;
 
-public class MethodTweener extends Tweener {
+public class MethodTweener<T> extends Tweener {
     private double duration;
     private double delay;
     private TransitionType transitionType;
     private EaseType easeType;
-    private Object initialValue;
-    private Object deltaValue;
-    private Object finalValue;
-    private Consumer<Object> method;
+    private T initialValue;
+    private T deltaValue;
+    private T finalValue;
+    private Consumer<T> method;
 
     @Override
     public boolean step(double dt) {
@@ -34,7 +33,7 @@ public class MethodTweener extends Tweener {
             return true;
         }
 
-        Object currentValue;
+        T currentValue;
         double time = Math.min(elapsedTime - delay, duration);
         if (time < duration) {
             currentValue = tween.interpolateVariable(initialValue, deltaValue, time, duration, transitionType, easeType);
@@ -52,7 +51,7 @@ public class MethodTweener extends Tweener {
         return false;
     }
 
-    public MethodTweener(Consumer<Object> method, Object from, Object to, double duration) {
+    public MethodTweener(Consumer<T> method, T from, T to, double duration) {
         this.method = method;
         this.initialValue = from;
         this.deltaValue = AnimationUtils.subtract(to, from);
@@ -60,17 +59,17 @@ public class MethodTweener extends Tweener {
         this.duration = duration;
     }
 
-    public MethodTweener setTransitionType(TransitionType transitionType) {
+    public MethodTweener<T> setTransitionType(TransitionType transitionType) {
         this.transitionType = transitionType;
         return this;
     }
 
-    public MethodTweener setEaseType(EaseType easeType) {
+    public MethodTweener<T> setEaseType(EaseType easeType) {
         this.easeType = easeType;
         return this;
     }
 
-    public MethodTweener setDelay(double delay) {
+    public MethodTweener<T> setDelay(double delay) {
         this.delay = delay;
         return this;
     }

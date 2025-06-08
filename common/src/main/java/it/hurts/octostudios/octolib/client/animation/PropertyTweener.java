@@ -9,13 +9,13 @@ import oshi.util.tuples.Pair;
 
 import java.lang.reflect.Field;
 
-public class PropertyTweener extends Tweener {
+public class PropertyTweener<T> extends Tweener {
     private final Object target;
     private final String[] field;
-    private Object initialValue;
-    private Object baseFinalValue;
-    private Object finalValue;
-    private Object deltaValue;
+    private T initialValue;
+    private T baseFinalValue;
+    private T finalValue;
+    private T deltaValue;
     private final double duration;
     private TransitionType transitionType;
     private EaseType easeType;
@@ -25,7 +25,7 @@ public class PropertyTweener extends Tweener {
     boolean doContinueDelayed = false;
     boolean relative = false;
 
-    PropertyTweener(Object target, String field, Object to, double duration) {
+    PropertyTweener(Object target, String field, T to, double duration) {
         this.target = target;
         this.field = field.split("\\.");
         this.initialValue = getField(target, this.field);
@@ -103,50 +103,50 @@ public class PropertyTweener extends Tweener {
         }
     }
 
-    public PropertyTweener asRelative() {
+    public PropertyTweener<T> asRelative() {
         this.relative = true;
         return this;
     }
 
-    public PropertyTweener setTransitionType(TransitionType transitionType) {
+    public PropertyTweener<T> setTransitionType(TransitionType transitionType) {
         this.transitionType = transitionType;
         return this;
     }
 
-    public PropertyTweener setEaseType(EaseType easeType) {
+    public PropertyTweener<T> setEaseType(EaseType easeType) {
         this.easeType = easeType;
         return this;
     }
 
-    public PropertyTweener setDelay(double delay) {
+    public PropertyTweener<T> setDelay(double delay) {
         this.delay = delay;
         return this;
     }
 
-    public PropertyTweener fromCurrent() {
+    public PropertyTweener<T> fromCurrent() {
         this.doContinue = false;
         return this;
     }
 
-    public PropertyTweener from(Object value) {
+    public PropertyTweener<T> from(T value) {
         initialValue = value;
         doContinue = false;
         return this;
     }
 
     @SneakyThrows
-    public static Object getField(Object object, String[] field) {
+    public T getField(Object object, String[] field) {
         Pair<Object, Field> finalField = getFinalField(object, field);
-        return finalField.getB().get(finalField.getA());
+        return (T) finalField.getB().get(finalField.getA());
     }
 
     @SneakyThrows
-    public static void setField(Object object, String[] field, Object value) {
+    public void setField(Object object, String[] field, T value) {
         Pair<Object, Field> finalField = getFinalField(object, field);
         finalField.getB().set(finalField.getA(), value);
     }
 
-    private static Pair<Object, Field> getFinalField(Object object, String[] field) {
+    private Pair<Object, Field> getFinalField(Object object, String[] field) {
         Field currentField = null;
         boolean isStatic = object instanceof Class<?>;
 

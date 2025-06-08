@@ -236,8 +236,8 @@ public class Tween {
         return AnimationUtils.lerp(initialValue, added, runEquation(transitionType, easeType, time, 0.0, 1.0, duration));
     }
 
-    public PropertyTweener tweenProperty(Object target, String property, Object to, double durationInSeconds) {
-        PropertyTweener tweener = new PropertyTweener(target, property, to, durationInSeconds);
+    public <T> PropertyTweener<T> tweenProperty(Object target, String property, T to, double durationInSeconds) {
+        PropertyTweener<T> tweener = new PropertyTweener<>(target, property, to, durationInSeconds);
         this.append(tweener);
         return tweener;
     }
@@ -254,8 +254,8 @@ public class Tween {
         return tweener;
     }
 
-    public MethodTweener tweenMethod(Consumer<Object> method, Object from, Object to, double duration) {
-        MethodTweener tweener = new MethodTweener(method, from, to, duration);
+    public <T> MethodTweener<T> tweenMethod(Consumer<T> method, T from, T to, double duration) {
+        MethodTweener<T> tweener = new MethodTweener<>(method, from, to, duration);
         this.append(tweener);
         return tweener;
     }

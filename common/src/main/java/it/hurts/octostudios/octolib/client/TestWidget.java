@@ -104,10 +104,10 @@ public class TestWidget extends AbstractWidget {
 //                .from(Color.GREEN)
 //                .setTransitionType(TransitionType.LINEAR);
 
-        tween.tweenMethod(color -> this.setColor((Vector3f) color), new Vector3f(0f, 1f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
+        tween.tweenMethod(this::setColor, new Vector3f(0f, 1f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
         tween.parallel().tweenProperty(this, "position", new Vector2f(10, 10), 0.5);
         tween.tweenInterval(0.5);
-        tween.tweenMethod(color -> this.setColor((Vector3f) color), new Vector3f(1f, 0f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
+        tween.tweenMethod(this::setColor, new Vector3f(1f, 0f, 0f), new Vector3f(1f, 1f, 1f), 0.5).setTransitionType(TransitionType.LINEAR);
         tween.parallel().tweenProperty(this, "position", new Vector2f(0, 0), 0.5);
         tween.tweenInterval(0.5);
 

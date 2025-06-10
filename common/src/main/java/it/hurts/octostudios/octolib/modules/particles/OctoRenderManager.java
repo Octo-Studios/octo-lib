@@ -2,6 +2,7 @@ package it.hurts.octostudios.octolib.modules.particles;
 
 import dev.architectury.event.EventResult;
 import it.hurts.octostudios.octolib.client.animation.TweenSystem;
+import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
 import it.hurts.octostudios.octolib.modules.config.ConfigManager;
 import lombok.Getter;
@@ -58,6 +59,7 @@ public class OctoRenderManager {
         ShakeSystem.updateAll();
         double dt = Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
         TweenSystem.updateAll(dt);
+        ParticleSystem.updateAll(dt);
     }
 
     public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> B getOrCreateBuffer(P provider) {

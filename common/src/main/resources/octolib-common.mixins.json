@@ -6,6 +6,7 @@
   "client": [
     "AbstractWidgetMixin",
     "GameRendererMixin",
+    "GuiMixin",
     "ScreenMixin"
   ],
   "mixins": [

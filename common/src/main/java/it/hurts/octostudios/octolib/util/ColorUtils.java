@@ -2,7 +2,7 @@ package it.hurts.octostudios.octolib.util;
 
 import net.minecraft.util.Mth;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class ColorUtils {
 
@@ -27,20 +27,25 @@ public class ColorUtils {
         return new Color(blendedRed, blendedGreen, blendedBlue, blendedAlpha);
     }
 
-    public static Color add(Color c1, Color c2) {
-        int r = clamp(c1.getRed()   + c2.getRed());
-        int g = clamp(c1.getGreen() + c2.getGreen());
-        int b = clamp(c1.getBlue()  + c2.getBlue());
-        int a = clamp(c1.getAlpha() + c2.getAlpha());
-        return new Color(r, g, b, a);
-    }
+    public static int lerpInt(int colorStart, int colorEnd, float t) {
+        t = Mth.clamp(t, 0, 1);
 
-    public static Color subtract(Color c1, Color c2) {
-        int r = clamp(c1.getRed()   - c2.getRed());
-        int g = clamp(c1.getGreen() - c2.getGreen());
-        int b = clamp(c1.getBlue()  - c2.getBlue());
-        int a = clamp(c1.getAlpha() - c2.getAlpha());
-        return new Color(r, g, b, a);
+        int aStart = (colorStart >> 24) & 0xFF;
+        int rStart = (colorStart >> 16) & 0xFF;
+        int gStart = (colorStart >> 8) & 0xFF;
+        int bStart = colorStart & 0xFF;
+
+        int aEnd = (colorEnd >> 24) & 0xFF;
+        int rEnd = (colorEnd >> 16) & 0xFF;
+        int gEnd = (colorEnd >> 8) & 0xFF;
+        int bEnd = colorEnd & 0xFF;
+
+        int a = (int)(aStart + t * (aEnd - aStart));
+        int r = (int)(rStart + t * (rEnd - rStart));
+        int g = (int)(gStart + t * (gEnd - gStart));
+        int b = (int)(bStart + t * (bEnd - bStart));
+
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
     private static int clamp(int value) {

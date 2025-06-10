@@ -6,9 +6,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
-import java.awt.*;
+import java.awt.Color;
 
 import static net.minecraft.client.renderer.RenderStateShard.LEQUAL_DEPTH_TEST;
 import static net.minecraft.client.renderer.RenderStateShard.LIGHTNING_TRANSPARENCY;

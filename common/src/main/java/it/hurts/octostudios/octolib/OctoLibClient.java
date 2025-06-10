@@ -4,6 +4,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
 
 public final class OctoLibClient {

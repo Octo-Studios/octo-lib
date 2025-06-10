@@ -3,6 +3,8 @@ package it.hurts.octostudios.octolib.client;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -26,7 +28,7 @@ public class TestScreen extends Screen {
         int y = 16;
         for (TransitionType transitionType : TransitionType.values()) {
             for (EaseType easeType : EaseType.values()) {
-                this.addRenderableWidget(new TestWidget(x, y, transitionType, easeType));
+                this.addRenderableWidget(new TestWidget(x, y, transitionType, easeType, this));
                 y += 30;
 
                 if (y + 30 > this.height) {
@@ -48,6 +50,10 @@ public class TestScreen extends Screen {
         guiGraphics.pose().translate(this.width/2f, this.height/2f, 0);
         guiGraphics.pose().scale((float) this.squeeze.x, (float) this.squeeze.y, 1);
         guiGraphics.pose().translate(-this.width/2f, -this.height/2f, 0);
+
+        UIParticle uiParticle = new GalacticUIParticle(20f, 2, i, j, UIParticle.Layer.SCREEN, 1f);
+        uiParticle.setScreen(this);
+        uiParticle.instantiate();
 
         super.render(guiGraphics, i, j, f);
         guiGraphics.drawString(

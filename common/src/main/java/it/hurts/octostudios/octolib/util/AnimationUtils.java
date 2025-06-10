@@ -18,7 +18,7 @@ public class AnimationUtils {
 
     public static final Interpolator<Double> DOUBLE = register(Double.class, (from, to, t) -> from + (to - from) * t);
     public static final Interpolator<Float> FLOAT = register(Float.class, (from, to, t) -> from + (to - from) * (float) t);
-    public static final Interpolator<Color> COLOR = register(Color.class, ColorUtils::blend);
+    public static final Interpolator<OctoColor> COLOR = register(OctoColor.class, OctoColor::lerp);
     public static final Interpolator<Vec2> VEC2 = register(Vec2.class, (from, to, t) -> new Vec2(
             FLOAT.lerp(from.x, to.x, t),
             FLOAT.lerp(from.y, to.y, t)
@@ -46,8 +46,8 @@ public class AnimationUtils {
         registerAdd(Float.class, Float::sum);
         registerSubtract(Float.class, (a, b) -> a - b);
 
-        registerAdd(Color.class, ColorUtils::add);
-        registerSubtract(Color.class, ColorUtils::subtract);
+        registerAdd(OctoColor.class, OctoColor::add);
+        registerSubtract(OctoColor.class, OctoColor::subtract);
 
         registerAdd(Vec2.class, (a, b) -> new Vec2(a.x + b.x, a.y + b.y));
         registerSubtract(Vec2.class, (a, b) -> new Vec2(a.x - b.x, a.y - b.y));

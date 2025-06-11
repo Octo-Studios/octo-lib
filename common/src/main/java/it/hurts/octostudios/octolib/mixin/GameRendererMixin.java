@@ -1,7 +1,6 @@
 package it.hurts.octostudios.octolib.mixin;
 
-import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
-import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;

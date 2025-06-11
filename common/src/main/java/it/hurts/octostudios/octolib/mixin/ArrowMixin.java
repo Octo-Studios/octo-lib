@@ -1,7 +1,7 @@
 package it.hurts.octostudios.octolib.mixin;
 
-import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
-import it.hurts.octostudios.octolib.modules.particles.trail.TrailProvider;
+import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.trail.TrailProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;

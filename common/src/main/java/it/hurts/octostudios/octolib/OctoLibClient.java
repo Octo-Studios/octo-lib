@@ -1,11 +1,8 @@
 package it.hurts.octostudios.octolib;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
-import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
 
 public final class OctoLibClient {
     public static void init() {

@@ -1,8 +1,8 @@
 package it.hurts.octostudios.octolib.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.hurts.octostudios.octolib.modules.particles.OctoRenderManager;
-import it.hurts.octostudios.octolib.modules.particles.RenderProvider;
+import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.RenderProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.world.phys.Vec3;

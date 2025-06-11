@@ -2,9 +2,9 @@ package it.hurts.octostudios.octolib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import it.hurts.octostudios.octolib.modules.commands.OctolibCommand;
-import it.hurts.octostudios.octolib.modules.config.ConfigManager;
-import it.hurts.octostudios.octolib.modules.network.OctolibNetwork;
+import it.hurts.octostudios.octolib.module.command.OctolibCommand;
+import it.hurts.octostudios.octolib.module.config.ConfigManager;
+import it.hurts.octostudios.octolib.module.network.OctolibNetwork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

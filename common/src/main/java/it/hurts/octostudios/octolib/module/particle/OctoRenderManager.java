@@ -4,7 +4,6 @@ import it.hurts.octostudios.octolib.client.animation.TweenSystem;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
-import it.hurts.octostudios.octolib.module.particle.trail.TrailProvider;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -28,11 +27,10 @@ public class OctoRenderManager {
 
     public static void clientTick(ClientLevel level) {
         long time = level.getGameTime();
-
-        if (time == lastTick)
-            return;
+        if (time == lastTick) return;
         lastTick = time;
 
+        // 2. process all providers as before
         var iterator = providers.iterator();
         while (iterator.hasNext()) {
             var p = iterator.next();

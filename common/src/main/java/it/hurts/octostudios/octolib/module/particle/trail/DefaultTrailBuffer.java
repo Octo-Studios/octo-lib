@@ -9,7 +9,7 @@ import java.util.Deque;
 import java.util.Iterator;
 
 @Data
-public class DefaultTrailBuffer implements TrailBuffer {
+public class DefaultTrailBuffer<T> implements TrailBuffer {
     private Deque<Vec3> points = new ArrayDeque<>();
 
     private final int maxSize;

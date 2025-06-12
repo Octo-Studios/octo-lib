@@ -19,98 +19,94 @@ import java.util.Objects;
 import static it.hurts.octostudios.octolib.util.TesselatorUtils.TRAIL_RENDER_TYPE;
 import static it.hurts.octostudios.octolib.util.VectorUtils.Y_VEC;
 
-public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer> {
+public abstract class TrailProvider implements RenderProvider<TrailProvider, TrailBuffer> {
     @Override
-    default TrailBuffer createBuffer() {
-        return new DefaultTrailBuffer(getTrailMaxLength());
+    public TrailBuffer createBuffer() {
+        return new DefaultTrailBuffer<>(getTrailMaxLength());
     }
 
     @Override
-    default boolean shouldRender(TrailBuffer buffer) {
+    public boolean shouldRender(TrailBuffer buffer) {
         return isTrailAlive() || (!disappearAfterDeath() && buffer.size() != 0);
     }
 
     @Override
-    default Vec3 getRenderPosition(float partialTick) {
+    public Vec3 getRenderPosition(float partialTick) {
         return getTrailPosition(partialTick);
     }
 
-    Vec3 getTrailPosition(float partialTick);
+    public abstract Vec3 getTrailPosition(float partialTick);
 
     @Override
     @Deprecated
-    default double getRenderDistance() {
+    public double getRenderDistance() {
         return getTrailRenderDistance();
     }
 
-    default double getTrailRenderDistance() {
+    public double getTrailRenderDistance() {
         return 64;
     }
 
     @Override
     @Deprecated
-    default int getUpdateFrequency() {
+    public int getUpdateFrequency() {
         return getTrailUpdateFrequency();
     }
 
-    int getTrailUpdateFrequency();
+    public abstract int getTrailUpdateFrequency();
 
-    boolean isTrailAlive();
+    public abstract boolean isTrailAlive();
 
-    default boolean isTrailGrowing() {
+    public boolean isTrailGrowing() {
         return true;
     }
 
-    default boolean disappearAfterDeath() {
+    public boolean disappearAfterDeath() {
         return false;
     }
 
-    int getTrailMaxLength();
+    public abstract int getTrailMaxLength();
 
-    int getTrailFadeInColor();
+    public abstract int getTrailFadeInColor();
 
-    int getTrailFadeOutColor();
+    public abstract int getTrailFadeOutColor();
 
-    double getTrailScale();
+    public abstract double getTrailScale();
 
-    default int getTrailInterpolationPoints() {
+    public int getTrailInterpolationPoints() {
         return 1;
     }
 
-    default List<Vec3> getTrailRenderPositions(List<Vec3> points, float pTicks) {
+    public List<Vec3> getTrailRenderPositions(List<Vec3> points, float pTicks) {
         return points;
     }
 
     @Override
     @Deprecated
-    default void render(float pTicks, PoseStack poseStack, MultiBufferSource bufferSourceList) {
-        renderTrail(pTicks, poseStack, bufferSourceList);
-    }
-
-    default void renderTrail(float pTicks, PoseStack poseStack, MultiBufferSource bufferSourceList) {
+    public void render(float pTicks, PoseStack poseStack, MultiBufferSource bufferSourceList) {
         ClientLevel world = Minecraft.getInstance().level;
         if (world == null) return;
 
-        Vec3 matrixTranslation = getRenderPosition(pTicks);
+        Vec3 matrixTranslation = this.getRenderPosition(pTicks);
         long time = world.getGameTime();
-        int segments = getTrailMaxLength();
+        int segments = this.getTrailMaxLength();
 
-        if (segments <= 0 || getTrailUpdateFrequency() <= 0) return;
+        if (segments <= 0 || this.getTrailUpdateFrequency() <= 0) return;
 
         List<Vec3> partialPoses = new ArrayList<>();
-        float partial = (time % getTrailUpdateFrequency()) + pTicks;
+        float partial = (time % this.getTrailUpdateFrequency()) + pTicks;
 
         TrailBuffer buffer = OctoRenderManager.getOrCreateBuffer(this);
         if (buffer == null) return;
 
         List<Vec3> points = new ArrayList<>();
-        if (isTrailAlive()) points.add(new Vec3(0, 0, 0));
+        if (this.isTrailAlive()) points.add(new Vec3(0, 0, 0));
 
         for (Vec3 vec3 : buffer) {
             points.add(vec3.subtract(matrixTranslation));
         }
 
-        points = getTrailRenderPositions(points, pTicks);
+        points = this.getTrailRenderPositions(points, pTicks);
 
         if (points.size() > 2) {
             for (int i = 0; i < points.size() - 1; i++) {
@@ -120,7 +116,7 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
                 Vec3 p3 = i == points.size() - 2 ? points.getLast() : points.get(i + 2);
 
                 partialPoses.add(p1);
-                int interpolationPoints = Math.max(1, getTrailInterpolationPoints() + 1);
+                int interpolationPoints = Math.max(1, this.getTrailInterpolationPoints() + 1);
                 for (float f = 1f / interpolationPoints; f < 1; f += 1f / interpolationPoints) {
                     partialPoses.add(VectorUtils.catmullromVec(f, p0, p1, p2, p3));
                 }
@@ -130,19 +126,14 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
             partialPoses.addAll(points);
         }
 
-        if (points.size() > 1 && getTrailMaxLength() + 1 == points.size()) {
+        if (points.size() > 1 && this.getTrailMaxLength() + 1 == points.size()) {
             int i = partialPoses.size() - 1;
             Vec3 adjustment = partialPoses.get(i - 1).subtract(partialPoses.get(i))
-                    .scale(partial / (double) getTrailUpdateFrequency() * getTrailInterpolationPoints());
+                    .scale(partial / (double) this.getTrailUpdateFrequency() * this.getTrailInterpolationPoints());
             partialPoses.set(i, partialPoses.get(i).add(adjustment));
         }
 
-        draw3dTrail(partialPoses, poseStack, bufferSourceList);
-    }
-
-
-    default void draw3dTrail(List<Vec3> partialPoses, PoseStack poseStack, MultiBufferSource bufferSourceList) {
-        if (partialPoses == null || partialPoses.size() < 2) return;
+        if (partialPoses.size() < 2) return;
 
         partialPoses = partialPoses.stream().filter(Objects::nonNull).toList();
 
@@ -162,15 +153,15 @@ public interface TrailProvider extends RenderProvider<TrailProvider, TrailBuffer
 
             var perpendicular1 = vec1n.cross(Y_VEC).normalize();
 
-            var scale = getTrailScale() * (1.0 - (double) i / (partialPoses.size() - 1)) + 0.005;
+            var scale = this.getTrailScale() * (1.0 - (double) i / (partialPoses.size() - 1)) + 0.005;
 
             crossVecs[i - 1][0] = perpendicular1.scale(scale);
             crossVecs[i - 1][1] = VectorUtils.rotate(crossVecs[i - 1][0], vec1n, 120);
             crossVecs[i - 1][2] = VectorUtils.rotate(crossVecs[i - 1][0], vec1n, -120);
         }
 
-        var color1 = new Color(getTrailFadeInColor(), true);
-        var color2 = new Color(getTrailFadeOutColor(), true);
+        var color1 = new Color(this.getTrailFadeInColor(), true);
+        var color2 = new Color(this.getTrailFadeOutColor(), true);
 
         poseStack.pushPose();
 

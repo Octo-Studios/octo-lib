@@ -3,9 +3,23 @@ package it.hurts.octostudios.octolib.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class RenderUtils {
+    public static Vec2 toScreenCoords(Matrix4f matrix, double x, double y) {
+        Matrix4f inverse = new Matrix4f(matrix);
+        inverse.invert();
+        return toViewportCoords(inverse, x, y);
+    }
+
+    public static Vec2 toViewportCoords(Matrix4f matrix, double x, double y) {
+        Vector4f vec = new Vector4f((float) x, (float) y, 0.0f, 1.0f);
+        vec = matrix.transform(vec);
+        return new Vec2(vec.x(), vec.y());
+    }
+
     public static void renderTextureFromCenter(PoseStack matrix, float centerX, float centerY, float width, float height, float scale, float zOffset) {
         renderTextureFromCenter(matrix, centerX, centerY, 0, 0, width, height, width, height, scale, zOffset);
     }

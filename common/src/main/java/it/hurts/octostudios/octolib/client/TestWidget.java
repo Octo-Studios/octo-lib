@@ -15,9 +15,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
-
-import java.awt.Color;
 
 public class TestWidget extends AbstractWidget {
     protected Screen screen;

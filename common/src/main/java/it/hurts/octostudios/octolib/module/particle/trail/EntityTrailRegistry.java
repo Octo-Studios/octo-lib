@@ -2,7 +2,6 @@ package it.hurts.octostudios.octolib.module.particle.trail;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
 
 import java.util.HashMap;
 import java.util.Map;

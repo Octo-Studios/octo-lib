@@ -7,6 +7,8 @@ import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+import java.awt.geom.Point2D;
+
 public class RenderUtils {
     public static Vec2 toScreenCoords(Matrix4f matrix, double x, double y) {
         Matrix4f inverse = new Matrix4f(matrix);
@@ -18,6 +20,24 @@ public class RenderUtils {
         Vector4f vec = new Vector4f((float) x, (float) y, 0.0f, 1.0f);
         vec = matrix.transform(vec);
         return new Vec2(vec.x(), vec.y());
+    }
+
+    private boolean isPointInQuad(double x, double y, Point2D[] quad) {
+        // we divide the quad into two triangles and check if the point is in either one
+        return pointInTriangle(x, y, quad[0], quad[1], quad[2]) ||
+                pointInTriangle(x, y, quad[0], quad[2], quad[3]);
+    }
+
+    private boolean pointInTriangle(double px, double py, Point2D a, Point2D b, Point2D c) {
+        double area = 0.5 * (-b.getY() * c.getX() + a.getY() * (-b.getX() + c.getX()) +
+                a.getX() * (b.getY() - c.getY()) + b.getX() * c.getY());
+
+        double sign = area < 0 ? -1 : 1;
+
+        double s = (a.getY() * c.getX() - a.getX() * c.getY() + (c.getY() - a.getY()) * px + (a.getX() - c.getX()) * py) * sign;
+        double t = (a.getX() * b.getY() - a.getY() * b.getX() + (a.getY() - b.getY()) * px + (b.getX() - a.getX()) * py) * sign;
+
+        return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
     public static void renderTextureFromCenter(PoseStack matrix, float centerX, float centerY, float width, float height, float scale, float zOffset) {

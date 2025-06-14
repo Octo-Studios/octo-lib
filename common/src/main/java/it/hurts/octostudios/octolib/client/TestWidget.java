@@ -5,6 +5,7 @@ import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
+import it.hurts.octostudios.octolib.client.screen.widget.HasRenderMatrix;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;

@@ -3,6 +3,7 @@ package it.hurts.octostudios.octolib.module.config.network;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.TestScreen;
+import it.hurts.octostudios.octolib.client.screen.TestGearScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -29,7 +30,7 @@ public class TestScreenPacket implements CustomPacketPayload {
     }
     
     public void handle(NetworkManager.PacketContext packetContext) {
-        Minecraft.getInstance().setScreen(new TestScreen());
+        Minecraft.getInstance().setScreen(new TestGearScreen());
     }
     
     @Override

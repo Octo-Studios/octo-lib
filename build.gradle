@@ -1,5 +1,5 @@
 plugins {
-    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.10.431' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
 }
@@ -11,6 +11,13 @@ architectury {
 allprojects {
     group = rootProject.mod_group
     version = rootProject.mod_version + "+" + rootProject.minecraft_version
+
+    repositories {
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
+    }
 }
 
 subprojects {
@@ -20,13 +27,6 @@ subprojects {
 
     base {
         archivesName = "$rootProject.mod_name" + "-" + "$project.name".toUpperCase()
-    }
-
-    repositories {
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
     }
 
     dependencies {

@@ -48,7 +48,7 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
 
         if (this.getParent() instanceof HasRenderMatrix has) {
             guiGraphics.pose().pushPose();
-            Vec2 bleh = RenderUtils.toScreenCoords(HasRenderMatrix.getFinalMatrix(has), mouseX, mouseY);
+            Vec2 bleh = RenderUtils.toScreenCoords(has.getMatrix(), mouseX, mouseY);
             guiGraphics.pose().translate(bleh.x-0.5, bleh.y-0.5, 0);
             guiGraphics.renderOutline(0, 0, 2, 2, 0xffff0000);
             guiGraphics.pose().popPose();

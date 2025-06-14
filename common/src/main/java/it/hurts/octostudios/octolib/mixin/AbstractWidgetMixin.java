@@ -51,7 +51,7 @@ public abstract class AbstractWidgetMixin {
                                  @Local(ordinal = 1, argsOnly = true) LocalDoubleRef mouseY
     ) {
         if (this instanceof Child<?> child && child.getParent() instanceof HasRenderMatrix has) {
-            Vec2 bleh = RenderUtils.toScreenCoords(HasRenderMatrix.getFinalMatrix(has), mouseX.get(), mouseY.get());
+            Vec2 bleh = RenderUtils.toScreenCoords(has.getMatrix(), mouseX.get(), mouseY.get());
             mouseX.set(bleh.x);
             mouseY.set(bleh.y);
         }

@@ -56,4 +56,17 @@ public class OctoColor {
                 this.a - other.a
         );
     }
+
+    public OctoColor multiply(float rFactor, float gFactor, float bFactor, float aFactor) {
+        return new OctoColor(
+                this.r * rFactor,
+                this.g * gFactor,
+                this.b * bFactor,
+                this.a * aFactor
+        );
+    }
+
+    public OctoColor multiply(float factor) {
+        return this.multiply(factor, factor, factor, factor);
+    }
 }

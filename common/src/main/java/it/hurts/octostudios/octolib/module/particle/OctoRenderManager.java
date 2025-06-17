@@ -1,5 +1,6 @@
 package it.hurts.octostudios.octolib.module.particle;
 
+import it.hurts.octostudios.octolib.OctoLibClient;
 import it.hurts.octostudios.octolib.client.animation.TweenSystem;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.shake.ShakeSystem;
@@ -50,7 +51,7 @@ public class OctoRenderManager {
 
     public static void clientRenderTick() {
         ShakeSystem.updateAll();
-        double dt = Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
+        double dt = OctoLibClient.getDeltaTime();
         TweenSystem.updateAll(dt);
         ParticleSystem.updateAll(dt);
     }

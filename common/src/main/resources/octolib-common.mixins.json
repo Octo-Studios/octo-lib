@@ -6,7 +6,7 @@
   "client": [
     "AbstractWidgetAccessor",
     "AbstractWidgetMixin",
-    "EntityMixin",
+    "ClientLevelMixin",
     "GameRendererMixin",
     "GuiMixin",
     "MinecraftMixin",

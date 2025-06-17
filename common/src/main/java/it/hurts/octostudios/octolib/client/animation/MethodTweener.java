@@ -3,6 +3,7 @@ package it.hurts.octostudios.octolib.client.animation;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
+import net.minecraft.client.Minecraft;
 
 import java.util.function.Consumer;
 
@@ -17,7 +18,7 @@ public class MethodTweener<T> extends Tweener {
     private Consumer<T> method;
 
     @Override
-    public boolean step(double dt) {
+    public boolean step() {
         if (finished) {
             return false;
         }
@@ -27,14 +28,12 @@ public class MethodTweener<T> extends Tweener {
             return false;
         }
 
-        elapsedTime += dt;
-
-        if (elapsedTime < delay) {
+        if (getElapsedTime() < delay) {
             return true;
         }
 
         T currentValue;
-        double time = Math.min(elapsedTime - delay, duration);
+        double time = Math.min(getElapsedTime() - delay, duration);
         if (time < duration) {
             currentValue = tween.interpolateVariable(initialValue, deltaValue, time, duration, transitionType, easeType);
         } else {

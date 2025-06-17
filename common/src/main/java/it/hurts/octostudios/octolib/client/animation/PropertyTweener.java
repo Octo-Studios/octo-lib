@@ -59,7 +59,7 @@ public class PropertyTweener<T> extends Tweener {
     }
 
     @Override
-    public boolean step(double dt) {
+    public boolean step() {
         if (finished) {
             return false;
         }
@@ -69,9 +69,7 @@ public class PropertyTweener<T> extends Tweener {
             return false;
         }
 
-        elapsedTime += dt;
-
-        if (elapsedTime < delay) {
+        if (getElapsedTime() < delay) {
             return true;
         } else if (doContinueDelayed && delay >= 0.001) {
             initialValue = getField(target, field);
@@ -79,7 +77,7 @@ public class PropertyTweener<T> extends Tweener {
             doContinueDelayed = false;
         }
 
-        double time = Math.min(elapsedTime - delay, duration);
+        double time = Math.min(getElapsedTime() - delay, duration);
         if (time < duration) {
 //            if (customMethod.isValid())
             setField(target, field, tween.interpolateVariable(initialValue, deltaValue, time, duration, transitionType, easeType));

@@ -60,6 +60,7 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
         super.onClick(mouseX, mouseY);
         Tween tween = Tween.create();
         tween.tweenMethod(this::setColor, OctoColor.RED, OctoColor.GREEN, 0.5f);
+        tween.start();
     }
 
     @Override

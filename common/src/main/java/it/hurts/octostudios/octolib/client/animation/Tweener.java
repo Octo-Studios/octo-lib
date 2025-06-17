@@ -6,18 +6,22 @@ import lombok.Setter;
 public abstract class Tweener {
     @Getter @Setter
     protected Tween tween;
-    protected double elapsedTime;
+    protected long startTimestampMillis;
     @Getter
     protected boolean finished;
 
     public void start() {
-        elapsedTime = 0;
+        startTimestampMillis = System.currentTimeMillis();
         finished = false;
+    }
+
+    public double getElapsedTime() {
+        return (System.currentTimeMillis() - startTimestampMillis) / 1000d * tween.speedScale;
     }
 
     protected void finish() {
         finished = true;
     }
 
-    public abstract boolean step(double dt);
+    public abstract boolean step();
 }

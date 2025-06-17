@@ -20,6 +20,7 @@ import java.util.List;
 
 public class TestGear extends AbstractWidget implements HasRenderMatrix, ContainerEventHandler {
     private Matrix4f renderMatrix;
+    Tween tween = Tween.create();
 
     @Setter
     private float rot;
@@ -68,8 +69,10 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean result = super.mouseClicked(mouseX,mouseY, button);
         if (!ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button) && result) {
-            Tween tween = Tween.create();
+            tween.kill();
+            tween = Tween.create();
             tween.tweenMethod(this::setRot, this.rot, this.rot + 60f, 0.75f).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.QUART);
+            tween.start();
             return true;
         };
         return false;

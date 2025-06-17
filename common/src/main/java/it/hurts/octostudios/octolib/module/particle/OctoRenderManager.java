@@ -52,7 +52,7 @@ public class OctoRenderManager {
     public static void clientRenderTick() {
         ShakeSystem.updateAll();
         double dt = OctoLibClient.getDeltaTime();
-        TweenSystem.updateAll(dt);
+        //TweenSystem.updateAll();
         ParticleSystem.updateAll(dt);
     }
 

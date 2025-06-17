@@ -18,8 +18,8 @@ public class Tween {
     @Getter
     EaseType defaultEase = EaseType.EASE_IN_OUT;
 
-    @Getter
-    double totalTime = 0;
+    long startTimestampMillis;
+
     int currentStep = -1;
     @Getter
     int loops = 1;
@@ -30,14 +30,20 @@ public class Tween {
     boolean ignoreTimeScale = false;
 
     @Getter
-    boolean started = false;
+    volatile boolean started = false;
     @Getter
-    boolean running = true;
-    boolean dead = false;
-    @Getter
-    boolean valid = false;
+    volatile boolean running = true;
+    volatile boolean dead = false;
     boolean defaultParallel = false;
     boolean parallelEnabled = false;
+
+    public void start() {
+        TweenSystem.addTween(this);
+    }
+
+    public double getTotalTime() {
+        return (System.currentTimeMillis() - startTimestampMillis) / 1000d;
+    }
 
     private void startTweeners() {
         if (tweeners.isEmpty()) {
@@ -56,7 +62,7 @@ public class Tween {
         if (reset) {
             started = false;
             dead = false;
-            totalTime = 0;
+            startTimestampMillis = System.currentTimeMillis();
         }
     }
 
@@ -86,19 +92,16 @@ public class Tween {
     }
 
     public void play() {
-        if (!valid) OctoLib.LOGGER.warn("Tween invalid. Probably already finished.");
         if (dead) OctoLib.LOGGER.warn("Can't play finished Tween, use stop() first to reset its state.");
         this.running = true;
     }
 
     public void kill() {
         running = false;
-        valid = false;
         dead = true;
     }
 
     public void clear() {
-        valid = false;
         tweeners.clear();
     }
 
@@ -147,15 +150,7 @@ public class Tween {
         return this;
     }
 
-    protected boolean customStep(double dt) {
-        boolean runningBefore = running;
-        running = true;
-        boolean stepResult = this.step(dt);
-        running = running && runningBefore;
-        return stepResult;
-    }
-
-    protected boolean step(double dt) {
+    protected boolean step() {
         if (dead) {
             return false;
         }
@@ -172,24 +167,17 @@ public class Tween {
 
             currentStep = 0;
             loopsDone = 0;
-            totalTime = 0;
+            startTimestampMillis = System.currentTimeMillis();
             this.startTweeners();
             started = true;
         }
 
-        double adjustedDelta = dt * speedScale;
         boolean stepActive = false;
-        totalTime += adjustedDelta;
 
-        while (adjustedDelta > 0 && running) {
-            double stepDelta = adjustedDelta;
-
+        while (speedScale > 0 && running) {
             for (Tweener tweener : tweeners.get(currentStep)) {
-                stepActive = tweener.step(adjustedDelta) || stepActive;
-                stepDelta = Math.min(adjustedDelta, stepDelta);
+                stepActive = tweener.step() || stepActive;
             }
-
-            adjustedDelta = stepDelta;
 
             if (stepActive) {
                 return true;
@@ -217,10 +205,7 @@ public class Tween {
     }
 
     public static Tween create() {
-        Tween tween = new Tween();
-        tween.valid = true;
-        TweenSystem.addTween(tween);
-        return tween;
+        return new Tween();
     }
 
     protected double runEquation(TransitionType transitionType, EaseType easeType, double time, double initial, double delta, double duration) {

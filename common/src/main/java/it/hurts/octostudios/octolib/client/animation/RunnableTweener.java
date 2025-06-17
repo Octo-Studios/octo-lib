@@ -1,18 +1,18 @@
 package it.hurts.octostudios.octolib.client.animation;
 
+import net.minecraft.client.Minecraft;
+
 public class RunnableTweener extends Tweener {
     private final Runnable runnable;
     private double delay;
 
     @Override
-    public boolean step(double dt) {
+    public boolean step() {
         if (finished) {
             return false;
         }
 
-        elapsedTime += dt;
-
-        if (elapsedTime < delay) {
+        if (getElapsedTime() < delay) {
             return true;
         }
 

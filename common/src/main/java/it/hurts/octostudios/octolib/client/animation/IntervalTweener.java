@@ -4,14 +4,12 @@ public class IntervalTweener extends Tweener {
     private final double duration;
 
     @Override
-    public boolean step(double dt) {
+    public boolean step() {
         if (finished) {
             return false;
         }
 
-        elapsedTime += dt;
-
-        if (elapsedTime < duration) {
+        if (getElapsedTime() < duration) {
             return true;
         }
 

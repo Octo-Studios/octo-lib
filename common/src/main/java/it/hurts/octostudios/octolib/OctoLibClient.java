@@ -10,6 +10,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 
 public final class OctoLibClient {
+    public static long DELTA_NANOS;
+
     public static void init() {
         registerEvents();
         EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
@@ -21,6 +23,6 @@ public final class OctoLibClient {
     }
 
     public static double getDeltaTime() {
-        return Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
+        return DELTA_NANOS / 1000000000d;
     }
 }

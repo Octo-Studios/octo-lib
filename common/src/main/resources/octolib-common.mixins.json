@@ -9,6 +9,7 @@
     "EntityMixin",
     "GameRendererMixin",
     "GuiMixin",
+    "MinecraftMixin",
     "ScreenMixin"
   ],
   "mixins": [

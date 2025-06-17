@@ -8,7 +8,6 @@ import it.hurts.octostudios.octolib.util.VectorUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
@@ -166,7 +165,7 @@ public class UIParticle {
 
         OctoColor color = this.getColor();
 
-        RenderSystem.setShaderColor(color.r, color.g, color.b, color.a);
+        RenderSystem.setShaderColor(color.r(), color.g(), color.b(), color.a());
         RenderSystem.setShaderTexture(0, tex.rl);
 
         RenderSystem.enableBlend();

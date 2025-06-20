@@ -27,7 +27,6 @@ public class GalacticUIParticle extends ExtendedUIParticle {
         this.setColors(new OctoColor(1f, 1f, 1f, 1f), new OctoColor(0f, 1f, 1f, 0f));
         this.direction = new Vector2f(RANDOM.nextFloat() - 0.5f, RANDOM.nextFloat() - 0.5f).normalize();
         this.resizeWithLifetime = false;
-        this.size = 1f;
 
         this.gravity = 0.01f;
         this.gravityDirection = new Vector2f(0f, 1f);

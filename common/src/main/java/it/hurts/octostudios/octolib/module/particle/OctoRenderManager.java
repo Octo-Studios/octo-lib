@@ -51,9 +51,6 @@ public class OctoRenderManager {
 
     public static void clientRenderTick() {
         ShakeSystem.updateAll();
-        double dt = OctoLibClient.getDeltaTime();
-        //TweenSystem.updateAll();
-        ParticleSystem.updateAll(dt);
     }
 
     public static <B extends RenderBuffer<P, B>, P extends RenderProvider<P, B>> B getOrCreateBuffer(P provider) {

@@ -1,7 +1,9 @@
 package it.hurts.octostudios.octolib.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.shake.Shakeable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.joml.Vector2f;
@@ -16,6 +18,6 @@ public class ScreenMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
             shift = At.Shift.AFTER))
     private void beforeRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics);
+        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics, partialTick);
     }
 }

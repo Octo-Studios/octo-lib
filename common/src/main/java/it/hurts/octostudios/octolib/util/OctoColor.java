@@ -24,6 +24,26 @@ public record OctoColor(float r, float g, float b, float a) {
         );
     }
 
+    public static OctoColor lerp(double t, OctoColor... colors) {
+        if (colors == null || colors.length == 0) {
+            throw new IllegalArgumentException("colors array can't be empty");
+        }
+
+        if (colors.length == 1) {
+            return colors[0];
+        }
+
+        t = Math.min(Math.max(t, 0.0), 1.0);
+
+        double scaledT = t * (colors.length - 1);
+        int index = (int) Math.floor(scaledT);
+        int nextIndex = Math.min(index + 1, colors.length - 1);
+
+        double localT = scaledT - index;
+
+        return colors[index].lerp(colors[nextIndex], localT);
+    }
+
     public OctoColor add(OctoColor other) {
         return new OctoColor(
                 this.r + other.r,

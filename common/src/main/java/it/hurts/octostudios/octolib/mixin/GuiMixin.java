@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GuiMixin {
     @Inject(method = "render", at = @At("RETURN"))
     private void renderGuiParticles(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        ParticleSystem.renderGuiParticles(guiGraphics);
+        ParticleSystem.renderGuiParticles(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(true));
     }
 }

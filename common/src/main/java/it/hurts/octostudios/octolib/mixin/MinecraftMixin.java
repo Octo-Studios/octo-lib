@@ -1,6 +1,7 @@
 package it.hurts.octostudios.octolib.mixin;
 
 import it.hurts.octostudios.octolib.OctoLibClient;
+import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,5 +23,10 @@ public class MinecraftMixin {
     @Inject(method = "runTick", at = @At(value = "TAIL"))
     private void injectDeltaNanos(boolean renderLevel, CallbackInfo ci) {
         OctoLibClient.DELTA_NANOS = Util.getNanos() - octolib$startNanos;
+    }
+
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;tick(Z)V"))
+    private void tick(CallbackInfo ci) {
+        ParticleSystem.tick();
     }
 }

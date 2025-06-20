@@ -1,6 +1,8 @@
 package it.hurts.octostudios.octolib.client.screen;
 
 import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.client.screen.widget.TestGear;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -8,6 +10,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+
+import java.util.Random;
 
 public class TestGearScreen extends Screen {
     Tween tween = Tween.create().setLoops(-1);
@@ -26,6 +30,14 @@ public class TestGearScreen extends Screen {
         tween.start();
     }
 
+    boolean shouldTick;
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.shouldTick = true;
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -35,6 +47,14 @@ public class TestGearScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        if (shouldTick) {
+            this.shouldTick = false;
+            UIParticle particle = new GalacticUIParticle(1.25f, 40, mouseX, mouseY, UIParticle.Layer.SCREEN, 0);
+            particle.setScreen(this);
+            particle.rollVelocity = new Random().nextFloat(-5, 5);
+            particle.instantiate();
+        }
+
     }
 
     @Override
@@ -43,5 +63,10 @@ public class TestGearScreen extends Screen {
         if (tween != null) {
             tween.kill();
         }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 }

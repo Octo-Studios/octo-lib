@@ -2,21 +2,37 @@ package it.hurts.octostudios.octolib.module.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import it.hurts.octostudios.octolib.module.config.network.TestScreenPacket;
+import it.hurts.octostudios.octolib.module.config.network.UnholyAbominationPacket;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class OctolibCommand {
     
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("octolib").requires(s -> s.hasPermission(2))
+                        .then(Commands.literal("openScreen")
+                                .then(Commands.argument("classpath", StringArgumentType.string())
+                                        .executes(context -> {
+                                            String path = StringArgumentType.getString(context, "classpath");
+                                            NetworkManager.sendToPlayer(context.getSource().getPlayer(), new UnholyAbominationPacket(path));
+                                            return Command.SINGLE_SUCCESS;
+                                        })
+                                )
+                        )
                 .then(Commands.literal("animatorSystemTestScreen")
                         .executes(component -> {
                             if (component.getSource().getPlayer() == null) {

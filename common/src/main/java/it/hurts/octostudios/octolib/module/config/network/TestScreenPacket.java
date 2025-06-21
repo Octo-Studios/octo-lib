@@ -5,10 +5,13 @@ import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.TestScreen;
 import it.hurts.octostudios.octolib.client.screen.TestGearScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class TestScreenPacket implements CustomPacketPayload {
     public static final Type<TestScreenPacket> TYPE =

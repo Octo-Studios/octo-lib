@@ -10,7 +10,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.joml.Vector2d;
+
+import java.util.function.Predicate;
 
 public class TestScreen extends Screen {
     private int ticker;

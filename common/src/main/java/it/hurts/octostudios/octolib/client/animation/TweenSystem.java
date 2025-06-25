@@ -1,5 +1,7 @@
 package it.hurts.octostudios.octolib.client.animation;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;

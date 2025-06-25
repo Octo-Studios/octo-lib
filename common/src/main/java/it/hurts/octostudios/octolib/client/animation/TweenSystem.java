@@ -71,11 +71,7 @@ public class TweenSystem {
         public static void executeAll() {
             Runnable task;
             while ((task = renderQueue.poll()) != null) {
-                try {
-                    task.run();
-                } catch (Exception e) {
-                    e.printStackTrace(); // or your error handling~
-                }
+                task.run();
             }
         }
     }

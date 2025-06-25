@@ -1,6 +1,7 @@
 package it.hurts.octostudios.octolib.mixin;
 
 import it.hurts.octostudios.octolib.OctoLibClient;
+import it.hurts.octostudios.octolib.client.animation.TweenSystem;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,7 @@ public class MinecraftMixin {
     @Inject(method = "runTick", at = @At(value = "HEAD"))
     private void injectStartNanos(boolean renderLevel, CallbackInfo ci) {
         octolib$startNanos = Util.getNanos();
+        TweenSystem.RenderThreadExecutor.executeAll();
     }
 
     @Inject(method = "runTick", at = @At(value = "TAIL"))

@@ -18,7 +18,15 @@ public class TweenSystem {
         running = true;
 
         Thread tweenThread = new Thread(() -> {
+            long lastMs = 0;
             while (running) {
+                long currentMs = System.currentTimeMillis();
+                if (lastMs == currentMs) {
+                    continue;
+                }
+
+                lastMs = System.currentTimeMillis();
+
                 Tween tween;
                 while ((tween = PENDING.poll()) != null) {
                     if (TWEENS.contains(tween)) {
@@ -29,12 +37,6 @@ public class TweenSystem {
                 }
 
                 updateAll();
-
-//                try {
-//                    Thread.sleep(1);
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                }
             }
         }, "Tween thread");
 
@@ -56,5 +58,25 @@ public class TweenSystem {
             }
         });
         TWEENS.removeAll(toRemove);
+    }
+
+    public static class RenderThreadExecutor {
+
+        private static final Queue<Runnable> renderQueue = new ConcurrentLinkedQueue<>();
+
+        public static void runOnRenderThread(Runnable task) {
+            renderQueue.add(task);
+        }
+
+        public static void executeAll() {
+            Runnable task;
+            while ((task = renderQueue.poll()) != null) {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    e.printStackTrace(); // or your error handling~
+                }
+            }
+        }
     }
 }

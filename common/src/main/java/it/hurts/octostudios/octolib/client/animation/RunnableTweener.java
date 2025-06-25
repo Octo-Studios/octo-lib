@@ -16,7 +16,7 @@ public class RunnableTweener extends Tweener {
             return true;
         }
 
-        Minecraft.getInstance().submit(runnable);
+        TweenSystem.RenderThreadExecutor.runOnRenderThread(runnable);
         finish();
         return false;
     }

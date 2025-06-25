@@ -40,7 +40,7 @@ public class MethodTweener<T> extends Tweener {
             currentValue = finalValue;
         }
 
-        Minecraft.getInstance().submit(() -> method.accept(currentValue));
+        TweenSystem.RenderThreadExecutor.runOnRenderThread(() -> method.accept(currentValue));
 
         if (time < duration) {
             return true;

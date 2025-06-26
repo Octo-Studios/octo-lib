@@ -61,7 +61,6 @@ public class TweenSystem {
     }
 
     public static class RenderThreadExecutor {
-
         private static final Queue<Runnable> renderQueue = new ConcurrentLinkedQueue<>();
 
         public static void runOnRenderThread(Runnable task) {
@@ -71,6 +70,21 @@ public class TweenSystem {
         public static void executeAll() {
             Runnable task;
             while ((task = renderQueue.poll()) != null) {
+                task.run();
+            }
+        }
+    }
+
+    public static class ServerThreadExecutor {
+        private static final Queue<Runnable> serverQueue = new ConcurrentLinkedQueue<>();
+
+        public static void runOnServerThread(Runnable task) {
+            serverQueue.add(task);
+        }
+
+        public static void executeAll() {
+            Runnable task;
+            while ((task = serverQueue.poll()) != null) {
                 task.run();
             }
         }

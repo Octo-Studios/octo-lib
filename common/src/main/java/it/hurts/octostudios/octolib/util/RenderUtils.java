@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.geom.Point2D;
 
@@ -72,6 +73,38 @@ public class RenderUtils {
 
         matrix.popPose();
 
+        BufferUploader.drawWithShader(builder.buildOrThrow());
+    }
+
+    public static void renderTilingTexture(PoseStack matrix, float x, float y, float texOffX, float texOffY,
+                                           float texWidth, float texHeight, float width, float height,
+                                           float zOffset, boolean tileHorizontally, boolean tileVertically) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+
+        int wrapS = tileHorizontally ? GL11.GL_REPEAT : GL11.GL_CLAMP;
+        int wrapT = tileVertically ? GL11.GL_REPEAT : GL11.GL_CLAMP;
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapS);
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapT);
+
+        float uStart = texOffX / texWidth;
+        float vStart = texOffY / texHeight;
+        float uRange = tileHorizontally ? (width / texWidth) : 1.0f;
+        float vRange = tileVertically ? (height / texHeight) : 1.0f;
+        float uEnd = uStart + uRange;
+        float vEnd = vStart + vRange;
+
+        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+
+        matrix.pushPose();
+        matrix.translate(x, y, 0);
+        Matrix4f m = matrix.last().pose();
+
+        builder.addVertex(m, 0f, height, zOffset).setUv(uStart, vEnd)
+                .addVertex(m, width, height, zOffset).setUv(uEnd, vEnd)
+                .addVertex(m, width, 0f, zOffset).setUv(uEnd, vStart)
+                .addVertex(m, 0f, 0f, zOffset).setUv(uStart, vStart);
+
+        matrix.popPose();
         BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 }

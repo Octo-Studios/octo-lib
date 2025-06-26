@@ -19,11 +19,11 @@ public class MinecraftMixin {
     @Inject(method = "runTick", at = @At(value = "HEAD"))
     private void injectStartNanos(boolean renderLevel, CallbackInfo ci) {
         octolib$startNanos = Util.getNanos();
-        TweenSystem.RenderThreadExecutor.executeAll();
     }
 
     @Inject(method = "runTick", at = @At(value = "TAIL"))
     private void injectDeltaNanos(boolean renderLevel, CallbackInfo ci) {
+        TweenSystem.RenderThreadExecutor.executeAll();
         OctoLibClient.DELTA_NANOS = Util.getNanos() - octolib$startNanos;
     }
 

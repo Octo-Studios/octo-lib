@@ -1,14 +1,17 @@
 package it.hurts.octostudios.octolib.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.client.screen.widget.TestGear;
+import it.hurts.octostudios.octolib.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.Random;
@@ -55,6 +58,8 @@ public class TestGearScreen extends Screen {
             particle.instantiate();
         }
 
+        RenderSystem.setShaderTexture(0, ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"));
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 10, 10, 0, 0, 8, 8, 80, 80, 0, true, false);
     }
 
     @Override

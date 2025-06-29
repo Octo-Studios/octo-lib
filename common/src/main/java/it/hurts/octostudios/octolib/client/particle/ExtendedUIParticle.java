@@ -35,7 +35,7 @@ public class ExtendedUIParticle extends UIParticle {
         // Apply gravity
         gravityAccel += gravity;
         if (gravityAccel != 0) {
-            this.transform.getPosition().add(gravityDirection.mul(gravityAccel));
+            this.transform.getPosition().add(new Vector2f(gravityDirection).mul(gravityAccel));
         }
     }
 }

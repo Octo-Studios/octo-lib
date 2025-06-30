@@ -12,7 +12,7 @@ public class Transform {
     @Setter private Vector2f size;
 
     private Vector2f oldPosition;
-    private float oldRotation;
+    private float oldRoll;
     private Vector2f oldSize;
 
     public Transform(Vector2f position, float roll, Vector2f size) {
@@ -21,7 +21,7 @@ public class Transform {
         this.size = size;
 
         this.oldPosition = new Vector2f(position);
-        this.oldRotation = roll;
+        this.oldRoll = roll;
         this.oldSize = new Vector2f(size);
     }
 
@@ -35,7 +35,7 @@ public class Transform {
 
     public void updateOldValues() {
         this.oldPosition = new Vector2f(position);
-        this.oldRotation = roll;
+        this.oldRoll = roll;
         this.oldSize = new Vector2f(size);
     }
 
@@ -47,7 +47,7 @@ public class Transform {
     }
 
     public float getInterpolatedRoll(float partialTicks) {
-        return Mth.lerp(partialTicks, oldRotation, roll);
+        return lerpAngle(partialTicks, oldRoll, roll);
     }
 
     public Vector2f getInterpolatedSize(float partialTicks) {
@@ -55,5 +55,10 @@ public class Transform {
                 Mth.lerp(partialTicks, oldSize.x, size.x),
                 Mth.lerp(partialTicks, oldSize.y, size.y)
         );
+    }
+
+    private static float lerpAngle(float partialTicks, float start, float end) {
+        float delta = ((end - start + 540) % 360) - 180;
+        return (start + delta * partialTicks + 360) % 360;
     }
 }

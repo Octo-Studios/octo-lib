@@ -38,7 +38,7 @@ public class TestGearScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        this.shouldTick = true;
+        if (Minecraft.getInstance().player.tickCount % 20 == 0) this.shouldTick = true;
     }
 
     @Override

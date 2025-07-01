@@ -16,15 +16,20 @@ public class OctolibNetwork {
         registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
         registerS2C(UnholyAbominationPacket.TYPE, UnholyAbominationPacket.STREAM_CODEC, UnholyAbominationPacket::handle);
     }
-    
-    private static  <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> type,
+
+    public static <T extends CustomPacketPayload> void registerS2C (
+            CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,
-            NetworkManager.NetworkReceiver<T> receiver) {
-        if (Platform.getEnvironment() == Env.CLIENT) {
-            NetworkManager.registerReceiver(NetworkManager.s2c(), type, codec, receiver);
-        } else {
-            NetworkManager.registerS2CPayloadType(type, codec);
-        }
+            NetworkManager.NetworkReceiver<T> receiver
+    ) {
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, type, codec, receiver);
     }
-    
+
+    public static <T extends CustomPacketPayload> void registerC2S (
+            CustomPacketPayload.Type<T> type,
+            StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            NetworkManager.NetworkReceiver<T> receiver
+    ) {
+        NetworkManager.registerReceiver(NetworkManager.Side.C2S, type, codec, receiver);
+    }
 }

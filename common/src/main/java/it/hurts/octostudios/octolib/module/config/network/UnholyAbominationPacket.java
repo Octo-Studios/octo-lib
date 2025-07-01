@@ -3,6 +3,8 @@ package it.hurts.octostudios.octolib.module.config.network;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.screen.TestGearScreen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -34,6 +36,11 @@ public class UnholyAbominationPacket implements CustomPacketPayload {
     }
 
     public void handle(NetworkManager.PacketContext packetContext) {
+        this.handleClient();
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void handleClient() {
         try {
             Class<?> clazz = Class.forName(path);
             var something = clazz.getConstructor().newInstance();

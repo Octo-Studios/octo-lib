@@ -3,22 +3,20 @@ package it.hurts.octostudios.octolib.module.config.network;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
+import it.hurts.octostudios.octolib.module.network.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 
-public class SyncConfigPacket implements CustomPacketPayload {
-    
+public class SyncConfigPacket extends Packet {
+    public static final CustomPacketPayload.Type<SyncConfigPacket> TYPE =
+            Packet.createType(OctoLib.MODID, "config_sync");
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncConfigPacket> STREAM_CODEC =
+            Packet.createCodec(SyncConfigPacket::write, SyncConfigPacket::new);
+
     private final String configPath;
     private final String configFile;
-    
-    public static final CustomPacketPayload.Type<SyncConfigPacket> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "config_sync"));
-    
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncConfigPacket> STREAM_CODEC =
-            CustomPacketPayload.codec(SyncConfigPacket::write, SyncConfigPacket::new);
-    
+
     public SyncConfigPacket(RegistryFriendlyByteBuf buf) {
         this.configPath = buf.readUtf();
         this.configFile = buf.readUtf();
@@ -33,14 +31,14 @@ public class SyncConfigPacket implements CustomPacketPayload {
         buf.writeUtf(configPath);
         buf.writeUtf(configFile);
     }
-    
-    public void handle(NetworkManager.PacketContext packetContext) {
+
+    @Override
+    protected void handleClient(NetworkManager.PacketContext packetContext) {
         ConfigManager.reloadStringConfig(configFile, configPath, false);
     }
-    
+
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-    
 }

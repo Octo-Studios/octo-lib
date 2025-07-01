@@ -3,6 +3,7 @@ package it.hurts.octostudios.octolib.module.config.network;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.screen.TestGearScreen;
+import it.hurts.octostudios.octolib.module.network.Packet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -14,12 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class UnholyAbominationPacket implements CustomPacketPayload {
+public class UnholyAbominationPacket extends Packet {
     public static final Type<UnholyAbominationPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "no_just_no"));
-
+            Packet.createType(OctoLib.MODID, "no_just_no");
     public static final StreamCodec<RegistryFriendlyByteBuf, UnholyAbominationPacket> STREAM_CODEC =
-            CustomPacketPayload.codec(UnholyAbominationPacket::write, UnholyAbominationPacket::new);
+            Packet.createCodec(UnholyAbominationPacket::write, UnholyAbominationPacket::new);
 
     String path;
 
@@ -35,12 +35,8 @@ public class UnholyAbominationPacket implements CustomPacketPayload {
         buf.writeUtf(path);
     }
 
-    public void handle(NetworkManager.PacketContext packetContext) {
-        this.handleClient();
-    }
-
-    @Environment(EnvType.CLIENT)
-    private void handleClient() {
+    @Override
+    protected void handleClient(NetworkManager.PacketContext packetContext) {
         try {
             Class<?> clazz = Class.forName(path);
             var something = clazz.getConstructor().newInstance();
@@ -61,6 +57,5 @@ public class UnholyAbominationPacket implements CustomPacketPayload {
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
-
 }
 

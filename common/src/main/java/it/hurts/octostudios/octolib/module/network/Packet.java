@@ -34,7 +34,6 @@ public abstract class Packet implements CustomPacketPayload {
 
     }
 
-    @Environment(EnvType.SERVER)
     protected void handleServer(NetworkManager.PacketContext packetContext) {
 
     }

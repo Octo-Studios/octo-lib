@@ -4,6 +4,8 @@ import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import it.hurts.octostudios.octolib.module.network.Packet;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -33,6 +35,7 @@ public class SyncConfigPacket extends Packet {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         ConfigManager.reloadStringConfig(configFile, configPath, false);
     }

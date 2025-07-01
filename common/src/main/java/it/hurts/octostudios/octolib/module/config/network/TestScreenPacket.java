@@ -4,6 +4,8 @@ import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.client.screen.TestGearScreen;
 import it.hurts.octostudios.octolib.module.network.Packet;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -32,6 +34,7 @@ public class TestScreenPacket extends Packet {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         Minecraft.getInstance().setScreen(new TestGearScreen());
     }

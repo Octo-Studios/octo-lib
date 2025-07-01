@@ -36,6 +36,7 @@ public class UnholyAbominationPacket extends Packet {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         try {
             Class<?> clazz = Class.forName(path);

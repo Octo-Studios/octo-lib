@@ -8,6 +8,7 @@ import it.hurts.octostudios.octolib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
@@ -51,17 +52,16 @@ public class UIParticle {
     @Getter private final Layer layer;
 
     @Getter @Setter private Screen screen;
-
-    public Transform transform;
-    public Vector2f direction = new Vector2f(0, 1);
-    public float rollVelocity;
-    public float speed;
-    public int time;
-    public float zOffset;
-    public OctoColor[] colors;
-    public Pair<Integer, Integer> blendFunc;
-    public boolean enableBlend;
-    public boolean resizeWithLifetime;
+    @Getter private final Transform transform;
+    @Getter private Vector2f direction = new Vector2f(0, 1);
+    @Getter @Setter private float rollVelocity;
+    @Getter @Setter private float speed;
+    @Getter @Setter private int time;
+    @Getter @Setter private float zOffset;
+    @Getter private OctoColor[] colors;
+    @Getter private Pair<Integer, Integer> blendFunc;
+    @Getter @Setter private boolean enableBlend;
+//    @Getter @Setter private boolean resizeWithLifetime;
 
     public UIParticle(Texture2D texture, float maxSpeed, int lifetime, float xStart, float yStart, Layer layer, float zOffset) {
         this.texture = texture;
@@ -75,28 +75,27 @@ public class UIParticle {
         this.colors = new OctoColor[]{OctoColor.WHITE};
         this.blendFunc = new Pair<>(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         this.enableBlend = true;
-        this.resizeWithLifetime = true;
     }
 
-    public UIParticle enableBlend(boolean value) {
+    public void enableBlend(boolean value) {
         this.enableBlend = value;
-        return this;
     }
 
-    public UIParticle setBlendFunc(int source, int destination) {
+    public void setBlendFunc(int source, int destination) {
         this.blendFunc = new Pair<>(source, destination);
         this.enableBlend = true;
-        return this;
     }
 
-    public UIParticle setColors(OctoColor... colors) {
+    public void setColors(OctoColor... colors) {
         this.colors = colors;
-        return this;
     }
 
-    public UIParticle setDirection(float x, float y) {
-        this.direction = new Vector2f(x, y);
-        return this;
+    public void setDirection(float x, float y) {
+        this.direction = new Vector2f(x, y).normalize();
+    }
+
+    public void setDirection(Vector2f direction) {
+        this.direction = new Vector2f(direction).normalize();
     }
 
     public boolean isExpired() {

@@ -2,7 +2,6 @@ package it.hurts.octostudios.octolib.client.particle;
 
 import it.hurts.octostudios.octolib.util.OctoColor;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
 import java.util.Random;
@@ -22,14 +21,13 @@ public class GalacticUIParticle extends ExtendedUIParticle {
                 zOffset
         );
 
-        this.speed = RANDOM.nextFloat() * 2 * maxSpeed;
-        this.angularVelocity = speed*3;
+        this.setSpeed(RANDOM.nextFloat() * 2 * maxSpeed);
+        this.setAngularVelocity(this.getSpeed()*3);
         this.setColors(new OctoColor(1f, 1f, 1f, 1f), new OctoColor(0f, 1f, 1f, 0f));
-        this.direction = new Vector2f(RANDOM.nextFloat() - 0.5f, RANDOM.nextFloat() - 0.5f).normalize();
-        this.resizeWithLifetime = false;
+        this.setDirection(new Vector2f(RANDOM.nextFloat() - 0.5f, RANDOM.nextFloat() - 0.5f).normalize());
 
-        this.gravity = 0.01f;
-        this.gravityDirection = new Vector2f(0f, 1f);
-        this.friction = 0.02f;
+        this.setGravity(0.01f);
+        this.setGravityDirection(0f, 1f);
+        this.setFriction(0.02f);
     }
 }

@@ -1,12 +1,33 @@
 package it.hurts.octostudios.octolib.util;
 
-public record OctoColor(float r, float g, float b, float a) {
+import java.util.Objects;
+
+public final class OctoColor {
     public static final OctoColor RED = new OctoColor(1f, 0f, 0f, 1f);
     public static final OctoColor GREEN = new OctoColor(0f, 1f, 0f, 1f);
     public static final OctoColor BLUE = new OctoColor(0f, 0f, 1f, 1f);
     public static final OctoColor WHITE = new OctoColor(1f, 1f, 1f, 1f);
     public static final OctoColor BLACK = new OctoColor(0f, 0f, 0f, 1f);
     public static final OctoColor ZERO = new OctoColor(0f, 0f, 0f, 0f);
+
+    private final float r;
+    private final float g;
+    private final float b;
+    private final float a;
+
+    public OctoColor(float r, float g, float b, float a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    public OctoColor(int argb) {
+        this.a = ((argb >> 24) & 0xFF) / 255f;
+        this.r = ((argb >> 16) & 0xFF) / 255f;
+        this.g = ((argb >> 8) & 0xFF) / 255f;
+        this.b = (argb & 0xFF) / 255f;
+    }
 
     public int getARGB() {
         return ((((int) (a * 255)) & 0xFF) << 24) |
@@ -74,4 +95,46 @@ public record OctoColor(float r, float g, float b, float a) {
     public OctoColor multiply(float factor) {
         return this.multiply(factor, factor, factor, factor);
     }
+
+    public float r() {
+        return r;
+    }
+
+    public float g() {
+        return g;
+    }
+
+    public float b() {
+        return b;
+    }
+
+    public float a() {
+        return a;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (OctoColor) obj;
+        return Float.floatToIntBits(this.r) == Float.floatToIntBits(that.r) &&
+                Float.floatToIntBits(this.g) == Float.floatToIntBits(that.g) &&
+                Float.floatToIntBits(this.b) == Float.floatToIntBits(that.b) &&
+                Float.floatToIntBits(this.a) == Float.floatToIntBits(that.a);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(r, g, b, a);
+    }
+
+    @Override
+    public String toString() {
+        return "OctoColor[" +
+                "r=" + r + ", " +
+                "g=" + g + ", " +
+                "b=" + b + ", " +
+                "a=" + a + ']';
+    }
+
 }

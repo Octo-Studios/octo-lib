@@ -69,7 +69,7 @@ public class TestScreen extends Screen {
                 Minecraft.getInstance().font,
                 String.valueOf(f),
                 this.width - Minecraft.getInstance().font.width(String.valueOf(f)) - 4,
-                this.height - 10, 0xffffffff, true);
+                this.height - 10, 0x33ffffff, true);
 
         guiGraphics.pose().popPose();
     }

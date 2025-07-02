@@ -54,7 +54,7 @@ public class TestGearScreen extends Screen {
             this.shouldTick = false;
             UIParticle particle = new GalacticUIParticle(1.25f, 40, mouseX, mouseY, UIParticle.Layer.SCREEN, 0);
             particle.setScreen(this);
-            particle.rollVelocity = new Random().nextFloat(-5, 5);
+            particle.setRollVelocity(new Random().nextFloat(-5, 5));
             particle.instantiate();
         }
 

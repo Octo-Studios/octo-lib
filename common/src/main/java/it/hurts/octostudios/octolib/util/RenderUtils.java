@@ -1,8 +1,14 @@
 package it.hurts.octostudios.octolib.util;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.phys.Vec2;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -49,8 +55,6 @@ public class RenderUtils {
                                                float height, float scale, float zOffset) {
         BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-
         matrix.pushPose();
 
         matrix.translate(centerX, centerY, 0);
@@ -73,6 +77,8 @@ public class RenderUtils {
 
         matrix.popPose();
 
+        RenderPipelines.SOLID.getShaderDefines();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 

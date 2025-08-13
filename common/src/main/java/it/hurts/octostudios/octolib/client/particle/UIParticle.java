@@ -146,7 +146,7 @@ public class UIParticle {
 
         RenderUtils.renderTextureFromCenter(pose, 0, 0, tex.texOffX, tex.texOffY,
                 tex.texWidth, tex.texHeight, tex.width, tex.height,
-                1, 0);
+                1, getZOffset());
 
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
         RenderSystem.defaultBlendFunc();
@@ -164,11 +164,11 @@ public class UIParticle {
         pose.mulPose(Axis.ZP.rotationDegrees(interpRot));
     }
 
-    private float getTimeRatio(float partialTicks) {
+    public float getTimeRatio(float partialTicks) {
         return (this.time + partialTicks) / this.lifetime;
     }
 
-    private OctoColor getColor(float partialTicks) {
+    public OctoColor getColor(float partialTicks) {
         return OctoColor.lerp(this.getTimeRatio(partialTicks), colors);
     }
 

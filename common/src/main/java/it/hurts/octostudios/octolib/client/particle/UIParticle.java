@@ -1,18 +1,16 @@
 package it.hurts.octostudios.octolib.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import it.hurts.octostudios.octolib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 import org.lwjgl.opengl.GL11;
 import oshi.util.tuples.Pair;
@@ -129,39 +127,38 @@ public class UIParticle {
         if (this.isExpired()) return;
 
         Texture2D tex = getTexture();
-        PoseStack pose = guiGraphics.pose();
-        pose.pushPose();
+        Matrix3x2fStack pose = guiGraphics.pose();
+        pose.pushMatrix();
         this.transformPose(pose, partialTicks);
 
         float lifePercentage = getTimeRatio(partialTicks);
         OctoColor color = getColor(partialTicks);
 
-        RenderSystem.setShaderColor(color.r(), color.g(), color.b(), color.a());
-        RenderSystem.setShaderTexture(0, tex.rl);
+        //RenderSystem.setShaderColor(color.r(), color.g(), color.b(), color.a());
+        //RenderSystem.setShaderTexture(0, tex.rl);
+        //RenderSystem.enableBlend();
+        //if (enableBlend) {
+        //    RenderSystem.blendFunc(blendFunc.getA(), blendFunc.getB());
+        //}
 
-        RenderSystem.enableBlend();
-        if (enableBlend) {
-            RenderSystem.blendFunc(blendFunc.getA(), blendFunc.getB());
-        }
-
-        RenderUtils.renderTextureFromCenter(pose, 0, 0, tex.texOffX, tex.texOffY,
+        RenderUtils.renderTextureFromCenter(Minecraft.getInstance().renderBuffers().bufferSource(), tex.rl, pose, 0, 0, tex.texOffX, tex.texOffY,
                 tex.texWidth, tex.texHeight, tex.width, tex.height,
-                1, getZOffset());
+                1, color.getARGB(), getZOffset());
 
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
-        pose.popPose();
+//        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+//        RenderSystem.defaultBlendFunc();
+//        RenderSystem.disableBlend();
+        pose.popMatrix();
     }
 
-    private void transformPose(PoseStack pose, float partialTicks) {
+    private void transformPose(Matrix3x2fStack pose, float partialTicks) {
         Vector2f interpPos = transform.getInterpolatedPosition(partialTicks);
         float interpRot = transform.getInterpolatedRoll(partialTicks);
         Vector2f interpSize = transform.getInterpolatedSize(partialTicks);
 
-        pose.translate(interpPos.x, interpPos.y, zOffset);
-        pose.scale(interpSize.x, interpSize.y, 1);
-        pose.mulPose(Axis.ZP.rotationDegrees(interpRot));
+        pose.translate(interpPos.x, interpPos.y);
+        pose.scale(interpSize.x, interpSize.y);
+        pose.rotate((float) Math.toRadians(interpRot));
     }
 
     public float getTimeRatio(float partialTicks) {

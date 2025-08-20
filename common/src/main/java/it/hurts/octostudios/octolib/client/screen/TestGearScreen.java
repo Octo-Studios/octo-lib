@@ -58,8 +58,7 @@ public class TestGearScreen extends Screen {
             particle.instantiate();
         }
 
-        RenderSystem.setShaderTexture(0, ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"));
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 10, 10, 0, 0, 8, 8, 80, 80, 0, true, false);
+        RenderUtils.renderTilingTexture(Minecraft.getInstance().renderBuffers().bufferSource(), ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics.pose(), 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, 100, true, false);
     }
 
     @Override

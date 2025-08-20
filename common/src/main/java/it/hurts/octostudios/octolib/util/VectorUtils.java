@@ -22,11 +22,11 @@ public class VectorUtils {
     }
 
     public static Vec3 loadFromNBT(String name, CompoundTag tag) {
-        CompoundTag tag1 = tag.getCompound(name);
+        CompoundTag tag1 = tag.getCompound(name).get();
         return new Vec3(
-                tag1.getDouble("x"),
-                tag1.getDouble("y"),
-                tag1.getDouble("z")
+                tag1.getDouble("x").get(),
+                tag1.getDouble("y").get(),
+                tag1.getDouble("z").get()
         );
     }
 

@@ -50,10 +50,10 @@ public class TestScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.width/2f, this.height/2f, 0);
-        guiGraphics.pose().scale((float) this.squeeze.x, (float) this.squeeze.y, 1);
-        guiGraphics.pose().translate(-this.width/2f, -this.height/2f, 0);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.width/2f, this.height/2f);
+        guiGraphics.pose().scale((float) this.squeeze.x, (float) this.squeeze.y);
+        guiGraphics.pose().translate(-this.width/2f, -this.height/2f);
 
         UIParticle uiParticle = new GalacticUIParticle(20f, 2, i, j, UIParticle.Layer.SCREEN, 1f);
         uiParticle.setScreen(this);
@@ -71,7 +71,7 @@ public class TestScreen extends Screen {
                 this.width - Minecraft.getInstance().font.width(String.valueOf(f)) - 4,
                 this.height - 10, 0x33ffffff, true);
 
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override

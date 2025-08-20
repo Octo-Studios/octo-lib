@@ -9,22 +9,31 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.geom.Point2D;
+import java.util.function.Function;
+
+import static net.minecraft.client.renderer.RenderPipelines.GUI;
+import static net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED;
 
 public class RenderUtils {
-    public static Vec2 toScreenCoords(Matrix4f matrix, double x, double y) {
-        Matrix4f inverse = new Matrix4f(matrix);
+    public static final Function<ResourceLocation, RenderType> OCTO_GUI = rl -> RenderType.create("octogui", 1536, GUI_TEXTURED,
+            RenderType.CompositeState.builder()
+                    .setTextureState(new RenderStateShard.TextureStateShard(rl, false))
+                    .createCompositeState(false));
+
+    public static Vec2 toScreenCoords(Matrix3x2f matrix, double x, double y) {
+        Matrix3x2f inverse = new Matrix3x2f(matrix);
         inverse.invert();
         return toViewportCoords(inverse, x, y);
     }
 
-    public static Vec2 toViewportCoords(Matrix4f matrix, double x, double y) {
-        Vector4f vec = new Vector4f((float) x, (float) y, 0.0f, 1.0f);
+    public static Vec2 toViewportCoords(Matrix3x2f matrix, double x, double y) {
+        Vector3f vec = new Vector3f((float) x, (float) y, 1.0f);
         vec = matrix.transform(vec);
         return new Vec2(vec.x(), vec.y());
     }
@@ -47,20 +56,20 @@ public class RenderUtils {
         return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
-    public static void renderTextureFromCenter(PoseStack matrix, float centerX, float centerY, float width, float height, float scale, float zOffset) {
-        renderTextureFromCenter(matrix, centerX, centerY, 0, 0, width, height, width, height, scale, zOffset);
+    public static void renderTextureFromCenter(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
+        renderTextureFromCenter(bufferSource, texture, matrix, centerX, centerY, 0, 0, width, height, width, height, scale, color, zOffset);
     }
 
-    public static void renderTextureFromCenter(PoseStack matrix, float centerX, float centerY, float texOffX, float texOffY, float texWidth, float texHeight, float width,
-                                               float height, float scale, float zOffset) {
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+    public static void renderTextureFromCenter(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float centerX, float centerY, float texOffX, float texOffY, float texWidth, float texHeight, float width,
+                                               float height, float scale, int color, float zOffset) {
+        VertexConsumer builder = bufferSource.getBuffer(OCTO_GUI.apply(texture));
 
-        matrix.pushPose();
+        matrix.pushMatrix();
 
-        matrix.translate(centerX, centerY, 0);
-        matrix.scale(scale, scale, scale);
+        matrix.translate(centerX, centerY);
+        matrix.scale(scale, scale);
 
-        Matrix4f m = matrix.last().pose();
+        Matrix3x2f m = matrix;
 
         float u1 = texOffX / texWidth;
         float u2 = (texOffX + width) / texWidth;
@@ -70,28 +79,17 @@ public class RenderUtils {
         float w2 = width / 2F;
         float h2 = height / 2F;
 
-        builder.addVertex(m, -w2, +h2, zOffset).setUv(u1, v2);
-        builder.addVertex(m, +w2, +h2, zOffset).setUv(u2, v2);
-        builder.addVertex(m, +w2, -h2, zOffset).setUv(u2, v1);
-        builder.addVertex(m, -w2, -h2, zOffset).setUv(u1, v1);
+        builder.addVertexWith2DPose(m, -w2, +h2, zOffset).setUv(u1, v2).setColor(color);
+        builder.addVertexWith2DPose(m, +w2, +h2, zOffset).setUv(u2, v2).setColor(color);
+        builder.addVertexWith2DPose(m, +w2, -h2, zOffset).setUv(u2, v1).setColor(color);
+        builder.addVertexWith2DPose(m, -w2, -h2, zOffset).setUv(u1, v1).setColor(color);
 
-        matrix.popPose();
-
-        RenderPipelines.SOLID.getShaderDefines();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferUploader.drawWithShader(builder.buildOrThrow());
+        matrix.popMatrix();
     }
 
-    public static void renderTilingTexture(PoseStack matrix, float x, float y, float texOffX, float texOffY,
+    public static void renderTilingTexture(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float x, float y, float texOffX, float texOffY,
                                            float texWidth, float texHeight, float width, float height,
-                                           float zOffset, boolean tileHorizontally, boolean tileVertically) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-
-        int wrapS = tileHorizontally ? GL11.GL_REPEAT : GL11.GL_CLAMP;
-        int wrapT = tileVertically ? GL11.GL_REPEAT : GL11.GL_CLAMP;
-        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapS);
-        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapT);
-
+                                           int color, float zOffset, boolean tileHorizontally, boolean tileVertically) {
         float uStart = texOffX / texWidth;
         float vStart = texOffY / texHeight;
         float uRange = tileHorizontally ? (width / texWidth) : 1.0f;
@@ -99,18 +97,16 @@ public class RenderUtils {
         float uEnd = uStart + uRange;
         float vEnd = vStart + vRange;
 
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        VertexConsumer builder = bufferSource.getBuffer(OCTO_GUI.apply(texture));
 
-        matrix.pushPose();
-        matrix.translate(x, y, 0);
-        Matrix4f m = matrix.last().pose();
+        matrix.pushMatrix();
+        matrix.translate(x, y);
 
-        builder.addVertex(m, 0f, height, zOffset).setUv(uStart, vEnd)
-                .addVertex(m, width, height, zOffset).setUv(uEnd, vEnd)
-                .addVertex(m, width, 0f, zOffset).setUv(uEnd, vStart)
-                .addVertex(m, 0f, 0f, zOffset).setUv(uStart, vStart);
+        builder.addVertexWith2DPose(matrix, 0f, height, zOffset).setUv(uStart, vEnd).setColor(color)
+                .addVertexWith2DPose(matrix, width, height, zOffset).setUv(uEnd, vEnd).setColor(color)
+                .addVertexWith2DPose(matrix, width, 0f, zOffset).setUv(uEnd, vStart).setColor(color)
+                .addVertexWith2DPose(matrix, 0f, 0f, zOffset).setUv(uStart, vStart).setColor(color);
 
-        matrix.popPose();
-        BufferUploader.drawWithShader(builder.buildOrThrow());
+        matrix.popMatrix();
     }
 }

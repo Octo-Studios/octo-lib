@@ -19,9 +19,9 @@ public class AbstractContainerScreenMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void renderParticles(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(leftPos, topPos, 0);
-        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(leftPos, topPos);
+        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+        guiGraphics.pose().popMatrix();
     }
 }

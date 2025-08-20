@@ -23,6 +23,6 @@ public class ScreenMixin {
             return;
         }
 
-        ParticleSystem.renderScreenParticles(screen, guiGraphics, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+        ParticleSystem.renderScreenParticles(screen, guiGraphics, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
     }
 }

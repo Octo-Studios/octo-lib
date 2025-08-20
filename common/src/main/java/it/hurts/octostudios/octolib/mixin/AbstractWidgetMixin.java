@@ -31,8 +31,8 @@ public abstract class AbstractWidgetMixin {
     @Accessor("y")
     public abstract int getLocalY();
 
-    @Inject(method = "clicked", at = @At("RETURN"), cancellable = true)
-    private void inject(double mouseX, double mouseY, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "mouseClicked", at = @At("RETURN"), cancellable = true)
+    private void inject(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof Child<?>) {
             cir.setReturnValue(this.isMouseOver(mouseX, mouseY));
         }

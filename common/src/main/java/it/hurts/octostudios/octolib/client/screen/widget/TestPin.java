@@ -41,17 +41,17 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
             this.color = OctoColor.GREEN;
         }
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.getX(), this.getY(), 0);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.getX(), this.getY());
         guiGraphics.renderOutline(0, 0, this.width, this.height, color.getARGB());
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         if (this.getParent() instanceof HasRenderMatrix has) {
-            guiGraphics.pose().pushPose();
+            guiGraphics.pose().pushMatrix();
             Vec2 bleh = RenderUtils.toScreenCoords(has.getMatrix(), mouseX, mouseY);
-            guiGraphics.pose().translate(bleh.x-0.5, bleh.y-0.5, 0);
+            guiGraphics.pose().translate((float) (bleh.x-0.5), (float) (bleh.y-0.5));
             guiGraphics.renderOutline(0, 0, 2, 2, 0xffff0000);
-            guiGraphics.pose().popPose();
+            guiGraphics.pose().popMatrix();
         }
     }
 

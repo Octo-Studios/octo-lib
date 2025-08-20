@@ -15,10 +15,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 public class LevelRenderEvents {
     
     @SubscribeEvent
-    public static void renderLevelRender(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES)
-            return;
-        
+    public static void renderLevelRender(RenderLevelStageEvent.AfterParticles event) {
         Vec3 vec3 = event.getCamera().getPosition();
         double d = vec3.x();
         double e = vec3.y();

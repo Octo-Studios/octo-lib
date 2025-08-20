@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -27,7 +28,7 @@ public class TestWidget extends AbstractWidget {
     public EaseType easeType;
     public Tween tween;
 
-    private Matrix4f renderPose = new Matrix4f();
+    private Matrix3x2f renderPose = new Matrix3x2f();
 
     public Tween hoverTween;
     private boolean hasHovered = false;
@@ -41,25 +42,25 @@ public class TestWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float partialTick) {
-        float actualPartialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float actualPartialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(position.x + this.getX(), position.y + this.getY(), 0);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(position.x + this.getX(), position.y + this.getY());
 
-        guiGraphics.pose().translate(this.width/2f, this.height/2f, 0);
-        guiGraphics.pose().scale(scale.x, scale.y, 1);
-        guiGraphics.pose().translate(-this.width/2f, -this.height/2f, 0);
+        guiGraphics.pose().translate(this.width/2f, this.height/2f);
+        guiGraphics.pose().scale(scale.x, scale.y);
+        guiGraphics.pose().translate(-this.width/2f, -this.height/2f);
 
-        this.renderPose = new Matrix4f(guiGraphics.pose().last().pose());
+        this.renderPose = new Matrix3x2f(guiGraphics.pose());
         guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), color.getARGB());
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.getX(), this.getY(), 0);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.getX(), this.getY());
         guiGraphics.renderOutline(-2, -12, 112, this.getHeight() + 14, 0x50ffffff);
-        guiGraphics.pose().scale(0.75f, 1, 1);
+        guiGraphics.pose().scale(0.75f, 1);
         guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), 0, -10, 0x50ffffff, true);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override

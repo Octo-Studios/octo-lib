@@ -13,13 +13,14 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestGear extends AbstractWidget implements HasRenderMatrix, ContainerEventHandler {
-    private Matrix4f renderMatrix;
+    private Matrix3x2f renderMatrix;
     Tween tween = Tween.create();
 
     @Setter
@@ -33,22 +34,22 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
     }
 
     @Override
-    public Matrix4f getMatrix() {
+    public Matrix3x2f getMatrix() {
         return this.renderMatrix;
     }
 
     @Override
-    public void setMatrix(Matrix4f matrix) {
+    public void setMatrix(Matrix3x2f matrix) {
         this.renderMatrix = matrix;
     }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rot));
-        guiGraphics.pose().translate(-this.width/2f - this.getX(), -this.height/2f - this.getY(), 0);
-        this.setMatrix(new Matrix4f(guiGraphics.pose().last().pose()));
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f);
+        guiGraphics.pose().rotate((float) Math.toRadians(rot));
+        guiGraphics.pose().translate(-this.width/2f - this.getX(), -this.height/2f - this.getY());
+        this.setMatrix(new Matrix3x2f(guiGraphics.pose()));
 
         guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffffffff);
         this.children().forEach(child -> {
@@ -57,7 +58,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
             }
         });
 
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override

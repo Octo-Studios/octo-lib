@@ -1,5 +1,8 @@
 package it.hurts.octostudios.octolib.util;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -9,18 +12,17 @@ import org.joml.Matrix4f;
 
 import java.awt.Color;
 
-import static net.minecraft.client.renderer.RenderStateShard.LEQUAL_DEPTH_TEST;
-import static net.minecraft.client.renderer.RenderStateShard.LIGHTNING_TRANSPARENCY;
-
 public class TesselatorUtils {
-    
-    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("octoparticle_trail", DefaultVertexFormat.POSITION_COLOR,
-            VertexFormat.Mode.QUADS, 256, false, false,
+
+    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder()
+            .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+            .withBlend(BlendFunction.LIGHTNING)
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+            .build();
+
+    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("octoparticle_trail", 256, TRAIL_PIPELINE,
             RenderType.CompositeState.builder()
-                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                    .setOutputState(RenderStateShard.OutputStateShard.MAIN_TARGET)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setOutputState(RenderStateShard.OutputStateShard.TRANSLUCENT_TARGET)
                     .createCompositeState(false));
     
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,

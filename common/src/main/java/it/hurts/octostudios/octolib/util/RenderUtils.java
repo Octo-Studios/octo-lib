@@ -15,6 +15,7 @@ import org.joml.*;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.geom.Point2D;
+import java.lang.Math;
 import java.util.function.Function;
 
 import static net.minecraft.client.renderer.RenderPipelines.GUI;
@@ -56,35 +57,41 @@ public class RenderUtils {
         return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
-    public static void renderTextureFromCenter(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
-        renderTextureFromCenter(bufferSource, texture, matrix, centerX, centerY, 0, 0, width, height, width, height, scale, color, zOffset);
+    public static void renderTextureFromCenter(ResourceLocation texture, GuiGraphics guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
+        renderTextureFromCenter(texture, guiGraphics, centerX, centerY, 0f, 0f, (int) width, (int) height, width, height, scale, color);
     }
 
-    public static void renderTextureFromCenter(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float centerX, float centerY, float texOffX, float texOffY, float texWidth, float texHeight, float width,
-                                               float height, float scale, int color, float zOffset) {
-        VertexConsumer builder = bufferSource.getBuffer(OCTO_GUI.apply(texture));
+    public static void renderTextureFromCenter(
+            ResourceLocation texture,
+            GuiGraphics guiGraphics,
+            float centerX,
+            float centerY,
+            float texOffX,
+            float texOffY,
+            int texWidth,                // changed to int as requested
+            int texHeight,               // changed to int as requested
+            float width,
+            float height,
+            float scale,
+            int color
+    ) {
+        // compute scaled width/height (kept as floats)
+        float scaledWidth = width * scale;
+        float scaledHeight = height * scale;
 
-        matrix.pushMatrix();
+        // top-left position so the texture is rendered centered at (centerX, centerY)
+        float x = centerX - scaledWidth * 0.5f;
+        float y = centerY - scaledHeight * 0.5f;
 
-        matrix.translate(centerX, centerY);
-        matrix.scale(scale, scale);
+        // texture coordinates in texels (keep as floats to preserve precision)
+        float u = texOffX;
+        float v = texOffY;
 
-        Matrix3x2f m = matrix;
+        // region size in texels (what portion of the texture atlas to draw)
+        int regionW = Math.round(width);   // original region width/height (unscaled)
+        int regionH = Math.round(height);
 
-        float u1 = texOffX / texWidth;
-        float u2 = (texOffX + width) / texWidth;
-        float v1 = texOffY / texHeight;
-        float v2 = (texOffY + height) / texHeight;
-
-        float w2 = width / 2F;
-        float h2 = height / 2F;
-
-        builder.addVertexWith2DPose(m, -w2, +h2, zOffset).setUv(u1, v2).setColor(color);
-        builder.addVertexWith2DPose(m, +w2, +h2, zOffset).setUv(u2, v2).setColor(color);
-        builder.addVertexWith2DPose(m, +w2, -h2, zOffset).setUv(u2, v1).setColor(color);
-        builder.addVertexWith2DPose(m, -w2, -h2, zOffset).setUv(u1, v1).setColor(color);
-
-        matrix.popMatrix();
+        guiGraphics.blit(GUI_TEXTURED, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
     }
 
     public static void renderTilingTexture(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float x, float y, float texOffX, float texOffY,

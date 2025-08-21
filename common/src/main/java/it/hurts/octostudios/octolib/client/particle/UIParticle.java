@@ -141,9 +141,20 @@ public class UIParticle {
         //    RenderSystem.blendFunc(blendFunc.getA(), blendFunc.getB());
         //}
 
-        RenderUtils.renderTextureFromCenter(Minecraft.getInstance().renderBuffers().bufferSource(), tex.rl, pose, 0, 0, tex.texOffX, tex.texOffY,
-                tex.texWidth, tex.texHeight, tex.width, tex.height,
-                1, color.getARGB(), getZOffset());
+        RenderUtils.renderTextureFromCenter(
+                tex.rl,
+                guiGraphics,
+                0,
+                0,
+                tex.texOffX,
+                tex.texOffY,
+                (int) tex.texWidth,
+                (int) tex.texHeight,
+                tex.width,
+                tex.height,
+                1,
+                color.getARGB()
+        );
 
 //        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 //        RenderSystem.defaultBlendFunc();

@@ -1,23 +1,30 @@
 package it.hurts.octostudios.octolib.client.particle;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import it.hurts.octostudios.octolib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
-import org.lwjgl.opengl.GL11;
-import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
 
 public class UIParticle {
+    public static final RenderPipeline ADDITIVE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
+            .withBlend(BlendFunction.LIGHTNING)
+            .withColorWrite(true)
+            .withLocation(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "additive"))
+            .build();
+
     @Data
     public static class Texture2D {
         private ResourceLocation rl;
@@ -56,9 +63,8 @@ public class UIParticle {
     @Getter @Setter private float speed;
     @Getter @Setter private int time;
     @Getter @Setter private float zOffset;
-    @Getter private OctoColor[] colors;
-    @Getter private Pair<Integer, Integer> blendFunc;
-    @Getter @Setter private boolean enableBlend;
+    @Getter private OctoColor[] colors = new OctoColor[]{OctoColor.WHITE};
+    @Getter @Setter private RenderPipeline renderPipeline = RenderPipelines.GUI_TEXTURED;
 //    @Getter @Setter private boolean resizeWithLifetime;
 
     public UIParticle(Texture2D texture, float maxSpeed, int lifetime, float xStart, float yStart, Layer layer, float zOffset) {
@@ -70,18 +76,6 @@ public class UIParticle {
         this.zOffset = zOffset;
 
         this.transform = new Transform(new Vector2f(xStart, yStart), 0, new Vector2f(1f, 1f));
-        this.colors = new OctoColor[]{OctoColor.WHITE};
-        this.blendFunc = new Pair<>(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-        this.enableBlend = true;
-    }
-
-    public void enableBlend(boolean value) {
-        this.enableBlend = value;
-    }
-
-    public void setBlendFunc(int source, int destination) {
-        this.blendFunc = new Pair<>(source, destination);
-        this.enableBlend = true;
     }
 
     public void setColors(OctoColor... colors) {
@@ -134,14 +128,8 @@ public class UIParticle {
         float lifePercentage = getTimeRatio(partialTicks);
         OctoColor color = getColor(partialTicks);
 
-        //RenderSystem.setShaderColor(color.r(), color.g(), color.b(), color.a());
-        //RenderSystem.setShaderTexture(0, tex.rl);
-        //RenderSystem.enableBlend();
-        //if (enableBlend) {
-        //    RenderSystem.blendFunc(blendFunc.getA(), blendFunc.getB());
-        //}
-
         RenderUtils.renderTextureFromCenter(
+                this.getRenderPipeline(),
                 tex.rl,
                 guiGraphics,
                 0,
@@ -155,10 +143,6 @@ public class UIParticle {
                 1,
                 color.getARGB()
         );
-
-//        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-//        RenderSystem.defaultBlendFunc();
-//        RenderSystem.disableBlend();
         pose.popMatrix();
     }
 

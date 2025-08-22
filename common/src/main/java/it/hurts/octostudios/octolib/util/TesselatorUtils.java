@@ -3,26 +3,37 @@ package it.hurts.octostudios.octolib.util;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import it.hurts.octostudios.octolib.OctoLib;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 import java.awt.Color;
 
+import static net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET;
+
 public class TesselatorUtils {
 
-    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder()
+    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
             .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
             .withBlend(BlendFunction.LIGHTNING)
+            .withColorWrite(true)
+            .withPolygonMode(PolygonMode.FILL)
+            .withVertexShader("core/position_color")
+            .withFragmentShader("core/position_color")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+            .withLocation(ResourceLocation.fromNamespaceAndPath(OctoLib.MODID, "trail"))
             .build();
 
     public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("octoparticle_trail", 256, TRAIL_PIPELINE,
             RenderType.CompositeState.builder()
-                    .setOutputState(RenderStateShard.OutputStateShard.TRANSLUCENT_TARGET)
+                    .setOutputState(RenderStateShard.OutputStateShard.MAIN_TARGET)
                     .createCompositeState(false));
     
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,

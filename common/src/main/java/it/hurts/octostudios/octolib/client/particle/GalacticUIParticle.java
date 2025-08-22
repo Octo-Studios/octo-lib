@@ -25,7 +25,7 @@ public class GalacticUIParticle extends ExtendedUIParticle {
         this.setAngularVelocity(this.getSpeed()*3);
         this.setColors(new OctoColor(1f, 1f, 1f, 1f), new OctoColor(0f, 1f, 1f, 0f));
         this.setDirection(new Vector2f(RANDOM.nextFloat() - 0.5f, RANDOM.nextFloat() - 0.5f).normalize());
-
+        this.setRenderPipeline(UIParticle.ADDITIVE_PIPELINE);
         this.setGravity(0.01f);
         this.setGravityDirection(0f, 1f);
         this.setFriction(0.02f);

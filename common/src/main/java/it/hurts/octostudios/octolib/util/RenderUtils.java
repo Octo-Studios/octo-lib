@@ -57,11 +57,12 @@ public class RenderUtils {
         return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
-    public static void renderTextureFromCenter(ResourceLocation texture, GuiGraphics guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
-        renderTextureFromCenter(texture, guiGraphics, centerX, centerY, 0f, 0f, (int) width, (int) height, width, height, scale, color);
+    public static void renderTextureFromCenter(RenderPipeline pipeline, ResourceLocation texture, GuiGraphics guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
+        renderTextureFromCenter(pipeline, texture, guiGraphics, centerX, centerY, 0f, 0f, (int) width, (int) height, width, height, scale, color);
     }
 
     public static void renderTextureFromCenter(
+            RenderPipeline pipeline,
             ResourceLocation texture,
             GuiGraphics guiGraphics,
             float centerX,
@@ -91,7 +92,7 @@ public class RenderUtils {
         int regionW = Math.round(width);   // original region width/height (unscaled)
         int regionH = Math.round(height);
 
-        guiGraphics.blit(GUI_TEXTURED, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
+        guiGraphics.blit(pipeline, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
     }
 
     public static void renderTilingTexture(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float x, float y, float texOffX, float texOffY,

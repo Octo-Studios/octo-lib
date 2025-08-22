@@ -1,6 +1,7 @@
 package it.hurts.octostudios.octolib.module.particle.trail;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
 import it.hurts.octostudios.octolib.module.particle.RenderProvider;
 import it.hurts.octostudios.octolib.util.ColorUtils;
@@ -83,7 +84,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
 
     @Override
     @Deprecated
-    public void render(float pTicks, PoseStack poseStack, MultiBufferSource bufferSourceList) {
+    public void render(float pTicks, PoseStack poseStack, VertexConsumer consumer) {
         ClientLevel world = Minecraft.getInstance().level;
         if (world == null) return;
 
@@ -166,7 +167,6 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         poseStack.pushPose();
 
         var matrix4f = poseStack.last().pose();
-        var tes = bufferSourceList.getBuffer(TRAIL_RENDER_TYPE);
 
         for (var i = 0; i < partialPoses.size() - 1; i++) {
             var pos1 = partialPoses.get(i);
@@ -186,20 +186,20 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
             var c1 = ColorUtils.blend(color1, color2, i / (float) (partialPoses.size() - 1));
             var c2 = ColorUtils.blend(color1, color2, (i + 1) / (float) (partialPoses.size() - 1));
 
-            TesselatorUtils.drawQuadGradient(tes, matrix4f,
+            TesselatorUtils.drawQuadGradient(consumer, matrix4f,
                     (float) base2Left.x, (float) base2Left.y, (float) base2Left.z,
                     (float) base1Left.x, (float) base1Left.y, (float) base1Left.z,
                     (float) tip1.x, (float) tip1.y, (float) tip1.z,
                     (float) tip2.x, (float) tip2.y, (float) tip2.z, c2, c1);
 
-            TesselatorUtils.drawQuadGradient(tes, matrix4f,
+            TesselatorUtils.drawQuadGradient(consumer, matrix4f,
                     (float) tip2.x, (float) tip2.y, (float) tip2.z,
                     (float) tip1.x, (float) tip1.y, (float) tip1.z,
                     (float) base1Right.x, (float) base1Right.y, (float) base1Right.z,
                     (float) base2Right.x, (float) base2Right.y, (float) base2Right.z,
                     c2, c1);
 
-            TesselatorUtils.drawQuadGradient(tes, matrix4f,
+            TesselatorUtils.drawQuadGradient(consumer, matrix4f,
                     (float) base2Right.x, (float) base2Right.y, (float) base2Right.z,
                     (float) base1Right.x, (float) base1Right.y, (float) base1Right.z,
                     (float) base1Left.x, (float) base1Left.y, (float) base1Left.z,

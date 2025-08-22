@@ -16,6 +16,8 @@ import net.minecraft.sounds.SoundEvents;
 
 import java.util.Random;
 
+import static net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED;
+
 public class TestGearScreen extends Screen {
     Tween tween = Tween.create().setLoops(-1);
 
@@ -48,6 +50,11 @@ public class TestGearScreen extends Screen {
     }
 
     @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        //super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         if (shouldTick) {
@@ -58,7 +65,7 @@ public class TestGearScreen extends Screen {
             particle.instantiate();
         }
 
-        RenderUtils.renderTilingTexture(Minecraft.getInstance().renderBuffers().bufferSource(), ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics.pose(), 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, 100, true, false);
+        RenderUtils.renderTilingTexture(GUI_TEXTURED, ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);
     }
 
     @Override

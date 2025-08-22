@@ -1,28 +1,19 @@
 package it.hurts.octostudios.octolib.util;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Minecraft;
+import it.hurts.octostudios.octolib.mixin.GuiGraphicsAccessor;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec2;
 import org.joml.*;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.geom.Point2D;
 import java.lang.Math;
-import java.util.function.Function;
-
-import static net.minecraft.client.renderer.RenderPipelines.GUI;
-import static net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED;
+import java.util.function.BiFunction;
 
 public class RenderUtils {
-    public static final Function<ResourceLocation, RenderType> OCTO_GUI = rl -> RenderType.create("octogui", 1536, GUI_TEXTURED,
+    public static final BiFunction<RenderPipeline, ResourceLocation, RenderType> OCTO_GUI = (pipeline, rl) -> RenderType.create("octogui", 1536, pipeline,
             RenderType.CompositeState.builder()
                     .setTextureState(new RenderStateShard.TextureStateShard(rl, false))
                     .createCompositeState(false));
@@ -95,9 +86,9 @@ public class RenderUtils {
         guiGraphics.blit(pipeline, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
     }
 
-    public static void renderTilingTexture(MultiBufferSource.BufferSource bufferSource, ResourceLocation texture, Matrix3x2fStack matrix, float x, float y, float texOffX, float texOffY,
+    public static void renderTilingTexture(RenderPipeline pipeline, ResourceLocation texture, GuiGraphics guiGraphics, float x, float y, float texOffX, float texOffY,
                                            float texWidth, float texHeight, float width, float height,
-                                           int color, float zOffset, boolean tileHorizontally, boolean tileVertically) {
+                                           int color, boolean tileHorizontally, boolean tileVertically) {
         float uStart = texOffX / texWidth;
         float vStart = texOffY / texHeight;
         float uRange = tileHorizontally ? (width / texWidth) : 1.0f;
@@ -105,16 +96,22 @@ public class RenderUtils {
         float uEnd = uStart + uRange;
         float vEnd = vStart + vRange;
 
-        VertexConsumer builder = bufferSource.getBuffer(OCTO_GUI.apply(texture));
-
+        Matrix3x2fStack matrix = guiGraphics.pose();
         matrix.pushMatrix();
         matrix.translate(x, y);
 
-        builder.addVertexWith2DPose(matrix, 0f, height, zOffset).setUv(uStart, vEnd).setColor(color)
-                .addVertexWith2DPose(matrix, width, height, zOffset).setUv(uEnd, vEnd).setColor(color)
-                .addVertexWith2DPose(matrix, width, 0f, zOffset).setUv(uEnd, vStart).setColor(color)
-                .addVertexWith2DPose(matrix, 0f, 0f, zOffset).setUv(uStart, vStart).setColor(color);
+//        builder.addVertex(0f, height*16, 100).setUv(uStart, vEnd).setColor(color)
+//                .addVertex(width, height*16, 100).setUv(uEnd, vEnd).setColor(color)
+//                .addVertex(width, 0f, 100).setUv(uEnd, vStart).setColor(color)
+//                .addVertex(0f, 0f, 100).setUv(uStart, vStart).setColor(color);
 
+        GuiGraphicsAccessor accessor = (GuiGraphicsAccessor) guiGraphics;
+        accessor.innerBlitAccessor(pipeline, texture, 0, (int) width, 0, (int) height, uStart, uEnd, vStart, vEnd, color);
+
+        //guiGraphics.renderOutline(0,0, (int) width, (int) height,color);
         matrix.popMatrix();
+
+
+        //bufferSource.endBatch();
     }
 }

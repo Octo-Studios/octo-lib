@@ -9,6 +9,7 @@
     "AbstractWidgetMixin",
     "ClientLevelMixin",
     "GameRendererMixin",
+    "GuiGraphicsAccessor",
     "GuiMixin",
     "MinecraftMixin",
     "ScreenMixin"

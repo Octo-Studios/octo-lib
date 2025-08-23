@@ -8,11 +8,13 @@ import it.hurts.octostudios.octolib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2f;
 
@@ -65,6 +67,7 @@ public class UIParticle {
     @Getter @Setter private float zOffset;
     @Getter private OctoColor[] colors = new OctoColor[]{OctoColor.WHITE};
     @Getter @Setter private RenderPipeline renderPipeline = RenderPipelines.GUI_TEXTURED;
+    private Matrix3x2f matrix = new Matrix3x2f();
 //    @Getter @Setter private boolean resizeWithLifetime;
 
     public UIParticle(Texture2D texture, float maxSpeed, int lifetime, float xStart, float yStart, Layer layer, float zOffset) {
@@ -76,6 +79,14 @@ public class UIParticle {
         this.zOffset = zOffset;
 
         this.transform = new Transform(new Vector2f(xStart, yStart), 0, new Vector2f(1f, 1f));
+    }
+
+    public void setMatrix(Matrix3x2f matrix) {
+        this.matrix = new Matrix3x2f(matrix);
+    }
+
+    public Matrix3x2f getMatrix() {
+        return new Matrix3x2f(matrix);
     }
 
     public void setColors(OctoColor... colors) {
@@ -121,13 +132,14 @@ public class UIParticle {
         if (this.isExpired()) return;
 
         Texture2D tex = getTexture();
-        Matrix3x2fStack pose = guiGraphics.pose();
-        pose.pushMatrix();
-        this.transformPose(pose, partialTicks);
 
-        float lifePercentage = getTimeRatio(partialTicks);
+        Matrix3x2f matrix = this.getMatrix();
+        this.transformPose(matrix, partialTicks);
+
         OctoColor color = getColor(partialTicks);
 
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().mul(matrix);
         RenderUtils.renderTextureFromCenter(
                 this.getRenderPipeline(),
                 tex.rl,
@@ -143,10 +155,10 @@ public class UIParticle {
                 1,
                 color.getARGB()
         );
-        pose.popMatrix();
+        guiGraphics.pose().popMatrix();
     }
 
-    private void transformPose(Matrix3x2fStack pose, float partialTicks) {
+    private void transformPose(Matrix3x2f pose, float partialTicks) {
         Vector2f interpPos = transform.getInterpolatedPosition(partialTicks);
         float interpRot = transform.getInterpolatedRoll(partialTicks);
         Vector2f interpSize = transform.getInterpolatedSize(partialTicks);

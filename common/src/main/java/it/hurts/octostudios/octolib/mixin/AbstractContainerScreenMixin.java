@@ -13,15 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
-    @Shadow protected int leftPos;
-
-    @Shadow protected int topPos;
-
-    @Inject(method = "renderContents", at = @At("RETURN"))
-    private void renderParticles(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        guiGraphics.pose().pushMatrix();
-        //guiGraphics.pose().translate(leftPos, topPos);
-        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
-        guiGraphics.pose().popMatrix();
-    }
+//    @Shadow protected int leftPos;
+//
+//    @Shadow protected int topPos;
+//
+//    @Inject(method = "renderContents", at = @At("RETURN"))
+//    private void renderParticles(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+//        guiGraphics.pose().pushMatrix();
+//        //guiGraphics.pose().translate(leftPos, topPos);
+//        ParticleSystem.renderScreenParticles((Screen) (Object) this, guiGraphics, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+//        guiGraphics.pose().popMatrix();
+//    }
 }

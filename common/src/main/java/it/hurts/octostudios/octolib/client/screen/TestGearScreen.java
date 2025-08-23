@@ -59,10 +59,14 @@ public class TestGearScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         if (shouldTick) {
             this.shouldTick = false;
-            UIParticle particle = new GalacticUIParticle(1.25f, 40, mouseX, mouseY, UIParticle.Layer.SCREEN, 0);
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate(mouseX,mouseY);
+            UIParticle particle = new GalacticUIParticle(1.25f, 40, 0, 0, UIParticle.Layer.SCREEN, 0);
             particle.setScreen(this);
             particle.setRollVelocity(new Random().nextFloat(-5, 5));
+            particle.setMatrix(guiGraphics.pose());
             particle.instantiate();
+            guiGraphics.pose().popMatrix();
         }
 
         RenderUtils.renderTilingTexture(GUI_TEXTURED, ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);

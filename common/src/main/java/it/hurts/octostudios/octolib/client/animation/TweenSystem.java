@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.LockSupport;
 
 public class TweenSystem {
     private static final List<Tween> TWEENS = new ArrayList<>();
@@ -18,25 +19,22 @@ public class TweenSystem {
         running = true;
 
         Thread tweenThread = new Thread(() -> {
-            long lastMs = 0;
             while (running) {
-                long currentMs = System.currentTimeMillis();
-                if (lastMs == currentMs) {
+                if (TWEENS.isEmpty() && PENDING.isEmpty()) {
+                    LockSupport.parkNanos(2000000L);
                     continue;
                 }
 
-                lastMs = System.currentTimeMillis();
-
                 Tween tween;
                 while ((tween = PENDING.poll()) != null) {
-                    if (TWEENS.contains(tween)) {
-                        continue;
+                    if (!TWEENS.contains(tween)) {
+                        TWEENS.add(tween);
                     }
-
-                    TWEENS.add(tween);
                 }
 
                 updateAll();
+
+                LockSupport.parkNanos(2000000L);
             }
         }, "Tween thread");
 

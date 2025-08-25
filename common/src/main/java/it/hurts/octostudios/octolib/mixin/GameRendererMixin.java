@@ -3,6 +3,7 @@ package it.hurts.octostudios.octolib.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
+import it.hurts.octostudios.octolib.util.DeltaTimeTracker;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
+
+    @Inject(method = "render", at = @At("HEAD"))
+    private void injectHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        DeltaTimeTracker.updateDeltaTime();
+    }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isGameLoadFinished()Z"))
     private void renderTick(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {

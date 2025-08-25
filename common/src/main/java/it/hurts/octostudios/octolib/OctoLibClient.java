@@ -7,13 +7,12 @@ import it.hurts.octostudios.octolib.module.network.OctolibNetwork;
 import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
 import it.hurts.octostudios.octolib.module.particle.trail.EntityTrailRegistry;
 import it.hurts.octostudios.octolib.module.particle.trail.TestArrowTrail;
+import it.hurts.octostudios.octolib.util.DeltaTimeTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 
 public final class OctoLibClient {
-    public static long DELTA_NANOS;
-
     public static void init() {
         registerEvents();
 
@@ -27,6 +26,6 @@ public final class OctoLibClient {
     }
 
     public static double getDeltaTime() {
-        return DELTA_NANOS / 1000000000d;
+        return DeltaTimeTracker.getDeltaSeconds();
     }
 }

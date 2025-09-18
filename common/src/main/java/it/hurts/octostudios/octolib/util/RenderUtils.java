@@ -81,10 +81,10 @@ public class RenderUtils {
                                            float zOffset, boolean tileHorizontally, boolean tileVertically) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-        int wrapS = tileHorizontally ? GL11.GL_REPEAT : GL11.GL_CLAMP;
-        int wrapT = tileVertically ? GL11.GL_REPEAT : GL11.GL_CLAMP;
-        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapS);
-        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapT);
+//        int wrapS = tileHorizontally ? GL11.GL_REPEAT : GL11.GL_CLAMP;
+//        int wrapT = tileVertically ? GL11.GL_REPEAT : GL11.GL_CLAMP;
+//        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, wrapS);
+//        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, wrapT);
 
         float uStart = texOffX / texWidth;
         float vStart = texOffY / texHeight;

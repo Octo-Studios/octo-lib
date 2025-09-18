@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "package": "it.hurts.shatterbyte.shatterlib.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "AbstractContainerScreenMixin",
+    "AbstractWidgetAccessor",
+    "AbstractWidgetMixin",
+    "ClientLevelMixin",
+    "GameRendererMixin",
+    "GuiGraphicsAccessor",
+    "GuiMixin",
+    "MinecraftMixin",
+    "ScreenMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

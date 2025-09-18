@@ -8,7 +8,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'octolib'
+rootProject.name = 'shatterlib'
 
 include 'common'
 include 'fabric'

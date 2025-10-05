@@ -15,11 +15,44 @@ public final class OctoColor {
     private final float b;
     private final float a;
 
-    public OctoColor(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
+    public OctoColor(float red, float green, float blue, float alpha) {
+        this.r = red;
+        this.g = green;
+        this.b = blue;
+        this.a = alpha;
+    }
+
+    public static OctoColor fromHSV(float hue, float saturation, float value, float alpha) {
+        hue = hue % 1.0f;
+        if (hue < 0) hue += 1.0f;
+
+        saturation = Math.min(Math.max(saturation, 0f), 1f);
+        value = Math.min(Math.max(value, 0f), 1f);
+
+        float tempR = 0f, tempG = 0f, tempB = 0f;
+
+        if (saturation == 0.0f) {
+            tempR = tempG = tempB = value;
+        } else {
+            float i = (float) Math.floor(hue * 6.0f);
+            float f = hue * 6.0f - i;
+            float p = value * (1.0f - saturation);
+            float q = value * (1.0f - saturation * f);
+            float t = value * (1.0f - saturation * (1.0f - f));
+
+            int sector = (int) i % 6;
+
+            switch (sector) {
+                case 0: tempR = value; tempG = t; tempB = p; break;
+                case 1: tempR = q; tempG = value; tempB = p; break;
+                case 2: tempR = p; tempG = value; tempB = t; break;
+                case 3: tempR = p; tempG = q; tempB = value; break;
+                case 4: tempR = t; tempG = p; tempB = value; break;
+                case 5: tempR = value; tempG = p; tempB = q; break;
+            }
+        }
+
+        return new OctoColor(tempR, tempG, tempB, alpha);
     }
 
     public OctoColor(int argb) {
@@ -110,6 +143,45 @@ public final class OctoColor {
 
     public float a() {
         return a;
+    }
+
+    /**
+     * Converts the RGB components to HSV (Hue, Saturation, Value).
+     * @return A float array {hue, saturation, value}, where each component is in the range [0.0, 1.0].
+     */
+    public float[] toHSV() {
+        float min = Math.min(r, Math.min(g, b));
+        float max = Math.max(r, Math.max(g, b));
+        float delta = max - min;
+
+        float h, s, v;
+
+        v = max;
+
+        if (max != 0) {
+            s = delta / max;
+        } else {
+            s = 0;
+            h = 0;
+            return new float[] {h, s, v};
+        }
+
+        if (delta == 0) {
+            h = 0;
+        } else if (r == max) {
+            h = (g - b) / delta;
+        } else if (g == max) {
+            h = 2f + (b - r) / delta;
+        } else {
+            h = 4f + (r - g) / delta;
+        }
+
+        h /= 6.0f;
+        if (h < 0) {
+            h += 1.0f;
+        }
+
+        return new float[] {h, s, v};
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.joml.Vector2d;
 
@@ -71,15 +72,15 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean result = super.mouseClicked(mouseX, mouseY, button);
-        if (!result && button == 1) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        boolean result = super.mouseClicked(event, isDoubleClick);
+        if (!result && event.button() == 1) {
             for (GuiEventListener g : this.children()) {
                 if (g instanceof TestWidget widget) {
-                    widget.onClick(mouseX, mouseY);
+                    widget.onClick(event, isDoubleClick);
                 }
             }
-        } else if (!result && button == 0) {
+        } else if (!result && event.button() == 0) {
             //this.squeeze = new Vector2d(1,1);
 
             var tween = Tween.create().setTransitionType(TransitionType.SINE).setParallel(true);
@@ -88,6 +89,7 @@ public class TestScreen extends Screen {
             tween.tweenProperty(this, "squeeze.y", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_OUT);
             tween.tweenProperty(this, "squeeze.x", 1, 0.15).setDelay(0.15).setEaseType(EaseType.EASE_IN);
         }
+
         return result;
     }
 

@@ -5,6 +5,7 @@ import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.client.particle.GalacticUIParticle;
 import it.hurts.shatterbyte.shatterlib.client.particle.UIParticle;
+import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
@@ -51,12 +53,12 @@ public class TestWidget extends AbstractWidget {
         guiGraphics.pose().translate(-this.width/2f, -this.height/2f);
 
         this.renderPose = new Matrix3x2f(guiGraphics.pose());
-        guiGraphics.renderOutline(0, 0, this.getWidth(), this.getHeight(), color.getARGB());
+        RenderUtils.renderOutline(guiGraphics,0, 0, this.getWidth(), this.getHeight(), color.getARGB());
         guiGraphics.pose().popMatrix();
 
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(this.getX(), this.getY());
-        guiGraphics.renderOutline(-2, -12, 112, this.getHeight() + 14, 0x50ffffff);
+        RenderUtils.renderOutline(guiGraphics,-2, -12, 112, this.getHeight() + 14, 0x50ffffff);
         guiGraphics.pose().scale(0.75f, 1);
         guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), 0, -10, 0x50ffffff, true);
         guiGraphics.pose().popMatrix();
@@ -93,7 +95,7 @@ public class TestWidget extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
         if (tween != null) {
             tween.kill();
         }
@@ -105,17 +107,6 @@ public class TestWidget extends AbstractWidget {
         };
 
         tween = Tween.create().setTransitionType(transitionType).setEase(easeType).setLoops(3);
-//        tween.tweenProperty(this, "position", new Vector2f(), 0);
-//        tween.tweenProperty(this.position, "x", 100f, 0.5);
-//        tween.tweenRunnable(() -> ShatterLib.LOGGER.info("First runnable!"));
-//        tween.tweenProperty(this.position, "y", 20f, 0.5);
-//        tween.tweenRunnable(() -> ShatterLib.LOGGER.info("Waiting for a second after this one..."));
-//        tween.tweenInterval(1);
-//        tween.tweenRunnable(() -> ShatterLib.LOGGER.info("Yippie!"));
-//        tween.tweenProperty(this, "color", Color.WHITE, 1)
-//                .from(Color.GREEN)
-//                .setTransitionType(TransitionType.LINEAR);
-
         tween.tweenMethod(this::setColor, ShatterColor.GREEN, ShatterColor.WHITE, 0.5).setTransitionType(TransitionType.LINEAR);
         tween.parallel().tweenProperty(this, "position", new Vector2f(10, 10), 0.5);
         tween.parallel().tweenRunnable(spawnParticle);
@@ -125,6 +116,6 @@ public class TestWidget extends AbstractWidget {
         tween.parallel().tweenRunnable(spawnParticle);
         tween.tweenInterval(0.5);
 
-        super.onClick(mouseX, mouseY);
+        super.onClick(event, isDoubleClick);
     }
 }

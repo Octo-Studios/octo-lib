@@ -14,7 +14,7 @@ public class LevelRenderEvents {
     
     @SubscribeEvent
     public static void renderLevelRender(RenderLevelStageEvent.AfterParticles event) {
-        CommonCode.renderTrails(event.getCamera(), Minecraft.getInstance().renderBuffers().bufferSource(), event.getPoseStack(), event.getPartialTick());
+        CommonCode.renderTrails(Minecraft.getInstance().gameRenderer.getMainCamera(), Minecraft.getInstance().renderBuffers().bufferSource(), event.getPoseStack(), Minecraft.getInstance().getDeltaTracker());
     }
 
     @SubscribeEvent

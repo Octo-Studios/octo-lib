@@ -31,6 +31,13 @@ public class RenderUtils {
                 pointInTriangle(x, y, quad[0], quad[2], quad[3]);
     }
 
+    public static void renderOutline(GuiGraphics guiGraphics, int x, int y, int width, int height, int color) {
+        guiGraphics.fill(x, y, x + width, y + 1, color);
+        guiGraphics.fill(x, y + height - 1, x + width, y + height, color);
+        guiGraphics.fill(x, y + 1, x + 1, y + height - 1, color);
+        guiGraphics.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
+    }
+
     private boolean pointInTriangle(double px, double py, Point2D a, Point2D b, Point2D c) {
         double area = 0.5 * (-b.getY() * c.getX() + a.getY() * (-b.getX() + c.getX()) +
                 a.getX() * (b.getY() - c.getY()) + b.getX() * c.getY());

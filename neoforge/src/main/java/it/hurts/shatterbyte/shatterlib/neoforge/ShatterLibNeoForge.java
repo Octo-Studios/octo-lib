@@ -11,7 +11,7 @@ public final class ShatterLibNeoForge {
     public ShatterLibNeoForge(IEventBus modBus) {
         ShatterLib.init();
 
-        if (FMLEnvironment.dist == Dist.CLIENT)
+        if (FMLEnvironment.getDist() == Dist.CLIENT)
             new ShatterLibNeoForgeClient(modBus);
     }
 }

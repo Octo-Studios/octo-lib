@@ -4,14 +4,17 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
+import it.hurts.shatterbyte.shatterlib.module.particle.trail.EntityTrailRegistry;
+import it.hurts.shatterbyte.shatterlib.module.particle.trail.TestArrowTrail;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
+import net.minecraft.world.entity.EntityType;
 
 public final class ShatterLibClient {
     public static void init() {
         registerEvents();
 
         TweenSystem.init();
-        //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
     }
     
     private static void registerEvents() {

@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib.client.screen.widget;
 import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
+import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
@@ -49,7 +51,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
         guiGraphics.pose().translate(-this.width/2f - this.getX(), -this.height/2f - this.getY());
         this.setMatrix(new Matrix3x2f(guiGraphics.pose()));
 
-        guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffffffff);
+        RenderUtils.renderOutline(guiGraphics,this.getX(), this.getY(), this.width, this.height, 0xffffffff);
         this.children().forEach(child -> {
             if (child instanceof Renderable renderable) {
                 renderable.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -65,9 +67,9 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean result = super.mouseClicked(mouseX,mouseY, button);
-        if (!ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button) && result) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        boolean result = super.mouseClicked(event, isDoubleClick);
+        if (!ContainerEventHandler.super.mouseClicked(event, isDoubleClick) && result) {
             tween.kill();
             tween = Tween.create();
             tween.tweenMethod(this::setRot, this.rot, this.rot + 60f, 0.75f).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.QUART);

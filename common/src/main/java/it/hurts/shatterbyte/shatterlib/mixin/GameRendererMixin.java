@@ -29,7 +29,7 @@ public class GameRendererMixin {
         ShatterRenderManager.clientRenderTick();
     }
 
-    @Inject(require = 0, method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
+    @Inject(require = 0, method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
     private void renderScreenParticles(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
         ParticleSystem.renderScreenParticles(minecraft.screen, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false));
     }

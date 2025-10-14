@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.HasRenderMatrix;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.phys.Vec2;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,9 +26,9 @@ public abstract class AbstractWidgetMixin {
     public abstract int getLocalY();
 
     @Inject(method = "mouseClicked", at = @At("RETURN"), cancellable = true)
-    private void inject(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+    private void inject(MouseButtonEvent event, boolean isDoubleClick, CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof Child<?>) {
-            cir.setReturnValue(this.isMouseOver(mouseX, mouseY));
+            cir.setReturnValue(this.isMouseOver(event.x(), event.y()));
         }
     }
 

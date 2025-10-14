@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.particle.RenderProvider;
+import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,11 +16,10 @@ public class CommonCode {
 
     }
 
-    public static void renderTrails(Camera camera, MultiBufferSource.BufferSource consumers, PoseStack poseStack, DeltaTracker deltaTracker) {
-        Vec3 vec3 = camera.getPosition();
-        double d = vec3.x();
-        double e = vec3.y();
-        double g = vec3.z();
+    public static void renderTrails(Vec3 cameraPos, MultiBufferSource.BufferSource consumers, PoseStack poseStack, DeltaTracker deltaTracker) {
+        double d = cameraPos.x();
+        double e = cameraPos.y();
+        double g = cameraPos.z();
 
         VertexConsumer consumer = consumers.getBuffer(TesselatorUtils.TRAIL_RENDER_TYPE);
         float f = deltaTracker.getGameTimeDeltaPartialTick(false);

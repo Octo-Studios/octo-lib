@@ -29,7 +29,7 @@ public abstract class Packet implements CustomPacketPayload {
         }
     }
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
 
     }

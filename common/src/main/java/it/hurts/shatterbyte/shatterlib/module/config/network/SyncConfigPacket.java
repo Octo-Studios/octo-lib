@@ -35,7 +35,7 @@ public class SyncConfigPacket extends Packet {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         ConfigManager.reloadStringConfig(configFile, configPath, false);
     }

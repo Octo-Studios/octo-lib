@@ -34,7 +34,7 @@ public class TestScreenPacket extends Packet {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         Minecraft.getInstance().setScreen(new TestGearScreen());
     }

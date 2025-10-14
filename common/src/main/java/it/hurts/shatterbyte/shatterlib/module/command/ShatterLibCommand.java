@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
-import it.hurts.shatterbyte.shatterlib.module.config.network.UnholyAbominationPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -18,15 +17,6 @@ public class ShatterLibCommand {
     
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("shatterlib").requires(s -> s.hasPermission(2))
-                        .then(Commands.literal("openScreen")
-                                .then(Commands.argument("classpath", StringArgumentType.string())
-                                        .executes(context -> {
-                                            String path = StringArgumentType.getString(context, "classpath");
-                                            NetworkManager.sendToPlayer(context.getSource().getPlayer(), new UnholyAbominationPacket(path));
-                                            return Command.SINGLE_SUCCESS;
-                                        })
-                                )
-                        )
                 .then(Commands.literal("animatorSystemTestScreen")
                         .executes(component -> {
                             if (component.getSource().getPlayer() == null) {

@@ -13,6 +13,7 @@ allprojects {
     version = rootProject.mod_version + "+" + rootProject.minecraft_version
 
     repositories {
+        mavenCentral()
         maven {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
@@ -40,7 +41,7 @@ subprojects {
             parchment("org.parchmentmc.data:parchment-1.21.9:2025.10.05@zip")
         }
 
-        implementation 'org.yaml:snakeyaml:2.2'
+        implementation("de.marhali:json5-java:3.0.0")
 
         compileOnly 'org.projectlombok:lombok:1.18.32'
         annotationProcessor 'org.projectlombok:lombok:1.18.32'

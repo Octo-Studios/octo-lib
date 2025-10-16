@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.module.particle;
 
 import it.hurts.shatterbyte.shatterlib.client.shake.ShakeSystem;
-import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
+//import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import lombok.Getter;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -19,7 +19,7 @@ public class ShatterRenderManager {
     public static void worldExit(LocalPlayer player) {
         map.clear();
         providers.clear();
-        ConfigManager.reloadAll();
+        //ConfigManager.reloadAll();
     }
 
     public static void clientTick(ClientLevel level) {

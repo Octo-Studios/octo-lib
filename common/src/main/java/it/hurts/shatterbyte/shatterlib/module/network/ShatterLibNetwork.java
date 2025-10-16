@@ -2,7 +2,7 @@ package it.hurts.shatterbyte.shatterlib.module.network;
 
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
-import it.hurts.shatterbyte.shatterlib.module.config.network.SyncConfigPacket;
+//import it.hurts.shatterbyte.shatterlib.module.config.network.SyncConfigPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import net.fabricmc.api.EnvType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class ShatterLibNetwork {
     public static void init() {
-        registerS2C(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC, SyncConfigPacket::handle);
+        //registerS2C(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC, SyncConfigPacket::handle);
         registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
     }
 

@@ -1,10 +1,12 @@
 package it.hurts.shatterbyte.shatterlib.client.shake;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.joml.Vector2f;
 
 import java.util.Random;
 
+@ToString
 public class ShakeData {
     private final Vector2f amplitude;
     private final Vector2f frequency;

@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public final class ShatterLib {
-    
     public static final String MODID = "shatterlib";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 

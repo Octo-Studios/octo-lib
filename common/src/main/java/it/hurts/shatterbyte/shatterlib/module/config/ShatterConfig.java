@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.marhali.json5.Json5;
 import de.marhali.json5.Json5Element;
 import de.marhali.json5.Json5Object;
+import de.marhali.json5.config.DigitSeparatorStrategy;
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.RangeProp;
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
 
@@ -13,6 +14,8 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class ShatterConfig {
     private static final Gson GSON = new Gson();
@@ -39,28 +42,120 @@ public abstract class ShatterConfig {
         }
     }
 
+    private String addInlineComments(String out) throws IOException {
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            String inlineComment = "";
+            String name = field.getName();
+
+            if (field.isAnnotationPresent(RangeProp.class)) {
+                RangeProp ann = field.getAnnotation(RangeProp.class);
+                inlineComment = ann.min() + " - " + ann.max();
+            } else if (field.isAnnotationPresent(SimpleProp.class)) {
+                SimpleProp ann = field.getAnnotation(SimpleProp.class);
+                inlineComment = ann.inlineComment();
+            }
+
+            if (inlineComment.isEmpty()) {
+                continue;
+            }
+
+            Pattern p = Pattern.compile("(?m)(^\\s*"
+                    + Pattern.quote(name)
+                    + "\\s*:\\s*)([^\\n,]+)(,?)");
+            Matcher m = p.matcher(out);
+            StringBuffer sb = new StringBuffer();
+            boolean found = false;
+            while (m.find()) {
+                found = true;
+                String before = m.group(1);    // "  testRange: "
+                String value = m.group(2);     // "75.0"
+                String trailingComma = m.group(3); // maybe ","
+                String replacement = before + value + trailingComma + " // " + inlineComment;
+                m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+            }
+            m.appendTail(sb);
+
+            if (found) {
+                out = sb.toString();
+            }
+        }
+
+        return out;
+    }
+
     public void save(Path path) throws IOException {
         Json5Object obj = new Json5Object();
         writeToJson(obj);
-        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            JSON5.serialize(obj, writer);
+
+        StringWriter sw = new StringWriter();
+        JSON5.serialize(obj, sw);
+        String json = sw.toString();
+
+        json = this.addNewLinesBeforeComments(json);
+        json = this.addInlineComments(json);
+
+        Files.createDirectories(path.getParent() == null ? Path.of(".") : path.getParent());
+        try (Writer fileWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            fileWriter.write(json);
         }
     }
 
-    // ---------- helpers ----------
+    private String addNewLinesBeforeComments(String json) {
+        if (json == null || json.isEmpty()) return json;
 
-    /**
-     * convert arbitrary java object -> Json5Element in a robust way.
-     * tries direct parse first; if that fails (e.g. top-level primitive issues),
-     * parses a wrapped object {"_": <value>} and returns the "_" element.
-     */
+        // preserve original CRLF style if present
+        boolean hadCRLF = json.contains("\r\n");
+        // normalize to \n for easier processing
+        String normalized = json.replace("\r\n", "\n");
+
+        Pattern p = Pattern.compile("(?m)^\\s*//"); // match comment lines (start of line, optional indent, then //)
+        Matcher m = p.matcher(normalized);
+        StringBuffer sb = new StringBuffer();
+
+        while (m.find()) {
+            int start = m.start();
+
+            // find last non-whitespace character before this comment line
+            int prev = start - 1;
+            while (prev >= 0 && Character.isWhitespace(normalized.charAt(prev))) prev--;
+
+            boolean shouldInsert = true;
+
+            if (prev < 0) {
+                // comment is at very start of file -> don't insert blank line
+                shouldInsert = false;
+            } else {
+                char last = normalized.charAt(prev);
+                if (last == '{') {
+                    // comment directly after opening brace (like "{\n  // ...") -> don't insert
+                    shouldInsert = false;
+                } else {
+                    // check whether there's already an empty line between last non-whitespace and this comment
+                    String between = normalized.substring(prev + 1, start);
+                    if (between.contains("\n\n")) {
+                        shouldInsert = false; // already has a blank line
+                    }
+                }
+            }
+
+            String replacement = (shouldInsert ? "\n" : "") + m.group();
+            m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        m.appendTail(sb);
+
+        String result = sb.toString();
+        // restore CRLF if original used it
+        if (hadCRLF) result = result.replace("\n", "\r\n");
+        return result;
+    }
+
+
     private Json5Element toJson5Element(Object value) {
-        // null -> use json null
         String json = GSON.toJson(value);
         try {
             return JSON5.parse(json);
         } catch (Exception e) {
-            // fallback: wrap so parser always sees an object
             String wrapped = "{\"_\": " + json + "}";
             Json5Element parsed = JSON5.parse(wrapped);
             if (parsed.isJson5Object()) {
@@ -70,17 +165,11 @@ public abstract class ShatterConfig {
         }
     }
 
-    /**
-     * convert Json5Element -> Java object (using gson). uses JSON5.serialize to
-     * obtain a stable json string for gson to parse.
-     */
     private Object fromJson5Element(Json5Element elem, Type targetType) throws IOException {
         StringWriter sw = new StringWriter();
         JSON5.serialize(elem, sw);
         return GSON.fromJson(sw.toString(), targetType);
     }
-
-    // ---------- reflection-based read/write ----------
 
     private void applyFromJson(Json5Object obj) {
         Field[] fields = this.getClass().getDeclaredFields();
@@ -111,8 +200,6 @@ public abstract class ShatterConfig {
                     }
                     field.setFloat(this, val);
                 }
-
-                // fields without annotations are left alone (or you can decide to include them)
             } catch (IllegalAccessException | IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -129,19 +216,12 @@ public abstract class ShatterConfig {
                 Object value = field.get(this);
                 Json5Element elem = toJson5Element(value);
 
-                // if you have comments on the annotation, try to attach them.
-                // note: json5-java may expose APIs to attach comments to elements or properties.
-                // if `obj.setComment` is what worked for you before, keep it; otherwise
-                // the element-level comment API might be different. adjust as needed.
                 if (field.isAnnotationPresent(SimpleProp.class)) {
                     SimpleProp ann = field.getAnnotation(SimpleProp.class);
                     if (!ann.comment().isEmpty()) {
-                        // best-effort: many json5 libs let you attach a comment to the element.
-                        // if this call doesn't exist in your version, change to whatever API is provided.
                         try {
                             elem.setComment(ann.comment());
                         } catch (Throwable t) {
-                            // fallback: caller used obj.setComment previously; keep silent if not available
                             try { obj.setComment(ann.comment()); } catch (Throwable ignored) {}
                         }
                     }

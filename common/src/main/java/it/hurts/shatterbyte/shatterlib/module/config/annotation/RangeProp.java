@@ -9,6 +9,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface RangeProp {
     String comment() default "";
-    float min();
-    float max();
+    String inlineComment() default "";
+    String stringFormat() default "%.2f";
+    double min() default Double.NEGATIVE_INFINITY;
+    double max() default Double.POSITIVE_INFINITY;
+    boolean clamp() default false;
 }

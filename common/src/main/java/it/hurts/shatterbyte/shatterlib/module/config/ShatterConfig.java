@@ -1,9 +1,8 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import com.google.gson.Gson;
-import de.marhali.json5.Json5;
-import de.marhali.json5.Json5Element;
-import de.marhali.json5.Json5Object;
+import com.mojang.blaze3d.vertex.PoseStack;
+import de.marhali.json5.*;
 import de.marhali.json5.config.DigitSeparatorStrategy;
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.RangeProp;
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
@@ -26,6 +25,10 @@ public abstract class ShatterConfig {
             .build());
 
     public void load(Path path) throws IOException {
+        if (!ConfigManager.getRegisteredPaths().contains(this.getPath())) {
+            throw new RuntimeException("Tried to load an unregistered config: "+this.getPath());
+        }
+
         if (Files.exists(path)) {
             try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                 Json5Element rootElem = JSON5.parse(reader);
@@ -42,17 +45,17 @@ public abstract class ShatterConfig {
         }
     }
 
-    private String addInlineComments(String out) throws IOException {
+    private String addInlineComments(String out) {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             String inlineComment = "";
             String name = field.getName();
 
-            if (field.isAnnotationPresent(RangeProp.class)) {
-                RangeProp ann = field.getAnnotation(RangeProp.class);
-                inlineComment = ann.min() + " - " + ann.max();
-            } else if (field.isAnnotationPresent(SimpleProp.class)) {
+            if (field.isAnnotationPresent(SimpleProp.class)) {
                 SimpleProp ann = field.getAnnotation(SimpleProp.class);
+                inlineComment = ann.inlineComment();
+            } else if (field.isAnnotationPresent(RangeProp.class)) {
+                RangeProp ann = field.getAnnotation(RangeProp.class);
                 inlineComment = ann.inlineComment();
             }
 
@@ -85,6 +88,10 @@ public abstract class ShatterConfig {
     }
 
     public void save(Path path) throws IOException {
+        if (!ConfigManager.getRegisteredPaths().contains(this.getPath())) {
+            throw new RuntimeException("Tried to save an unregistered config: "+this.getPath());
+        }
+
         Json5Object obj = new Json5Object();
         writeToJson(obj);
 
@@ -106,17 +113,19 @@ public abstract class ShatterConfig {
 
         // preserve original CRLF style if present
         boolean hadCRLF = json.contains("\r\n");
-        // normalize to \n for easier processing
         String normalized = json.replace("\r\n", "\n");
 
-        Pattern p = Pattern.compile("(?m)^\\s*//"); // match comment lines (start of line, optional indent, then //)
+        // capture leading indentation (group 1) and the comment itself (group 2)
+        Pattern p = Pattern.compile("(?ms)(^\\s*)(/\\*.*?\\*/|//.*$)");
         Matcher m = p.matcher(normalized);
         StringBuffer sb = new StringBuffer();
 
         while (m.find()) {
-            int start = m.start();
+            String indent = m.group(1);    // the whitespace at the start of the comment line
+            String comment = m.group(2);   // the actual comment (block or line)
 
-            // find last non-whitespace character before this comment line
+            int start = m.start(2); // start index of the comment itself in normalized
+            // find last non-whitespace character before this comment start
             int prev = start - 1;
             while (prev >= 0 && Character.isWhitespace(normalized.charAt(prev))) prev--;
 
@@ -128,27 +137,28 @@ public abstract class ShatterConfig {
             } else {
                 char last = normalized.charAt(prev);
                 if (last == '{') {
-                    // comment directly after opening brace (like "{\n  // ...") -> don't insert
+                    // comment directly after opening brace -> don't insert
                     shouldInsert = false;
                 } else {
                     // check whether there's already an empty line between last non-whitespace and this comment
                     String between = normalized.substring(prev + 1, start);
-                    if (between.contains("\n\n")) {
+                    if (Pattern.compile("\\n\\s*\\n").matcher(between).find()) {
                         shouldInsert = false; // already has a blank line
                     }
                 }
             }
 
-            String replacement = (shouldInsert ? "\n" : "") + m.group();
-            m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+            // build replacement: optionally add a single blank line, then the original indentation + comment
+            String replacement = (shouldInsert ? "\n" : "") + indent + Matcher.quoteReplacement(comment);
+            m.appendReplacement(sb, replacement);
         }
         m.appendTail(sb);
 
         String result = sb.toString();
-        // restore CRLF if original used it
         if (hadCRLF) result = result.replace("\n", "\r\n");
         return result;
     }
+
 
 
     private Json5Element toJson5Element(Object value) {
@@ -186,19 +196,21 @@ public abstract class ShatterConfig {
 
                 if (field.isAnnotationPresent(RangeProp.class)) {
                     RangeProp ann = field.getAnnotation(RangeProp.class);
-                    float min = ann.min();
-                    float max = ann.max();
-                    float val;
+                    double min = ann.min();
+                    double max = ann.max();
+                    double val;
                     if (obj.has(name)) {
                         Json5Element e = obj.get(name);
-                        val = e.getAsJson5Primitive().getAsNumber().floatValue();
+                        val = e.getAsJson5Primitive().getAsNumber().doubleValue();
                     } else {
-                        val = field.getFloat(this); // default
+                        val = field.getDouble(this); // default
                     }
-                    if (val < min || val > max) {
+
+                    if (ann.clamp() && val < min || val > max) {
                         val = Math.max(min, Math.min(max, val)); // clamp
                     }
-                    field.setFloat(this, val);
+
+                    field.setDouble(this, val);
                 }
             } catch (IllegalAccessException | IOException ex) {
                 throw new RuntimeException(ex);
@@ -208,32 +220,47 @@ public abstract class ShatterConfig {
 
     private void writeToJson(Json5Object obj) {
         Field[] fields = this.getClass().getDeclaredFields();
+        ShatterConfig defaultInstance = ConfigManager.getDefaultInstance(this);
         for (Field field : fields) {
             field.setAccessible(true);
             String name = field.getName();
 
             try {
                 Object value = field.get(this);
+                Object defaultValue = field.get(defaultInstance);
                 Json5Element elem = toJson5Element(value);
+                Json5Element defaultElem = toJson5Element(defaultValue);
 
                 if (field.isAnnotationPresent(SimpleProp.class)) {
                     SimpleProp ann = field.getAnnotation(SimpleProp.class);
+                    String comment = "";
                     if (!ann.comment().isEmpty()) {
-                        try {
-                            elem.setComment(ann.comment());
-                        } catch (Throwable t) {
-                            try { obj.setComment(ann.comment()); } catch (Throwable ignored) {}
-                        }
+                        comment = ann.comment();
                     }
+
+                    if (defaultElem instanceof Json5Primitive || defaultElem instanceof Json5Array) {
+                        comment += "\n\nDefault: " + defaultElem.getAsString();
+                    }
+                    elem.setComment(comment);
+
                 } else if (field.isAnnotationPresent(RangeProp.class)) {
                     RangeProp ann = field.getAnnotation(RangeProp.class);
+                    String comment = "";
                     if (!ann.comment().isEmpty()) {
-                        try {
-                            elem.setComment(ann.comment());
-                        } catch (Throwable t) {
-                            try { obj.setComment(ann.comment()); } catch (Throwable ignored) {}
-                        }
+                        comment = ann.comment();
                     }
+
+                    if (defaultElem instanceof Json5Primitive || defaultElem instanceof Json5Array) {
+                        comment += "\n\nDefault: " + defaultElem.getAsString();
+                    }
+
+                    comment += "\n";
+
+                    String lowerRange = ann.min() == Float.NEGATIVE_INFINITY ? "-∞" : String.format(ann.stringFormat(), ann.min());
+                    String upperRange = ann.max() == Float.POSITIVE_INFINITY ? "+∞" : String.format(ann.stringFormat(), ann.max());
+                    comment += "Range: "+lowerRange+" -> "+upperRange;
+
+                    elem.setComment(comment);
                 }
 
                 obj.add(name, elem);
@@ -242,4 +269,6 @@ public abstract class ShatterConfig {
             }
         }
     }
+
+    public abstract String getPath();
 }

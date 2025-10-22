@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class MyConfig extends ShatterConfig {
-    public ColorEntry color = ColorEntry.builder(new ShatterColor(1f, 0.2f, 1f, 1f))
+    private ColorEntry color = ColorEntry.builder(new ShatterColor(1f, 0.2f, 1f, 1f))
             .includeAlpha(true)
             .withComment("test comment")
             .withInlineComment("yay inline comment")

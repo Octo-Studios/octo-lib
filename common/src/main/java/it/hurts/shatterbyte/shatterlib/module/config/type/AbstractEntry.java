@@ -1,6 +1,5 @@
 package it.hurts.shatterbyte.shatterlib.module.config.type;
 
-import de.marhali.json5.Json5;
 import de.marhali.json5.Json5Element;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +16,12 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
         this.value = defaultValue;
     }
 
-    E setCommentInternal(String comment) {
+    void setComment(String comment) {
         this.comment = comment;
-        return (E) this;
     }
 
-    E setInlineCommentInternal(String inlineComment) {
+    void setInlineComment(String inlineComment) {
         this.inlineComment = inlineComment;
-        return (E) this;
     }
 
     public abstract void loadFromJson(Json5Element element);
@@ -39,11 +36,13 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
             this.value = value;
         }
 
+        @SuppressWarnings("unchecked")
         public B withComment(String comment) {
             this.comment = comment;
             return (B) this;
         }
 
+        @SuppressWarnings("unchecked")
         public B withInlineComment(String inlineComment) {
             this.inlineComment = inlineComment;
             return (B) this;
@@ -53,8 +52,8 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
 
         public E build() {
             E entry = createEntry(value);
-            entry.setCommentInternal(comment);
-            entry.setInlineCommentInternal(inlineComment);
+            entry.setComment(comment);
+            entry.setInlineComment(inlineComment);
             return entry;
         }
     }

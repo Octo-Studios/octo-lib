@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
+import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
 import lombok.SneakyThrows;
 
 import java.lang.management.ManagementPermission;

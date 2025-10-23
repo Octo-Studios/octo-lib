@@ -2,26 +2,26 @@ package it.hurts.shatterbyte.shatterlib.module.config.type;
 
 import com.google.gson.Gson;
 import de.marhali.json5.*;
+import it.hurts.shatterbyte.shatterlib.module.config.Json5Deserializer;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Getter
 public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
     private String comment = "";
-    private String inlineComment = "";
 
     @Setter
     private T value;
 
-    public AbstractEntry(T defaultValue) {
+    AbstractEntry(T defaultValue) {
         this.value = defaultValue;
     }
 
@@ -29,19 +29,21 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
         this.comment = comment;
     }
 
-    void setInlineComment(String inlineComment) {
-        this.inlineComment = inlineComment;
-    }
-
+    @SuppressWarnings("unchecked")
     public void loadFromJson(Json5Element element) {
-        Json5Object object = element.getAsJson5Object();
+        try {
+            Object deserialized = Json5Deserializer.deserializeObject(element, this.getValue().getClass());
+            this.setValue((T) deserialized);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load entry from json", e);
+        }
     }
 
     public Json5Element saveToJson() {
         try {
             return serializeObject(this.getValue());
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to save entry to json", e);
         }
     }
 
@@ -129,7 +131,6 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
     public static abstract class Builder<T, E extends AbstractEntry<T, E>, B extends Builder<T, E, B>> {
         protected T value;
         protected String comment = "";
-        protected String inlineComment = "";
 
         protected Builder(T defaultValue) {
             this.value = defaultValue;
@@ -141,18 +142,11 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
             return (B) this;
         }
 
-        @SuppressWarnings("unchecked")
-        public B withInlineComment(String inlineComment) {
-            this.inlineComment = inlineComment;
-            return (B) this;
-        }
-
         protected abstract E createEntry(T defaultValue);
 
         public E build() {
             E entry = createEntry(value);
             entry.setComment(comment);
-            entry.setInlineComment(inlineComment);
             return entry;
         }
     }

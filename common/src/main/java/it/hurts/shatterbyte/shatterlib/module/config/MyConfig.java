@@ -16,11 +16,22 @@ public class MyConfig extends ShatterConfig {
     private ColorEntry testColor = ColorEntry.builder(new ShatterColor(1f, 0.2f, 1f, 1f))
             .includeAlpha(true)
             .withComment("test comment!")
-            .withInlineComment("yay inline comment :D")
             .build();
 
     private SimpleEntry<Boolean> testBoolean = SimpleEntry.builder(false)
             .withComment("Test boolean comment!")
+            .build();
+
+    private SimpleEntry<Double> testDouble = SimpleEntry.builder(35.4d)
+            .withComment("double comment")
+            .build();
+
+    private SimpleEntry<String> testString = SimpleEntry.builder("aaa\nNEWLINE JUMPSCARE")
+            .withComment("string comment")
+            .build();
+
+    private SimpleEntry<Float> testNumber = SimpleEntry.builder(2f)
+            .withComment("float comment")
             .build();
 
     private SimpleEntry<Boolean> anotherTestBoolean = SimpleEntry.builder(true)
@@ -31,10 +42,10 @@ public class MyConfig extends ShatterConfig {
             .withComment("test comment vec3 bleeh")
             .build();
 
-    private MapEntry<ShakeData> funkyMap = MapEntry.builder(Map.of(
-            "shatterlib:test", new ShakeData(1f,1f,1f),
-            "shatterlib:test2", new ShakeData(0.2f,3f,10.5d)
-    )).withComment("map").build();
+    private MapEntry<ShakeData> funkyMap = MapEntry.<ShakeData>builder()
+            .addPair("shatterlib:test", new ShakeData(1f,1f,1f))
+            .withComment("map")
+            .build();
 
     @Override
     public String getPath() {

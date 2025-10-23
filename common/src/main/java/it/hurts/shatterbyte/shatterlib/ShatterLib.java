@@ -6,7 +6,6 @@ import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
-import it.hurts.shatterbyte.shatterlib.module.config.type.Vec3Entry;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;

@@ -2,13 +2,11 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.shake.ShakeData;
-import it.hurts.shatterbyte.shatterlib.module.config.type.BooleanEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.ColorEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.MapEntry;
-import it.hurts.shatterbyte.shatterlib.module.config.type.Vec3Entry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
@@ -21,15 +19,15 @@ public class MyConfig extends ShatterConfig {
             .withInlineComment("yay inline comment :D")
             .build();
 
-    private BooleanEntry testBoolean = BooleanEntry.builder(false)
+    private SimpleEntry<Boolean> testBoolean = SimpleEntry.builder(false)
             .withComment("Test boolean comment!")
             .build();
 
-    private BooleanEntry anotherTestBoolean = BooleanEntry.builder(true)
+    private SimpleEntry<Boolean> anotherTestBoolean = SimpleEntry.builder(true)
             .withComment("Another test boolean comment!")
             .build();
 
-    private Vec3Entry someVec3 = Vec3Entry.builder(new Vec3(1.25d, 3d, 0.25d))
+    private SimpleEntry<Vec3> someVec3 = SimpleEntry.builder(new Vec3(1.25d, 3d, 0.25d))
             .withComment("test comment vec3 bleeh")
             .build();
 

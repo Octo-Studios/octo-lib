@@ -67,9 +67,6 @@ public class ColorEntry extends AbstractEntry<ShatterColor, ColorEntry> {
             hex = String.format("#%06X", rgb);
         }
 
-        Json5Primitive string = Json5Primitive.fromString(hex);
-        string.setComment(this.getComment());
-
-        return string;
+        return Json5Primitive.fromString(hex);
     }
 }

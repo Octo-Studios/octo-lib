@@ -1,15 +1,15 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
-import it.hurts.shatterbyte.shatterlib.module.config.type.BooleanEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
-public class CheckboxWidget extends AbstractEntryWidget<BooleanEntry> {
-    public CheckboxWidget(int x, int y, Component name, BooleanEntry entry) {
+public class CheckboxWidget extends AbstractEntryWidget<SimpleEntry<Boolean>> {
+    public CheckboxWidget(int x, int y, Component name, SimpleEntry<Boolean> entry) {
         super(x, y, 16, 16, name, entry);
     }
 

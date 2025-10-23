@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.shake;
 
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
-import it.hurts.shatterbyte.shatterlib.module.config.type.BooleanEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import lombok.Getter;
 import lombok.ToString;
 import org.joml.Vector2f;
@@ -19,7 +19,7 @@ public class ShakeData {
     private short seed;
 
     @Getter
-    private BooleanEntry isFinished = BooleanEntry.builder(false)
+    private SimpleEntry<Boolean> isFinished = SimpleEntry.builder(false)
             .withComment("True if the shake is finished.")
             .build();
 

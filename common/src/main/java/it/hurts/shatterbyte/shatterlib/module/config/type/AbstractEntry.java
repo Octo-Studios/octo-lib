@@ -35,14 +35,11 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
 
     public void loadFromJson(Json5Element element) {
         Json5Object object = element.getAsJson5Object();
-
     }
 
     public Json5Element saveToJson() {
         try {
-            Json5Element object = serializeObject(this.getValue());
-            object.setComment(this.getComment());
-            return object;
+            return serializeObject(this.getValue());
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -56,7 +53,11 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
             case String s -> Json5Primitive.fromString(s);
             case Character c -> Json5Primitive.fromCharacter(c);
             case Instant instant -> Json5Primitive.fromInstant(instant);
-            case AbstractEntry<?, ?> entry -> entry.saveToJson();
+            case AbstractEntry<?, ?> entry -> {
+                Json5Element element = entry.saveToJson();
+                element.setComment(entry.getComment());
+                yield element;
+            }
             default -> {
                 Class<?> clazz = object.getClass();
 

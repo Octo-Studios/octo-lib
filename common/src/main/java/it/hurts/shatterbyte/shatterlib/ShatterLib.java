@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
+import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
@@ -29,7 +30,7 @@ public final class ShatterLib {
     public static void main(String[] args) throws IllegalAccessException, IOException {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
         CONFIG.load(Path.of("."));
-        LOGGER.info(ShatterConfig.JSON5.serialize(AbstractEntry.serializeObject(CONFIG)));
+        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.serializeObject(CONFIG)));
         CONFIG.save(Path.of("."));
     }
     

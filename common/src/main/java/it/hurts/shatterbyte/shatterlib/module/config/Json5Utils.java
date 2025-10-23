@@ -1,9 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
-import de.marhali.json5.Json5Array;
-import de.marhali.json5.Json5Element;
-import de.marhali.json5.Json5Object;
-import de.marhali.json5.Json5Primitive;
+import de.marhali.json5.*;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
 import sun.misc.Unsafe;
 
@@ -11,7 +8,7 @@ import java.lang.reflect.*;
 import java.time.Instant;
 import java.util.*;
 
-public class Json5Deserializer {
+public class Json5Utils {
     private static final Unsafe unsafe;
     static {
         try {
@@ -21,6 +18,87 @@ public class Json5Deserializer {
         } catch (Exception e) {
             throw new RuntimeException("Failed to get sun.misc.Unsafe", e);
         }
+    }
+
+    public static Json5Element serializeObject(Object object) throws IllegalAccessException {
+        return switch (object) {
+            case null -> new Json5Null();
+            case Number number -> Json5Primitive.fromNumber(number);
+            case Boolean b -> Json5Primitive.fromBoolean(b);
+            case String s -> Json5Primitive.fromString(s);
+            case Character c -> Json5Primitive.fromCharacter(c);
+            case Instant instant -> Json5Primitive.fromInstant(instant);
+            case AbstractEntry<?, ?> entry -> {
+                Json5Element element = entry.saveToJson();
+                element.setComment(entry.getComment());
+                yield element;
+            }
+            default -> {
+                Class<?> clazz = object.getClass();
+
+                // enums -> name()
+                if (clazz.isEnum()) {
+                    yield Json5Primitive.fromString(((Enum<?>) object).name());
+                }
+
+                // arrays
+                if (clazz.isArray()) {
+                    Json5Array arr = new Json5Array();
+                    int len = Array.getLength(object);
+                    for (int i = 0; i < len; i++) {
+                        arr.add(serializeObject(Array.get(object, i)));
+                    }
+                    yield arr;
+                }
+
+                // collections
+                if (object instanceof Collection<?>) {
+                    Json5Array arr = new Json5Array();
+                    for (Object item : (Collection<?>) object) {
+                        arr.add(serializeObject(item));
+                    }
+                    yield arr;
+                }
+
+                // maps
+                if (object instanceof Map<?, ?>) {
+                    Json5Object json = new Json5Object();
+                    for (Map.Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
+                        String key = (e.getKey() == null) ? "null" : e.getKey().toString();
+                        json.add(key, serializeObject(e.getValue()));
+                    }
+                    yield json;
+                }
+
+                // treat JDK/core classes as leaves to avoid reflecting into them (avoids IllegalAccess)
+                Package pkg = clazz.getPackage();
+                String pkgName = (pkg == null) ? "" : pkg.getName();
+                if (pkgName.startsWith("java.") || pkgName.startsWith("javax.") || pkgName.startsWith("kotlin.")) {
+                    // fallback: use toString() as a simple representation
+                    yield Json5Primitive.fromString(object.toString());
+                }
+
+                // ---- otherwise reflect into user-defined class fields ----
+                Json5Object json5Object = new Json5Object();
+                for (Field field : clazz.getDeclaredFields()) {
+                    // skip static and transient fields (like gson does)
+                    int mods = field.getModifiers();
+                    if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) continue;
+
+                    field.setAccessible(true);
+                    Object fieldValue = field.get(object);
+                    String name = field.getName();
+
+                    if (fieldValue == null) {
+                        json5Object.add(name, new Json5Null());
+                    } else {
+                        json5Object.add(name, serializeObject(fieldValue));
+                    }
+                }
+                yield json5Object;
+            }
+        };
+
     }
 
     @SuppressWarnings("unchecked")

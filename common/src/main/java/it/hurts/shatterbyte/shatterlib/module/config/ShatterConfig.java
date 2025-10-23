@@ -32,7 +32,7 @@ public abstract class ShatterConfig {
     public void save(Path configDir) {
         Path configFile = configDir.resolve(this.getPath() + ".json5");
         try {
-            Json5Element configJson = AbstractEntry.serializeObject(this);
+            Json5Element configJson = Json5Utils.serializeObject(this);
 
             String jsonString = JSON5.serialize(configJson);
             Files.createDirectories(configFile.getParent());
@@ -61,7 +61,7 @@ public abstract class ShatterConfig {
                 this.save(configDir);
                 return;
             }
-            Json5Object configJson = (Json5Object) parsedElement;
+            Json5Object configJson = parsedElement.getAsJson5Object();
 
             for (Field field : this.getClass().getDeclaredFields()) {
                 if (!AbstractEntry.class.isAssignableFrom(field.getType())) {

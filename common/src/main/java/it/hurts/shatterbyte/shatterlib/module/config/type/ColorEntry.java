@@ -15,8 +15,8 @@ public class ColorEntry extends AbstractEntry<ShatterColor, ColorEntry> {
     public static class Builder extends AbstractEntry.Builder<ShatterColor, ColorEntry, Builder> {
         private boolean includeAlpha = true;
 
-        public Builder(ShatterColor value) {
-            super(value);
+        public Builder(ShatterColor defaultValue) {
+            super(defaultValue);
         }
 
         public ColorEntry.Builder includeAlpha(boolean includeAlpha) {
@@ -30,8 +30,8 @@ public class ColorEntry extends AbstractEntry<ShatterColor, ColorEntry> {
         }
     }
 
-    public static Builder builder(ShatterColor value) {
-        return new Builder(value);
+    public static Builder builder(ShatterColor defaultValue) {
+        return new Builder(defaultValue);
     }
 
     @Override
@@ -67,6 +67,9 @@ public class ColorEntry extends AbstractEntry<ShatterColor, ColorEntry> {
             hex = String.format("#%06X", rgb);
         }
 
-        return Json5Primitive.fromString(hex);
+        Json5Primitive string = Json5Primitive.fromString(hex);
+        string.setComment(this.getComment());
+
+        return string;
     }
 }

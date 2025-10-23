@@ -1,9 +1,14 @@
 package it.hurts.shatterbyte.shatterlib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import it.hurts.shatterbyte.shatterlib.client.shake.ShakeData;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.Vec3Entry;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,10 +25,9 @@ public final class ShatterLib {
         ShatterLibNetwork.init();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IllegalAccessException, IOException {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
-        MyConfig cfg = new MyConfig();
-        cfg.getTestColor();
+        LOGGER.info(ShatterConfig.JSON5.serialize(AbstractEntry.serializeObject(CONFIG)));
     }
     
     private static void registerEvents() {

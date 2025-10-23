@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public abstract class ShatterConfig {
     private static final Gson GSON = new Gson();
-    private static final Json5 JSON5 = Json5.builder(builder -> builder
+    public static final Json5 JSON5 = Json5.builder(builder -> builder
             .quoteless()
             .writeComments()
             .prettyPrinting()

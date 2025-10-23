@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.shake;
 
 import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
+import it.hurts.shatterbyte.shatterlib.module.config.type.BooleanEntry;
 import lombok.Getter;
 import lombok.ToString;
 import org.joml.Vector2f;
@@ -18,7 +19,9 @@ public class ShakeData {
     private short seed;
 
     @Getter
-    private boolean isFinished;
+    private BooleanEntry isFinished = BooleanEntry.builder(false)
+            .withComment("True if the shake is finished.")
+            .build();
 
     public ShakeData(Vector2f amplitude, Vector2f frequency, double durationInSeconds, short seed) {
         this.amplitude = amplitude;
@@ -41,7 +44,7 @@ public class ShakeData {
      * call this once per frame. it returns a Vector2f containing the new x/y offset.
      */
     public Vector2f update() {
-        if (this.isFinished) {
+        if (this.isFinished.getValue()) {
             return new Vector2f(0, 0);
         }
 
@@ -52,7 +55,7 @@ public class ShakeData {
         float easedT = 1 - t;
 
         if (t >= 1f) {
-            this.isFinished = true;
+            this.isFinished.setValue(true);
         }
 
         // compute offset using sine waves

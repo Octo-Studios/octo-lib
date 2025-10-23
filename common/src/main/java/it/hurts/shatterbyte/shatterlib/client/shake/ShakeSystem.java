@@ -26,7 +26,7 @@ public class ShakeSystem {
             target.setShakeOffset(offset);
         }
 
-        ACTIVE_SHAKES.values().removeIf(ShakeData::isFinished);
+        //ACTIVE_SHAKES.values().removeIf(ShakeData::isFinished);
     }
 
     public static void clearAll() {

@@ -10,27 +10,17 @@ public class BooleanEntry extends AbstractEntry<Boolean, BooleanEntry> {
     }
 
     public static class Builder extends AbstractEntry.Builder<Boolean, BooleanEntry, Builder> {
-        public Builder(boolean value) {
-            super(value);
+        public Builder(boolean defaultValue) {
+            super(defaultValue);
         }
 
         @Override
-        protected BooleanEntry createEntry(Boolean value) {
-            return new BooleanEntry(value);
+        protected BooleanEntry createEntry(Boolean defaultValue) {
+            return new BooleanEntry(defaultValue);
         }
     }
 
-    public static Builder builder(boolean value) {
-        return new Builder(value);
-    }
-
-    @Override
-    public void loadFromJson(Json5Element element) {
-        this.setValue(element.getAsBoolean());
-    }
-
-    @Override
-    public Json5Element saveToJson() {
-        return Json5Primitive.fromBoolean(this.getValue());
+    public static Builder builder(boolean defaultValue) {
+        return new Builder(defaultValue);
     }
 }

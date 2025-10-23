@@ -12,6 +12,7 @@ import java.io.IOException;
 public final class ShatterLib {
     public static final String MODID = "shatterlib";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static MyConfig CONFIG = new MyConfig();
 
     public static void init() {
         registerCommands();
@@ -23,13 +24,6 @@ public final class ShatterLib {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
         MyConfig cfg = new MyConfig();
         cfg.getTestColor();
-//        ConfigManager.register(cfg);
-//
-//        for (ShatterConfig config : ConfigManager.getRegisteredConfigs()) {
-//            Path path = Paths.get(config.getPath() + ".json5");
-//            config.load(path);
-//            config.save(path);
-//        }
     }
     
     private static void registerEvents() {

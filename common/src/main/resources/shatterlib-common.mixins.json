@@ -12,7 +12,8 @@
     "GuiGraphicsAccessor",
     "GuiMixin",
     "MinecraftMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "TitleScreenMixin"
   ],
   "mixins": [
   ],

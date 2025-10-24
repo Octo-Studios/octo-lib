@@ -56,8 +56,8 @@ public class ColorEntry extends AbstractEntry<ShatterColor, ColorEntry> {
     }
 
     @Override
-    public Json5Element saveToJson() {
-        int argb = this.getValue().getARGB();
+    public Json5Element saveToJson(ShatterColor value) {
+        int argb = value.getARGB();
         String hex;
 
         if (includeAlpha) {

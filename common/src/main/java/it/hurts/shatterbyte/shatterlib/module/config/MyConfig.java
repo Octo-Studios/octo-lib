@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.MapEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
@@ -42,9 +43,11 @@ public class MyConfig extends ShatterConfig {
             .withComment("test comment vec3 bleeh")
             .build();
 
-    private MapEntry<ShakeData> funkyMap = MapEntry.<ShakeData>builder()
-            .addPair("shatterlib:test", new ShakeData(1f,1f,1f))
-            .withComment("map")
+    private SimpleEntry<Integer[]> intArray = SimpleEntry.builder(new Integer[]{1,2,3,4,5})
+            .build();
+
+    private SimpleEntry<Rarity> rarityEntry = SimpleEntry.builder(Rarity.EPIC)
+            .withComment("rarity comment")
             .build();
 
     @Override

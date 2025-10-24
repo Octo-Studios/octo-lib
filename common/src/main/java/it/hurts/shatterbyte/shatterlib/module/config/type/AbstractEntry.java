@@ -5,10 +5,6 @@ import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.time.Instant;
 import java.util.*;
 
 @Getter
@@ -17,9 +13,18 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
 
     @Setter
     private T value;
+    final T defaultValue;
 
+    @SuppressWarnings("unchecked")
     AbstractEntry(T defaultValue) {
         this.value = defaultValue;
+
+        try {
+            Json5Element json = Json5Utils.serializeObject(value);
+            this.defaultValue = (T) Json5Utils.deserializeObject(json, value.getClass());
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't deep copy object: "+value.getClass().getName(), e);
+        }
     }
 
     void setComment(String comment) {
@@ -36,9 +41,13 @@ public abstract class AbstractEntry<T, E extends AbstractEntry<T, E>> {
         }
     }
 
-    public Json5Element saveToJson() {
+    public final Json5Element saveToJson() {
+        return saveToJson(this.getValue());
+    }
+
+    public Json5Element saveToJson(T value) {
         try {
-            return Json5Utils.serializeObject(this.getValue());
+            return Json5Utils.serializeObject(value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Failed to save entry to json", e);
         }

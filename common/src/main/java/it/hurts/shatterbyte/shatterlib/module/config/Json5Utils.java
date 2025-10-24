@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
+import org.apache.logging.log4j.util.Cast;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
@@ -30,7 +31,19 @@ public class Json5Utils {
             case Instant instant -> Json5Primitive.fromInstant(instant);
             case AbstractEntry<?, ?> entry -> {
                 Json5Element element = entry.saveToJson();
-                element.setComment(entry.getComment());
+                String comment = entry.getComment();
+
+                if (element.isJson5Primitive()) {
+                    if (!comment.isEmpty()) {
+                        comment += "\n\n";
+                    }
+
+                    Json5Primitive defaultValue = entry.saveToJson(Cast.cast(entry.getDefaultValue())).getAsJson5Primitive();
+
+                    comment += "Default: "+defaultValue.getAsString();
+                }
+
+                element.setComment(comment);
                 yield element;
             }
             default -> {

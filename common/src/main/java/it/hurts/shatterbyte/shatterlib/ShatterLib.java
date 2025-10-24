@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;

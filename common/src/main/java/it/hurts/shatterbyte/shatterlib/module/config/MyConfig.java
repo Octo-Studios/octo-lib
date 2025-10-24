@@ -1,22 +1,17 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.client.shake.ShakeData;
 import it.hurts.shatterbyte.shatterlib.module.config.type.ColorEntry;
-import it.hurts.shatterbyte.shatterlib.module.config.type.MapEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Map;
-
 @Getter
 public class MyConfig extends ShatterConfig {
     private ColorEntry testColor = ColorEntry.builder(new ShatterColor(1f, 0.2f, 1f, 1f))
             .includeAlpha(false)
-            .withComment("test comment!")
             .build();
 
     private SimpleEntry<Boolean> testBoolean = SimpleEntry.builder(false)

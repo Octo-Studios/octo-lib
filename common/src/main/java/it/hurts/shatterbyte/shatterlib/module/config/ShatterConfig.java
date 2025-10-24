@@ -63,6 +63,8 @@ public abstract class ShatterConfig {
             }
             Json5Object configJson = parsedElement.getAsJson5Object();
 
+
+
             for (Field field : this.getClass().getDeclaredFields()) {
                 if (!AbstractEntry.class.isAssignableFrom(field.getType())) {
                     continue;

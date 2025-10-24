@@ -1,16 +1,15 @@
 package it.hurts.shatterbyte.shatterlib.module.config.type;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
-public class MapEntry<V> extends AbstractEntry<HashMap<String, V>, MapEntry<V>> {
-    private MapEntry(HashMap<String, V> defaultValue) {
+public class MapEntry<V> extends AbstractEntry<LinkedHashMap<String, V>, MapEntry<V>> {
+    private MapEntry(LinkedHashMap<String, V> defaultValue) {
         super(defaultValue);
     }
 
-    public static class Builder<V> extends AbstractEntry.Builder<HashMap<String, V>, MapEntry<V>, MapEntry.Builder<V>> {
+    public static class Builder<V> extends AbstractEntry.Builder<LinkedHashMap<String, V>, MapEntry<V>, MapEntry.Builder<V>> {
         public Builder() {
-            super(new HashMap<>());
+            super(new LinkedHashMap<>());
         }
 
         public Builder<V> addPair(String key, V value) {
@@ -19,7 +18,7 @@ public class MapEntry<V> extends AbstractEntry<HashMap<String, V>, MapEntry<V>> 
         }
 
         @Override
-        protected MapEntry<V> createEntry(HashMap<String, V> defaultValue) {
+        protected MapEntry<V> createEntry(LinkedHashMap<String, V> defaultValue) {
             return new MapEntry<>(defaultValue);
         }
     }

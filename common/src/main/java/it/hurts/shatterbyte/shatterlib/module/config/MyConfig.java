@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.type.ColorEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.ListEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
@@ -43,6 +44,13 @@ public class MyConfig extends ShatterConfig {
 
     private SimpleEntry<Rarity> rarityEntry = SimpleEntry.builder(Rarity.EPIC)
             .withComment("rarity comment")
+            .build();
+
+    private ListEntry<Vec3> vec3list = ListEntry.<Vec3>builder()
+            .add(new Vec3(0,1,2))
+            .add(new Vec3(3,4,5))
+            .add(new Vec3(6,7,8))
+            .withComment("bleh")
             .build();
 
     @Override

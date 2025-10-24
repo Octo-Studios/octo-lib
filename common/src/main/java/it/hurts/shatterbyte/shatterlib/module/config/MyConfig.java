@@ -15,7 +15,7 @@ import java.util.Map;
 @Getter
 public class MyConfig extends ShatterConfig {
     private ColorEntry testColor = ColorEntry.builder(new ShatterColor(1f, 0.2f, 1f, 1f))
-            .includeAlpha(true)
+            .includeAlpha(false)
             .withComment("test comment!")
             .build();
 

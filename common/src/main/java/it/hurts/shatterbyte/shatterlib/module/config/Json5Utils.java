@@ -33,14 +33,39 @@ public class Json5Utils {
                 Json5Element element = entry.saveToJson();
                 String comment = entry.getComment();
 
-                if (element.isJson5Primitive()) {
+                if (entry.getValue().getClass().isEnum()) {
                     if (!comment.isEmpty()) {
+                        comment += "\n\n";
+                    }
+
+                    Object[] enumConstants = entry.getValue().getClass().getEnumConstants();
+
+                    if (enumConstants != null && enumConstants.length > 0) {
+                        comment += "Possible values: ";
+
+                        for (int i = 0; i < enumConstants.length; i++) {
+                            comment += enumConstants[i].toString();
+                            if (i < enumConstants.length - 1) {
+                                comment += ", ";
+                            }
+                        }
+
+                        comment += "\n";
+                    }
+                }
+
+                if (element.isJson5Primitive()) {
+                    if (!comment.isEmpty() && comment.equals(entry.getComment())) {
                         comment += "\n\n";
                     }
 
                     Json5Primitive defaultValue = entry.saveToJson(Cast.cast(entry.getDefaultValue())).getAsJson5Primitive();
 
                     comment += "Default: "+defaultValue.getAsString();
+                }
+
+                if (comment.isEmpty()) {
+                    yield element;
                 }
 
                 element.setComment(comment);

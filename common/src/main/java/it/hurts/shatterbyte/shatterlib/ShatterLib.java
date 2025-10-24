@@ -31,7 +31,7 @@ public final class ShatterLib {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
         CONFIG.load(Path.of("."));
         LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.serializeObject(CONFIG)));
-        CONFIG.save(Path.of("."));
+        //CONFIG.save(Path.of("."));
     }
     
     private static void registerEvents() {

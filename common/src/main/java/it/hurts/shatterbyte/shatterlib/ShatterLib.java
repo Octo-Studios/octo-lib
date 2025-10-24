@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -21,6 +22,7 @@ public final class ShatterLib {
     public static final String MODID = "shatterlib";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static MyConfig CONFIG = new MyConfig();
+    public static ExampleConfig EXAMPLE_CONFIG = new ExampleConfig();
 
     public static void init() {
         registerCommands();
@@ -30,8 +32,10 @@ public final class ShatterLib {
 
     public static void main(String[] args) throws IllegalAccessException, IOException {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
-        CONFIG.load(Path.of("."));
-        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.serializeObject(CONFIG)));
+//        CONFIG.load(Path.of("."));
+//        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.serializeObject(CONFIG)));
+        EXAMPLE_CONFIG.load(Path.of("."));
+        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.serializeObject(EXAMPLE_CONFIG)));
         //CONFIG.save(Path.of("."));
     }
     

@@ -1,28 +1,18 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
-import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
-import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
 import java.util.*;
 
 public class Json5Utils {
-    private static final Unsafe unsafe;
+    //private static final Unsafe unsafe;
     private static final Map<Type, TypeAdapter<?>> ADAPTERS = new HashMap<>();
 
     static {
-        try {
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            unsafe = (Unsafe) f.get(null);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get sun.misc.Unsafe", e);
-        }
-
         registerAdapter(ShatterColor.class, new ShatterColorAdapter());
     }
 
@@ -74,11 +64,6 @@ public class Json5Utils {
 
                         String fieldName = field.getName();
                         Object fieldValue = field.get(value);
-
-                        if (fieldValue instanceof AbstractEntry<?, ?> entry) {
-                            obj.add(fieldName, entry.saveToJson());
-                            continue;
-                        }
 
                         obj.add(fieldName, encode(fieldValue));
                     }

@@ -1,38 +1,47 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
-import com.google.gson.reflect.TypeToken;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.module.config.type.ListEntry;
-import it.hurts.shatterbyte.shatterlib.module.config.type.MapEntry;
-import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Getter
 public class MyConfig extends ShatterConfig {
-    private MapEntry<ShatterColor> colorMap = MapEntry.<ShatterColor>builder()
-            .put("firstColor", ShatterColor.BLUE)
-            .put("secondColor", ShatterColor.RED)
-            .build();
+    @Comment("colors")
+    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>();
 
-    private ListEntry<ShatterColor> colorList = ListEntry.<ShatterColor>builder()
-            .add(ShatterColor.BLUE)
-            .add(ShatterColor.RED)
-            .build();
+    private List<ShatterColor> colorList = new ArrayList<>();
+    private List<Boolean> booleanList = new ArrayList<>();
+    private Map<String, ShatterColor> colorMap2 = new LinkedHashMap<>();
 
-    private ListEntry<Boolean> booleanList = ListEntry.<Boolean>builder()
-            .add(true)
-            .add(false)
-            .build();
+    @Range(max = 0)
+    private double test = -0.1;
 
-    private MapEntry<ShatterColor> colorMap2 = MapEntry.<ShatterColor>builder()
-            .put("firstColor", ShatterColor.BLACK)
-            .put("secondColor", ShatterColor.WHITE)
-            .build();
+    @Comment("test comment!")
+    private ShatterColor someColor = ShatterColor.GREEN;
 
-    private SimpleEntry<ShatterColor> someColor = SimpleEntry.builder(ShatterColor.GREEN)
-            .withComment("Comment!!!")
-            .build();
+    public MyConfig() {
+        colorMap.put("test1", ShatterColor.BLACK);
+        colorMap.put("test2", ShatterColor.RED);
+        colorMap.put("test3", ShatterColor.BLUE);
+
+        colorList.add(ShatterColor.WHITE);
+        colorList.add(ShatterColor.GREEN);
+
+        booleanList.add(false);
+        booleanList.add(true);
+
+        colorMap2.put("test14", ShatterColor.BLACK);
+        colorMap2.put("test5", ShatterColor.RED);
+        colorMap2.put("test6", ShatterColor.BLUE);
+    }
 
     @Override
     public String getPath() {

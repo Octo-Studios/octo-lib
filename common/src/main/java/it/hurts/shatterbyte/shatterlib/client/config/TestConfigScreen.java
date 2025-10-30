@@ -16,8 +16,8 @@ public class TestConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.addRenderableWidget(new CheckboxWidget(20, 20, Component.empty(), ShatterLib.CONFIG.getTestBoolean()));
-        this.addRenderableWidget(new CheckboxWidget(20, 40, Component.empty(), ShatterLib.CONFIG.getAnotherTestBoolean()));
+//        this.addRenderableWidget(new CheckboxWidget(20, 20, Component.empty(), ShatterLib.CONFIG.getTestBoolean()));
+//        this.addRenderableWidget(new CheckboxWidget(20, 40, Component.empty(), ShatterLib.CONFIG.getAnotherTestBoolean()));
     }
 
     @Override

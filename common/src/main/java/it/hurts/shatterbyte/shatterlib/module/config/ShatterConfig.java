@@ -1,23 +1,15 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
-import com.google.gson.Gson;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.marhali.json5.*;
-import de.marhali.json5.config.DigitSeparatorStrategy;
-import it.hurts.shatterbyte.shatterlib.module.config.annotation.RangeProp;
-import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
 import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
 
-import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static it.hurts.shatterbyte.shatterlib.ShatterLib.LOGGER;
 
@@ -32,7 +24,7 @@ public abstract class ShatterConfig {
     public void save(Path configDir) {
         Path configFile = configDir.resolve(this.getPath() + ".json5");
         try {
-            Json5Element configJson = Json5Utils.serializeObject(this);
+            Json5Element configJson = Json5Utils.encode(this);
 
             String jsonString = JSON5.serialize(configJson);
             Files.createDirectories(configFile.getParent());
@@ -63,14 +55,15 @@ public abstract class ShatterConfig {
             }
             Json5Object configJson = parsedElement.getAsJson5Object();
 
-
-
             for (Field field : this.getClass().getDeclaredFields()) {
                 if (!AbstractEntry.class.isAssignableFrom(field.getType())) {
                     continue;
                 }
+
                 int mods = field.getModifiers();
-                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) continue;
+                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
+                    continue;
+                }
 
                 String fieldName = field.getName();
 
@@ -83,7 +76,10 @@ public abstract class ShatterConfig {
                     field.setAccessible(true);
                     AbstractEntry<?, ?> entry = (AbstractEntry<?, ?>) field.get(this);
                     Json5Element fieldElement = configJson.get(fieldName);
-                    entry.loadFromJson(fieldElement);
+                    Type type = field.getGenericType();
+                    if (type instanceof ParameterizedType parameterizedType) {
+                        entry.loadFromJson(fieldElement, parameterizedType.getActualTypeArguments()[0]);
+                    }
                 } catch (Exception e) {
                     LOGGER.warn("Failed to load config entry '{}' in {}, using default.", fieldName, this.getPath(), e);
                 }

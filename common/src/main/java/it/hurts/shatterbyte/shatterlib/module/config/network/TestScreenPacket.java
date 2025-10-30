@@ -1,6 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.module.config.network;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.architectury.injectables.annotations.PlatformOnly;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.network.Packet;
@@ -34,7 +38,6 @@ public class TestScreenPacket extends Packet {
     }
 
     @Override
-    //@Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
         Minecraft.getInstance().setScreen(new TestGearScreen());
     }

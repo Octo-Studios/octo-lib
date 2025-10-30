@@ -1,6 +1,5 @@
 package it.hurts.shatterbyte.shatterlib.client.shake;
 
-import it.hurts.shatterbyte.shatterlib.module.config.annotation.SimpleProp;
 import it.hurts.shatterbyte.shatterlib.module.config.type.SimpleEntry;
 import lombok.Getter;
 import lombok.ToString;
@@ -10,7 +9,6 @@ import java.util.Random;
 
 @ToString
 public class ShakeData {
-    @SimpleProp
     private final Vector2f amplitude;
     private final Vector2f frequency;
 

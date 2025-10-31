@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 import de.marhali.json5.*;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 
 import java.lang.reflect.*;
@@ -65,7 +66,16 @@ public class Json5Utils {
                         String fieldName = field.getName();
                         Object fieldValue = field.get(value);
 
-                        obj.add(fieldName, encode(fieldValue));
+                        Json5Element fieldElement = Json5Utils.encode(fieldValue);
+
+                        if (field.isAnnotationPresent(Comment.class)) {
+                            Comment comment = field.getAnnotation(Comment.class);
+                            if (!comment.value().isEmpty()) {
+                                fieldElement.setComment(comment.value());
+                            }
+                        }
+
+                        obj.add(fieldName, fieldElement);
                     }
 
                     yield obj;

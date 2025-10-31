@@ -1,11 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
-import it.hurts.shatterbyte.shatterlib.module.config.type.AbstractEntry;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -56,7 +55,7 @@ public abstract class ShatterConfig {
             Json5Object configJson = parsedElement.getAsJson5Object();
 
             for (Field field : this.getClass().getDeclaredFields()) {
-                if (!AbstractEntry.class.isAssignableFrom(field.getType())) {
+                if (field.isAnnotationPresent(Exclude.class)) {
                     continue;
                 }
 
@@ -67,19 +66,15 @@ public abstract class ShatterConfig {
 
                 String fieldName = field.getName();
 
-                // Check if the JSON file has a value for this field
                 if (!configJson.has(fieldName)) {
                     continue;
                 }
 
                 try {
                     field.setAccessible(true);
-                    AbstractEntry<?, ?> entry = (AbstractEntry<?, ?>) field.get(this);
                     Json5Element fieldElement = configJson.get(fieldName);
                     Type type = field.getGenericType();
-                    if (type instanceof ParameterizedType parameterizedType) {
-                        entry.loadFromJson(fieldElement, parameterizedType.getActualTypeArguments()[0]);
-                    }
+                    field.set(this, Json5Utils.decode(fieldElement, type));
                 } catch (Exception e) {
                     LOGGER.warn("Failed to load config entry '{}' in {}, using default.", fieldName, this.getPath(), e);
                 }

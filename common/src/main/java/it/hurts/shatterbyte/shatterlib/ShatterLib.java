@@ -27,8 +27,8 @@ public final class ShatterLib {
 
     public static void main(String[] args) throws IllegalAccessException, IOException {
         //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
-//        CONFIG.load(Path.of("."));
-//        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(CONFIG)));
+        CONFIG.load(Path.of("."));
+        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(CONFIG)));
         EXAMPLE_CONFIG.load(Path.of("."));
         LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(EXAMPLE_CONFIG)));
         //CONFIG.save(Path.of("."));

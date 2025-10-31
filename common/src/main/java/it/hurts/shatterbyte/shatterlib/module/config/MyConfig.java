@@ -27,6 +27,9 @@ public class MyConfig extends ShatterConfig {
     @Comment("test comment!")
     private ShatterColor someColor = ShatterColor.GREEN;
 
+    @Exclude
+    private String superPrivateString = "pls don't";
+
     public MyConfig() {
         colorMap.put("test1", ShatterColor.BLACK);
         colorMap.put("test2", ShatterColor.RED);

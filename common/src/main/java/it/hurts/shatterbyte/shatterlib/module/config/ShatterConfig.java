@@ -55,12 +55,12 @@ public abstract class ShatterConfig {
             Json5Object configJson = parsedElement.getAsJson5Object();
 
             for (Field field : this.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(Exclude.class)) {
+                int mods = field.getModifiers();
+                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
                     continue;
                 }
 
-                int mods = field.getModifiers();
-                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
+                if (field.isAnnotationPresent(Exclude.class)) {
                     continue;
                 }
 

@@ -4,6 +4,7 @@ import de.marhali.json5.*;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 
 import java.lang.reflect.*;
@@ -58,6 +59,10 @@ public class Json5Utils {
 
                     for (Field field : clazz.getDeclaredFields()) {
                         if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
+                            continue;
+                        }
+
+                        if (field.isAnnotationPresent(Exclude.class)) {
                             continue;
                         }
 

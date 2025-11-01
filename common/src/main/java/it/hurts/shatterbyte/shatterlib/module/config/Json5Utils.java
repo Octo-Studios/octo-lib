@@ -203,6 +203,8 @@ public class Json5Utils {
                 }
                 return newInstance;
 
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("Couldn't find an empty constructor for type: " + type.getTypeName(), e);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to decode object via reflection for type: " + type.getTypeName(), e);
             }

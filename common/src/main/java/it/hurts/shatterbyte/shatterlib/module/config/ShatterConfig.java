@@ -17,7 +17,9 @@ import java.util.regex.Pattern;
 import static it.hurts.shatterbyte.shatterlib.ShatterLib.LOGGER;
 
 public abstract class ShatterConfig {
+    @Exclude
     private Json5Object defaultSchema;
+
     public static final Json5 JSON5 = Json5.builder(builder -> builder
             .quoteless()
             .writeComments()

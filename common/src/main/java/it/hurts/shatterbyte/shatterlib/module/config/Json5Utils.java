@@ -61,11 +61,10 @@ public class Json5Utils {
                     Json5Object obj = new Json5Object();
                     Class<?> clazz = value.getClass();
 
-                    for (Field field : clazz.getDeclaredFields()) {
+                    for (Field field : getAllFields(clazz)) {
                         if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
                             continue;
                         }
-
                         if (field.isAnnotationPresent(Exclude.class)) {
                             continue;
                         }
@@ -186,7 +185,7 @@ public class Json5Utils {
                     Json5Element fieldValueJson = entry.getValue();
 
                     try {
-                        Field field = rawClass.getDeclaredField(fieldName);
+                        Field field = findFieldInHierarchy(rawClass, fieldName);
                         field.setAccessible(true);
 
                         Type fieldType = field.getGenericType();
@@ -274,6 +273,31 @@ public class Json5Utils {
 
         target.setComment(newComment.toString());
         return true;
+    }
+
+    // helper: return all declared fields up the class hierarchy (excluding Object.class)
+    private static List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> current = clazz;
+        while (current != null && current != Object.class) {
+            Field[] declared = current.getDeclaredFields();
+            fields.addAll(Arrays.asList(declared));
+            current = current.getSuperclass();
+        }
+        return fields;
+    }
+
+    // helper: find a field by name walking up the class hierarchy
+    private static Field findFieldInHierarchy(Class<?> clazz, String name) throws NoSuchFieldException {
+        Class<?> current = clazz;
+        while (current != null && current != Object.class) {
+            try {
+                return current.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                current = current.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException(name);
     }
 
     private static Class<?> getRawClass(Type type) {

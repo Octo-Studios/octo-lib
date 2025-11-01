@@ -14,11 +14,22 @@ import java.util.Map;
 
 @Getter
 public class MyConfig extends ShatterConfig {
+    @Override
+    public String getComment() {
+        return """
+                This is an example config,
+                Feel free to familiarize yourself with the features of ShatterLib's configuration system!
+                
+                :P
+                - catboybinary
+                """;
+    }
+
     @Comment("colors")
     private Map<String, ShatterColor> colorMap = new LinkedHashMap<>();
-
     private List<ShatterColor> colorList = new ArrayList<>();
     private List<Boolean> booleanList = new ArrayList<>();
+
     private Map<String, ShatterColor> colorMap2 = new LinkedHashMap<>();
 
     @Range(max = 0)

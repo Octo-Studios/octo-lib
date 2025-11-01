@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
+import de.marhali.json5.config.Json5Options;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
@@ -11,8 +12,8 @@ import java.lang.reflect.*;
 import java.util.*;
 
 public class Json5Utils {
-    //private static final Unsafe unsafe;
     private static final Map<Type, TypeAdapter<?>> ADAPTERS = new HashMap<>();
+    public static final Json5Options PRETTY_PRINT = Json5Options.builder().prettyPrinting().quoteless().build();
 
     static {
         registerAdapter(ShatterColor.class, new ShatterColorAdapter());
@@ -203,6 +204,73 @@ public class Json5Utils {
         }
 
         throw new IllegalArgumentException("Don't know how to decode " + json.getClass().getSimpleName() + " into type " + type.getTypeName());
+    }
+
+    public static void injectDefaultComments(Json5Object root, Json5Object defaultSchema) {
+        if (defaultSchema == null) {
+            return;
+        }
+
+        for (Map.Entry<String, Json5Element> entry : root.entrySet()) {
+            String key = entry.getKey();
+            Json5Element child = entry.getValue();
+            Json5Element defChild = defaultSchema.has(key) ? defaultSchema.get(key) : null;
+            injectDefaultCommentsRecursive(child, defChild);
+        }
+    }
+
+    private static void injectDefaultCommentsRecursive(Json5Element target, Json5Element def) {
+        if (target == null || def == null) {
+            return;
+        }
+
+        if (Json5Utils.appendDefaultComment(target, def)) {
+            return;
+        }
+
+        // object -> recurse by key
+        if (target.isJson5Object() && def.isJson5Object()) {
+            Json5Object targetObj = target.getAsJson5Object();
+            Json5Object defObj = def.getAsJson5Object();
+
+            for (Map.Entry<String, Json5Element> entry : targetObj.entrySet()) {
+                String key = entry.getKey();
+                Json5Element child = entry.getValue();
+                Json5Element defChild = defObj.has(key) ? defObj.get(key) : null;
+                injectDefaultCommentsRecursive(child, defChild);
+            }
+
+            return;
+        }
+
+        // array -> recurse by index
+        if (target.isJson5Array() && def.isJson5Array()) {
+            Json5Array targetArr = target.getAsJson5Array();
+            Json5Array defArr = def.getAsJson5Array();
+            int size = Math.min(targetArr.size(), defArr.size());
+            for (int i = 0; i < size; i++) {
+                injectDefaultCommentsRecursive(targetArr.get(i), defArr.get(i));
+            }
+        }
+    }
+
+    private static boolean appendDefaultComment(Json5Element target, Json5Element def) {
+        String defaultText = def.toString(PRETTY_PRINT);
+
+        if (defaultText.lines().count() > 10) {
+            return false;
+        }
+
+        String existing = target.getComment();
+        StringBuilder newComment = new StringBuilder();
+        if (existing != null && !existing.isEmpty()) {
+            newComment.append(existing.trim());
+            newComment.append("\n\n");
+        }
+        newComment.append("Default: ").append(defaultText);
+
+        target.setComment(newComment.toString());
+        return true;
     }
 
     private static Class<?> getRawClass(Type type) {

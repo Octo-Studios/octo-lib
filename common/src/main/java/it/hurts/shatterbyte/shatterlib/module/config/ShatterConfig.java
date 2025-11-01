@@ -3,16 +3,21 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 import de.marhali.json5.*;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static it.hurts.shatterbyte.shatterlib.ShatterLib.LOGGER;
 
 public abstract class ShatterConfig {
+    private Json5Object defaultSchema;
     public static final Json5 JSON5 = Json5.builder(builder -> builder
             .quoteless()
             .writeComments()
@@ -20,10 +25,113 @@ public abstract class ShatterConfig {
             .prettyPrinting()
             .build());
 
+    public Json5Object getDefaultSchema() {
+        Class<? extends ShatterConfig> clazz = this.getClass();
+
+        if (defaultSchema == null) {
+            try {
+                Constructor<? extends ShatterConfig> ctor = clazz.getDeclaredConstructor();
+                ctor.setAccessible(true);
+                ShatterConfig defaultInstance = ctor.newInstance();
+                Json5Element encoded = Json5Utils.encode(defaultInstance);
+                if (!encoded.isJson5Object()) {
+                    throw new IllegalStateException("Default schema encoded to non-object for " + clazz.getName());
+                }
+                defaultSchema = encoded.getAsJson5Object();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create default schema for " + clazz.getName(), e);
+            }
+        }
+
+        return defaultSchema;
+    }
+
+    /**
+     * Lookup a default Json5Element by a path string.
+     * <p>
+     * Supported syntax:
+     * <br>- dot field access: "colorMap.test1"
+     * <br>- array index: "colorList[0]"
+     * <br>- quoted keys for map entries: map['a.b'] or map["a.b"]
+     *
+     * @return Optional Json5Element
+     */
+    public Optional<Json5Element> getDefaultElement(String path) {
+        if (path == null || path.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Json5Element current = this.getDefaultSchema(); // start at top-level object
+
+        // token regex: group1 = single-quoted key, group2 = double-quoted key, group3 = index, group4 = simple key
+        Pattern tokenPattern = Pattern.compile("\\['([^']+)']|\\[\"([^\"]+)\"]|\\[(\\d+)]|([^.\\[]+)");
+        Matcher m = tokenPattern.matcher(path);
+
+        while (m.find()) {
+            String singleQuoted = m.group(1);
+            String doubleQuoted = m.group(2);
+            String index = m.group(3);
+            String simpleKey = m.group(4);
+
+            String key = singleQuoted != null ? singleQuoted
+                    : doubleQuoted != null ? doubleQuoted
+                    : simpleKey;
+
+            if (index != null) {
+                // array index access
+                if (!current.isJson5Array()) {
+                    return Optional.empty();
+                }
+
+                Json5Array arr = current.getAsJson5Array();
+                int i = Integer.parseInt(index);
+
+                if (i < 0 || i >= arr.size()) {
+                    return Optional.empty();
+                }
+
+                current = arr.get(i);
+            } else {
+                // key access on object (map/object)
+                if (!current.isJson5Object()) {
+                    return Optional.empty();
+                }
+
+                Json5Object obj = current.getAsJson5Object();
+                if (!obj.has(key)) {
+                    return Optional.empty();
+                }
+
+                current = obj.get(key);
+            }
+        }
+
+        return Optional.ofNullable(current);
+    }
+
+    public <T> Optional<T> getDefaultValue(String path, Type type) {
+        Optional<Json5Element> elemOpt = getDefaultElement(path);
+        if (elemOpt.isEmpty()) return Optional.empty();
+        try {
+            Json5Element elem = elemOpt.get();
+            T decoded = Json5Utils.decode(elem, type);
+            return Optional.ofNullable(decoded);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
     public void save(Path configDir) {
         Path configFile = configDir.resolve(this.getPath() + ".json5");
         try {
-            Json5Element configJson = Json5Utils.encode(this);
+            Json5Object configJson = Json5Utils.encode(this).getAsJson5Object();
+
+            if (!this.getComment().isEmpty()) {
+                configJson.setComment(this.getComment());
+            }
+
+            Json5Object defaultSchema = this.getDefaultSchema();
+            Json5Utils.injectDefaultComments(configJson, defaultSchema);
 
             String jsonString = JSON5.serialize(configJson);
             Files.createDirectories(configFile.getParent());
@@ -88,4 +196,7 @@ public abstract class ShatterConfig {
     }
 
     public abstract String getPath();
+    public String getComment() {
+        return "";
+    }
 }

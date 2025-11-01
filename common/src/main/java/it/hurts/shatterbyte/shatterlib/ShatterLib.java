@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib;
 
+import com.google.gson.Gson;
 import de.marhali.json5.Json5Element;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
@@ -7,6 +8,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.data.Inherite;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,8 @@ public final class ShatterLib {
 //
 //        Optional<Json5Element> defaultColorJson = CONFIG.getDefaultElement("colorMap");
         EXAMPLE_CONFIG.load(Path.of("."));
+
+        LOGGER.info(Inherite.class.getFields());
         //LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(EXAMPLE_CONFIG)));
         //CONFIG.save(Path.of("."));
     }

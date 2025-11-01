@@ -1,11 +1,16 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.data.Inherite;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@Setter
 public class MyConfig extends ShatterConfig {
     @Override
     public String getComment() {
@@ -40,6 +46,11 @@ public class MyConfig extends ShatterConfig {
 
     @Exclude
     private String superPrivateString = "pls don't";
+
+    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
+
+    private TestObject someObject = new TestObject();
+    private Inherite inheritanceTest = new Inherite();
 
     public MyConfig() {
         colorMap.put("test1", ShatterColor.BLACK);

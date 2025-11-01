@@ -187,6 +187,9 @@ public class Json5Utils {
                     try {
                         Field field = findFieldInHierarchy(rawClass, fieldName);
                         field.setAccessible(true);
+                        if (field.isAnnotationPresent(Exclude.class)) {
+                            continue;
+                        }
 
                         Type fieldType = field.getGenericType();
                         Object decodedValue = decode(fieldValueJson, fieldType);

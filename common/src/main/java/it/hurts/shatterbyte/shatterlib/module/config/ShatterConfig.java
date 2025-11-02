@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 
 import java.lang.reflect.Constructor;
@@ -139,6 +140,10 @@ public abstract class ShatterConfig {
         }
     }
 
+    public void save() {
+        this.save(Platform.getConfigFolder());
+    }
+
     public void save(Path configDir) {
         Path configFile = configDir.resolve(this.getPath() + ".json5");
         try {
@@ -158,6 +163,10 @@ public abstract class ShatterConfig {
         } catch (Exception e) {
             LOGGER.error("Failed to save config: {}", this.getPath(), e);
         }
+    }
+
+    public void load() {
+        this.load(Platform.getConfigFolder());
     }
 
     public void load(Path configDir) {

@@ -66,13 +66,14 @@ public class MyConfig extends ShatterConfig {
 
     @Exclude
     private String superPrivateString = "pls don't";
+    private String someString = "Test String!!!";
+    private boolean testBool = false;
 
     private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 
     private TestObject someObject = new TestObject();
     private Inherite inheritanceTest = new Inherite();
 
-    private boolean testBool = false;
 
     @Override
     public String getPath() {

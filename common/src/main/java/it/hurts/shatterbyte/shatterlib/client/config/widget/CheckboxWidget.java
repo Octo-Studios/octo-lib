@@ -27,13 +27,15 @@ public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
             RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
         }
 
+        boolean value = false;
+
         long start = System.nanoTime();
-        for (int i = 0; i < 1000; i++) {
-            this.getValue();
+        for (int i = 0; i < 50000; i++) {
+            value = this.getValue();
         }
         long end = System.nanoTime();
         
-        guiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(end - start), this.getX() + this.getWidth(), this.getY(), 0xffffffff, true);
+        guiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(end - start) + value, this.getX() + this.getWidth(), this.getY(), 0xffffffff, true);
     }
 
     @Override

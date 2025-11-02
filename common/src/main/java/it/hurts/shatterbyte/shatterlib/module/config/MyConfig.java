@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
+@Setter
 public class MyConfig extends ShatterConfig {
     @Override
     public String getComment() {
@@ -70,6 +71,8 @@ public class MyConfig extends ShatterConfig {
 
     private TestObject someObject = new TestObject();
     private Inherite inheritanceTest = new Inherite();
+
+    private boolean testBool = false;
 
     @Override
     public String getPath() {

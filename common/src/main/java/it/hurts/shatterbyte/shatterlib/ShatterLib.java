@@ -29,6 +29,7 @@ public final class ShatterLib {
         registerEvents();
         ShatterLibNetwork.init();
         ConfigManager.registerCommon(CONFIG);
+        CONFIG.load(Path.of("."));
     }
 
     public static void main(String[] args) throws IllegalAccessException, IOException {

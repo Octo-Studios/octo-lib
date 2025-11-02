@@ -4,29 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class EntryWidgetRegistry {
-//    private static final Map<Class<?>, EntryWidgetFactory<?>> FACTORIES = new HashMap<>();
-//
-//    private EntryWidgetRegistry() {}
-//
-//    public static <E> void register(Class<E> entryClass, EntryWidgetFactory<E> factory) {
-//        FACTORIES.put(entryClass, factory);
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    public static <E> EntryWidgetFactory<E> getFactory(Class<? extends AbstractEntry<?, ?>> cls) {
-//        EntryWidgetFactory<E> f = (EntryWidgetFactory<E>) FACTORIES.get(cls);
-//        if (f != null) {
-//            return f;
-//        }
-//
-//        // fallback: walk superclasses
-//        Class<?> cur = cls.getSuperclass();
-//        while (cur != null && AbstractEntry.class.isAssignableFrom(cur)) {
-//            f = (EntryWidgetFactory<E>) FACTORIES.get(cur);
-//            if (f != null) return f;
-//            cur = cur.getSuperclass();
-//        }
-//
-//        return null;
-//    }
+    private static final Map<Class<?>, EntryWidgetFactory<?>> FACTORIES = new HashMap<>();
+
+    private EntryWidgetRegistry() {}
+
+    public static <E> void register(Class<E> entryClass, EntryWidgetFactory<E> factory) {
+        FACTORIES.put(entryClass, factory);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E> EntryWidgetFactory<E> getFactory(Class<?> cls) {
+        return (EntryWidgetFactory<E>) FACTORIES.get(cls);
+    }
 }

@@ -41,6 +41,7 @@ public class Json5Utils {
             case String string -> Json5Primitive.fromString(string);
             case Number number -> Json5Primitive.fromNumber(number);
             case Boolean bool -> Json5Primitive.fromBoolean(bool);
+            case Enum<?> enumValue -> Json5Primitive.fromString(enumValue.name());
             case Collection<?> collection -> {
                 Json5Array array = new Json5Array();
                 for (Object item : collection) {
@@ -83,6 +84,10 @@ public class Json5Utils {
                             }
                         }
 
+                        if (fieldValue.getClass().isEnum()) {
+                            Json5Utils.appendEnumComments(fieldValue, fieldElement);
+                        }
+
                         obj.add(fieldName, fieldElement);
                     }
 
@@ -122,6 +127,9 @@ public class Json5Utils {
             }
             if ((rawClass == Double.class || rawClass == double.class)) {
                 return (T) Double.valueOf(json.getAsDouble());
+            }
+            if (rawClass.isEnum()) {
+                return (T) Enum.valueOf((Class<Enum>) rawClass, json.getAsString());
             }
         }
 
@@ -213,71 +221,26 @@ public class Json5Utils {
         throw new IllegalArgumentException("Don't know how to decode " + json.getClass().getSimpleName() + " into type " + type.getTypeName());
     }
 
-    public static void injectDefaultComments(Json5Object root, Json5Object defaultSchema) {
-        if (defaultSchema == null) {
-            return;
+    private static <T> void appendEnumComments(T value, Json5Element element) {
+        String comment = element.hasComment() ? element.getComment() : "";
+        if (!comment.isEmpty()) {
+            comment += "\n\n";
         }
 
-        for (Map.Entry<String, Json5Element> entry : root.entrySet()) {
-            String key = entry.getKey();
-            Json5Element child = entry.getValue();
-            Json5Element defChild = defaultSchema.has(key) ? defaultSchema.get(key) : null;
-            injectDefaultCommentsRecursive(child, defChild);
-        }
-    }
+        Object[] enumConstants = value.getClass().getEnumConstants();
 
-    private static void injectDefaultCommentsRecursive(Json5Element target, Json5Element def) {
-        if (target == null || def == null) {
-            return;
-        }
+        if (enumConstants != null && enumConstants.length > 0) {
+            comment += "Values: ";
 
-        if (Json5Utils.appendDefaultComment(target, def)) {
-            return;
-        }
-
-        // object -> recurse by key
-        if (target.isJson5Object() && def.isJson5Object()) {
-            Json5Object targetObj = target.getAsJson5Object();
-            Json5Object defObj = def.getAsJson5Object();
-
-            for (Map.Entry<String, Json5Element> entry : targetObj.entrySet()) {
-                String key = entry.getKey();
-                Json5Element child = entry.getValue();
-                Json5Element defChild = defObj.has(key) ? defObj.get(key) : null;
-                injectDefaultCommentsRecursive(child, defChild);
-            }
-
-            return;
-        }
-
-        // array -> recurse by index
-        if (target.isJson5Array() && def.isJson5Array()) {
-            Json5Array targetArr = target.getAsJson5Array();
-            Json5Array defArr = def.getAsJson5Array();
-            int size = Math.min(targetArr.size(), defArr.size());
-            for (int i = 0; i < size; i++) {
-                injectDefaultCommentsRecursive(targetArr.get(i), defArr.get(i));
+            for (int i = 0; i < enumConstants.length; i++) {
+                comment += enumConstants[i].toString();
+                if (i < enumConstants.length - 1) {
+                    comment += ", ";
+                }
             }
         }
-    }
 
-    private static boolean appendDefaultComment(Json5Element target, Json5Element def) {
-        String defaultText = def.toString(PRETTY_PRINT);
-
-        if (defaultText.lines().count() > 10) {
-            return false;
-        }
-
-        String existing = target.getComment();
-        StringBuilder newComment = new StringBuilder();
-        if (existing != null && !existing.isEmpty()) {
-            newComment.append(existing.trim());
-            newComment.append("\n\n");
-        }
-        newComment.append("Default: ").append(defaultText);
-
-        target.setComment(newComment.toString());
-        return true;
+        element.setComment(comment);
     }
 
     // helper: return all declared fields up the class hierarchy (excluding Object.class)

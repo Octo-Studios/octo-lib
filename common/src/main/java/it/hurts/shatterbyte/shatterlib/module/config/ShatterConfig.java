@@ -27,6 +27,14 @@ public abstract class ShatterConfig {
             .prettyPrinting()
             .build());
 
+    public ShatterConfig() {
+
+    }
+
+    public Json5Object getCurrentSchema() {
+        return Json5Utils.encode(this).getAsJson5Object();
+    }
+
     public Json5Object getDefaultSchema() {
         Class<? extends ShatterConfig> clazz = this.getClass();
 
@@ -49,7 +57,7 @@ public abstract class ShatterConfig {
     }
 
     /**
-     * Lookup a default Json5Element by a path string.
+     * Lookup a Json5Element by a path string.
      * <p>
      * Supported syntax:
      * <br>- dot field access: "colorMap.test1"
@@ -58,12 +66,12 @@ public abstract class ShatterConfig {
      *
      * @return Optional Json5Element
      */
-    public Optional<Json5Element> getDefaultElement(String path) {
+    public Optional<Json5Element> getElement(String path, Json5Element root) {
         if (path == null || path.isEmpty()) {
             return Optional.empty();
         }
 
-        Json5Element current = this.getDefaultSchema(); // start at top-level object
+        Json5Element current = root; // start at top-level object
 
         // token regex: group1 = single-quoted key, group2 = double-quoted key, group3 = index, group4 = simple key
         Pattern tokenPattern = Pattern.compile("\\['([^']+)']|\\[\"([^\"]+)\"]|\\[(\\d+)]|([^.\\[]+)");
@@ -111,8 +119,16 @@ public abstract class ShatterConfig {
         return Optional.ofNullable(current);
     }
 
-    public <T> Optional<T> getDefaultValue(String path, Type type) {
-        Optional<Json5Element> elemOpt = getDefaultElement(path);
+    /**
+     * Gets an element by path from the default schema
+     * @see #getElement(String, Json5Element)
+     */
+    public Optional<Json5Element> getDefaultElement(String path) {
+        return this.getElement(path, this.getDefaultSchema());
+    }
+
+    public <T> Optional<T> getValue(String path, Type type, Json5Element root) {
+        Optional<Json5Element> elemOpt = this.getElement(path, root);
         if (elemOpt.isEmpty()) return Optional.empty();
         try {
             Json5Element elem = elemOpt.get();
@@ -126,14 +142,14 @@ public abstract class ShatterConfig {
     public void save(Path configDir) {
         Path configFile = configDir.resolve(this.getPath() + ".json5");
         try {
-            Json5Object configJson = Json5Utils.encode(this).getAsJson5Object();
+            Json5Object configJson = this.getCurrentSchema();
 
             if (!this.getComment().isEmpty()) {
                 configJson.setComment(this.getComment());
             }
 
-            Json5Object defaultSchema = this.getDefaultSchema();
-            Json5Utils.injectDefaultComments(configJson, defaultSchema);
+            //Json5Object defaultSchema = this.getDefaultSchema();
+            //Json5Utils.injectDefaultComments(configJson, defaultSchema);
 
             String jsonString = JSON5.serialize(configJson);
             Files.createDirectories(configFile.getParent());

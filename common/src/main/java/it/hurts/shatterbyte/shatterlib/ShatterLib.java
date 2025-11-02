@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import de.marhali.json5.Json5Element;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -27,19 +28,12 @@ public final class ShatterLib {
         registerCommands();
         registerEvents();
         ShatterLibNetwork.init();
+        ConfigManager.registerCommon(CONFIG);
     }
 
     public static void main(String[] args) throws IllegalAccessException, IOException {
-        //System.out.println("Hello World!\n\n\n\n\n\n\n\n\n"); // Display the string.
         CONFIG.load(Path.of("."));
-//        LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(CONFIG)));
-//
-//        Optional<Json5Element> defaultColorJson = CONFIG.getDefaultElement("colorMap");
         EXAMPLE_CONFIG.load(Path.of("."));
-
-        LOGGER.info(Inherite.class.getFields());
-        //LOGGER.info(ShatterConfig.JSON5.serialize(Json5Utils.encode(EXAMPLE_CONFIG)));
-        //CONFIG.save(Path.of("."));
     }
     
     private static void registerEvents() {

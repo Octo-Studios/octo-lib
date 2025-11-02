@@ -2,10 +2,12 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.vehicle.Minecart;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,6 +26,14 @@ public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
         } else {
             RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
         }
+
+        long start = System.nanoTime();
+        for (int i = 0; i < 1000; i++) {
+            this.getValue();
+        }
+        long end = System.nanoTime();
+        
+        guiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(end - start), this.getX() + this.getWidth(), this.getY(), 0xffffffff, true);
     }
 
     @Override

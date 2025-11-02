@@ -18,6 +18,7 @@ public final class ShatterLibClient {
 
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        EntryWidgetRegistry.register(boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(Boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
     }

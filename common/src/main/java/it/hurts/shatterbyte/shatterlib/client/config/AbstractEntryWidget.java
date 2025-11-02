@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AbstractEntryWidget<E> extends AbstractWidget {
+    private E cachedValue;
+
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
@@ -16,13 +18,24 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget {
         super(x, y, width, height, name);
         this.getter = getter;
         this.setter = setter;
+
+        this.updateCachedValue();
     }
 
     public E getValue() {
-        return this.getter.get();
+        if (this.cachedValue == null) {
+            this.updateCachedValue();
+        }
+
+        return cachedValue;
     }
 
     public void setValue(E value) {
         this.setter.accept(value);
+        this.updateCachedValue();
+    }
+
+    private void updateCachedValue() {
+        this.cachedValue = this.getter.get();
     }
 }

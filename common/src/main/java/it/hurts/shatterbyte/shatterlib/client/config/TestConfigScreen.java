@@ -2,14 +2,18 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
-import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import lombok.SneakyThrows;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.util.Cast;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class TestConfigScreen extends Screen {
     Screen prevScreen;
@@ -24,6 +28,10 @@ public class TestConfigScreen extends Screen {
         super.init();
         try {
             Class<?> clazz = ShatterLib.CONFIG.getClass();
+
+            MethodHandles.Lookup lookup = MethodHandles.lookup();
+            MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+
             int y = 20;
             for (Field field : clazz.getDeclaredFields()) {
                 field.setAccessible(true);
@@ -33,30 +41,10 @@ public class TestConfigScreen extends Screen {
                     continue;
                 }
 
-                Object value = field.get(ShatterLib.CONFIG);
-
-                EntryWidgetFactory<?> factory = EntryWidgetRegistry.getFactory(value.getClass());
-
-                if (factory == null) {
+                AbstractEntryWidget<?> widget = TestConfigScreen.createWidgetFromField(privateLookup, field, ShatterLib.CONFIG, 20, y);
+                if (widget == null) {
                     continue;
                 }
-
-                AbstractEntryWidget<?> widget = factory.create(
-                        () -> {
-                            try {
-                                return Cast.cast(field.get(ShatterLib.CONFIG));
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
-                        },
-                        set -> {
-                            try {
-                                field.set(ShatterLib.CONFIG, set);
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }, 20, y, 64, 16, Component.literal(field.getName())
-                );
 
                 this.addRenderableWidget(widget);
                 y+=20;
@@ -64,6 +52,32 @@ public class TestConfigScreen extends Screen {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        //this.addRenderableWidget(new CheckboxWidget(ShatterLib.CONFIG::isTestBool, ShatterLib.CONFIG::setTestBool, 20, 20, 16, 16, Component.empty()));
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    private static <T> AbstractEntryWidget<T> createWidgetFromField(MethodHandles.Lookup lookup, Field field, Object rootObject, int x, int y) {
+        EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(field.getType());
+
+        if (factory == null) {
+            return null;
+        }
+
+        //VarHandle vh = lookup.findVarHandle(rootObject.getClass(), field.getName(), field.getType());
+        MethodHandle getterHandle = lookup.unreflectGetter(field).bindTo(rootObject);
+        MethodHandle setterHandle = lookup.unreflectSetter(field).bindTo(rootObject);
+
+        Supplier<Object> getter = getterHandle::invoke;
+        Consumer<T> setter = setterHandle::invoke;
+
+        AbstractEntryWidget<T> widget = factory.create(
+                (Supplier<T>) getter, setter,
+                x, y, 64, 16, Component.literal(field.getName())
+        );
+
+        return widget;
     }
 
     @Override

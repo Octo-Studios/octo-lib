@@ -1,22 +1,17 @@
 package it.hurts.shatterbyte.shatterlib;
 
-import com.google.gson.Gson;
-import de.marhali.json5.Json5Element;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
-import it.hurts.shatterbyte.shatterlib.module.config.Json5Utils;
-import it.hurts.shatterbyte.shatterlib.module.config.MyConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.dev.data.Inherite;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public final class ShatterLib {
     public static final String MODID = "shatterlib";
@@ -38,7 +33,7 @@ public final class ShatterLib {
     }
     
     private static void registerEvents() {
-        //PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncConfigs);
+        PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncConfigs);
     }
     
     private static void registerCommands() {

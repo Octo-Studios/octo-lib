@@ -1,15 +1,13 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import lombok.SneakyThrows;
+import net.minecraft.server.level.ServerPlayer;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ConfigManager {
-    private static Map<String, ShatterConfig> COMMON = new HashMap<>();
-    //private static Map<String, ShatterConfig> SERVER = new HashMap<>();
+    private static final Map<String, ShatterConfig> COMMON = new HashMap<>();
+    private static final Set<String> SERVER = new HashSet<>();
 
     @SneakyThrows
     public static void registerCommon(ShatterConfig config) {
@@ -22,5 +20,13 @@ public class ConfigManager {
 
     public static Set<String> getCommonPaths() {
         return COMMON.keySet();
+    }
+
+    public static Set<String> getServerPaths() {
+        return SERVER;
+    }
+
+    public static void syncConfigs(ServerPlayer serverPlayer) {
+
     }
 }

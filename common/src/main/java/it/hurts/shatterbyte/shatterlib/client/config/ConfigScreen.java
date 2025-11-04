@@ -1,24 +1,21 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.apache.logging.log4j.util.Cast;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class TestConfigScreen extends Screen {
+public class ConfigScreen extends Screen {
     Screen prevScreen;
 
-    public TestConfigScreen(Screen prevScreen) {
+    public ConfigScreen(Screen prevScreen) {
         super(Component.empty());
         this.prevScreen = prevScreen;
     }
@@ -41,7 +38,7 @@ public class TestConfigScreen extends Screen {
                     continue;
                 }
 
-                AbstractEntryWidget<?> widget = TestConfigScreen.createWidgetFromField(privateLookup, field, ShatterLib.CONFIG, 20, y);
+                AbstractEntryWidget<?> widget = ConfigScreen.createWidgetFromField(privateLookup, field, ShatterLib.CONFIG, 20, y);
                 if (widget == null) {
                     continue;
                 }

@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.config.dev;
 
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.RelicData;
 
@@ -7,7 +8,22 @@ public class ExampleConfig extends ShatterConfig {
     private RelicData data = new RelicData();
 
     @Override
+    public String getComment() {
+        return """
+                Example relic-like configuration file
+                Used for testing purposes.
+                """;
+    }
+
+    @Override
     public String getPath() {
         return "example";
     }
+
+    @Override
+    public ConfigSide getSide() {
+        return ConfigSide.COMMON;
+    }
+
+
 }

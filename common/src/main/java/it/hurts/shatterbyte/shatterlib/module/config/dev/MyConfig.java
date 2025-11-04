@@ -1,15 +1,15 @@
-package it.hurts.shatterbyte.shatterlib.module.config;
+package it.hurts.shatterbyte.shatterlib.module.config.dev;
 
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.Inherite;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@Setter
 public class MyConfig extends ShatterConfig {
     @Override
     public String getComment() {
@@ -78,5 +77,10 @@ public class MyConfig extends ShatterConfig {
     @Override
     public String getPath() {
         return ShatterLib.MODID;
+    }
+
+    @Override
+    public ConfigSide getSide() {
+        return ConfigSide.COMMON;
     }
 }

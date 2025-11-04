@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 import de.marhali.json5.*;
 import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
+import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -223,7 +224,10 @@ public abstract class ShatterConfig {
     }
 
     public abstract String getPath();
+
     public String getComment() {
         return "";
     }
+
+    public abstract ConfigSide getSide();
 }

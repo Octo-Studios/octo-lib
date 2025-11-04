@@ -1,4 +1,4 @@
-package it.hurts.shatterbyte.shatterlib.module.config;
+package it.hurts.shatterbyte.shatterlib.module.config.util;
 
 import de.marhali.json5.*;
 import de.marhali.json5.config.Json5Options;

@@ -13,7 +13,24 @@ public final class EntryWidgetRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <E> EntryWidgetFactory<E> getFactory(Class<?> cls) {
-        return (EntryWidgetFactory<E>) FACTORIES.get(cls);
+    public static <E> EntryWidgetFactory<E> getFactory(Class<?> clazz) {
+        Class<?> current = clazz;
+        while (current != null) {
+            EntryWidgetFactory<?> factory = FACTORIES.get(current);
+            if (factory != null) {
+                return (EntryWidgetFactory<E>) factory;
+            }
+
+            for (Class<?> interfaceClass : current.getInterfaces()) {
+                factory = FACTORIES.get(interfaceClass);
+                if (factory != null) {
+                    return (EntryWidgetFactory<E>) factory;
+                }
+            }
+
+            current = current.getSuperclass();
+        }
+
+        return null;
     }
 }

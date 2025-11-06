@@ -13,13 +13,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TextAreaWidget extends AbstractEntryWidget<String> {
-    public TextAreaWidget(Supplier<String> getter, Consumer<String> setter, int x, int y, int width, int height, Component name) {
-        super(getter, setter, x, y, width, height, name);
+    public TextAreaWidget(String defaultValue, Supplier<String> getter, Consumer<String> setter, int x, int y, int width, int height, String configPath, String fieldName) {
+        super(defaultValue, getter, setter, x, y, width, height, configPath, fieldName);
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(Minecraft.getInstance().font, this.getValue(), this.getX(), this.getY(), 0xffffffff, true);
+    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        guiGraphics.drawString(Minecraft.getInstance().font, this.getValue(), 0, 0, 0xffffffff, true);
     }
 
     @Override

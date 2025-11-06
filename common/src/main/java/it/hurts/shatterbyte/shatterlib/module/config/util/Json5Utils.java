@@ -13,6 +13,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.lang.reflect.*;
 import java.util.*;
 
+import static it.hurts.shatterbyte.shatterlib.ShatterLib.LOGGER;
+
 public class Json5Utils {
     private static final Map<Type, TypeAdapter<?>> ADAPTERS = new HashMap<>();
     public static final Json5Options PRETTY_PRINT = Json5Options.builder().prettyPrinting().quoteless().build();
@@ -219,6 +221,34 @@ public class Json5Utils {
         }
 
         throw new IllegalArgumentException("Don't know how to decode " + json.getClass().getSimpleName() + " into type " + type.getTypeName());
+    }
+
+    public static <T> void deserializeObject(Json5Object json5Object, T object) {
+        for (Field field : object.getClass().getDeclaredFields()) {
+            int mods = field.getModifiers();
+            if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
+                continue;
+            }
+
+            if (field.isAnnotationPresent(Exclude.class)) {
+                continue;
+            }
+
+            String fieldName = field.getName();
+
+            if (!json5Object.has(fieldName)) {
+                continue;
+            }
+
+            try {
+                field.setAccessible(true);
+                Json5Element fieldElement = json5Object.get(fieldName);
+                Type type = field.getGenericType();
+                field.set(object, Json5Utils.decode(fieldElement, type));
+            } catch (Exception e) {
+                LOGGER.warn("Failed to load field '{}', using default.", fieldName, e);
+            }
+        }
     }
 
     private static <T> void appendEnumComments(T value, Json5Element element) {

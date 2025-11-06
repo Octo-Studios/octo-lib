@@ -14,5 +14,5 @@ public interface EntryWidgetFactory<E> {
      * @param width widget width
      * @param height widget height
      */
-    AbstractEntryWidget<E> create(Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height, Component name);
+    AbstractEntryWidget<E> create(E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height, String configPath, String fieldName);
 }

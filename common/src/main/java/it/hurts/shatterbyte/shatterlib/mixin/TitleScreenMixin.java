@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.mixin;
 
 import dev.architectury.platform.Platform;
+import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.config.ConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -24,7 +25,7 @@ public class TitleScreenMixin {
         TitleScreen thisScreen = (TitleScreen) (Object) this;
         addRenderableWidget(thisScreen, Button.builder(
                 Component.literal("Test Config"),
-                button -> Minecraft.getInstance().setScreen(new ConfigScreen(thisScreen))
+                button -> Minecraft.getInstance().setScreen(new ConfigScreen(ShatterLib.CONFIG, thisScreen))
         ).bounds(thisScreen.width / 2 - 50, 2, 100, 20).build());
     }
 }

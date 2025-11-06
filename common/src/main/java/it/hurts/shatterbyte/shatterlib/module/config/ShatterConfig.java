@@ -141,6 +141,10 @@ public abstract class ShatterConfig {
         }
     }
 
+    public <T> Optional<T> getDefaultValue(String path, Type type) {
+        return this.getValue(path, type, this.getDefaultSchema());
+    }
+
     public void save() {
         this.save(Platform.getConfigFolder());
     }
@@ -188,34 +192,9 @@ public abstract class ShatterConfig {
                 this.save(configDir);
                 return;
             }
+
             Json5Object configJson = parsedElement.getAsJson5Object();
-
-            for (Field field : this.getClass().getDeclaredFields()) {
-                int mods = field.getModifiers();
-                if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
-                    continue;
-                }
-
-                if (field.isAnnotationPresent(Exclude.class)) {
-                    continue;
-                }
-
-                String fieldName = field.getName();
-
-                if (!configJson.has(fieldName)) {
-                    continue;
-                }
-
-                try {
-                    field.setAccessible(true);
-                    Json5Element fieldElement = configJson.get(fieldName);
-                    Type type = field.getGenericType();
-                    field.set(this, Json5Utils.decode(fieldElement, type));
-                } catch (Exception e) {
-                    LOGGER.warn("Failed to load config entry '{}' in {}, using default.", fieldName, this.getPath(), e);
-                }
-            }
-
+            Json5Utils.deserializeObject(configJson, this);
             this.save(configDir);
         } catch (Exception e) {
             LOGGER.error("Failed to load config: {}, using defaults.", this.getPath(), e);

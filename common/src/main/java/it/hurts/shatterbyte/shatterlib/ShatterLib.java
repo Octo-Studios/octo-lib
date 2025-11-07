@@ -11,6 +11,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import net.minecraft.world.level.storage.LevelResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,11 +37,18 @@ public final class ShatterLib {
         LifecycleEvent.SETUP.register(() -> {
             if (Platform.getEnvironment() == Env.CLIENT) {
                 LOGGER.info("Loading client configs");
-                ConfigManager.getClientConfigs().forEach(config -> config.load(Platform.getConfigFolder()));
+                ConfigManager.loadAllClientConfigs();
             }
 
             LOGGER.info("Loading common configs");
-            ConfigManager.getCommonConfigs().forEach(config -> config.load(Platform.getConfigFolder()));
+            ConfigManager.loadAllCommonConfigs();
+        });
+
+        LifecycleEvent.SERVER_BEFORE_START.register(serverState -> {
+            Path serverConfigFolder = serverState.getWorldPath(ConfigManager.SERVER_CONFIG);
+
+            LOGGER.info("Loading server configs");
+            ConfigManager.loadAllServerConfigs(serverConfigFolder);
         });
     }
 

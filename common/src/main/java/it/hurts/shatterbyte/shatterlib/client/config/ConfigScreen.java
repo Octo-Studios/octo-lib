@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import de.marhali.json5.Json5Element;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
@@ -119,7 +120,7 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        config.save();
+        config.save(Platform.getConfigFolder());
         this.minecraft.setScreen(prevScreen);
     }
 }

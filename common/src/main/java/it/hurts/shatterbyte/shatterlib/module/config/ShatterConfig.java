@@ -145,12 +145,8 @@ public abstract class ShatterConfig {
         return this.getValue(path, type, this.getDefaultSchema());
     }
 
-    public void save() {
-        this.save(Platform.getConfigFolder());
-    }
-
     public void save(Path configDir) {
-        Path configFile = configDir.resolve(this.getPath() + ".json5");
+        Path configFile = configDir.resolve(this.getFileName());
         try {
             Json5Object configJson = this.getCurrentSchema();
 
@@ -166,19 +162,15 @@ public abstract class ShatterConfig {
             Files.writeString(configFile, jsonString, StandardCharsets.UTF_8);
 
         } catch (Exception e) {
-            LOGGER.error("Failed to save config: {}", this.getPath(), e);
+            LOGGER.error("Failed to save config: {}", this.getFileName(), e);
         }
     }
 
-    public void load() {
-        this.load(Platform.getConfigFolder());
-    }
-
     public void load(Path configDir) {
-        Path configFile = configDir.resolve(this.getPath() + ".json5");
+        Path configFile = configDir.resolve(this.getFileName());
 
         if (!Files.exists(configFile)) {
-            LOGGER.info("Config file not found, creating default: {}", this.getPath());
+            LOGGER.info("Config file not found, creating default: {}", this.getFileName());
             this.save(configDir);
             return;
         }
@@ -188,7 +180,7 @@ public abstract class ShatterConfig {
             Json5Element parsedElement = JSON5.parse(jsonString);
 
             if (!(parsedElement instanceof Json5Object)) {
-                LOGGER.warn("Config file is not a JSON object, resetting: {}", this.getPath());
+                LOGGER.warn("Config file is not a JSON object, resetting: {}", this.getFileName());
                 this.save(configDir);
                 return;
             }
@@ -197,9 +189,14 @@ public abstract class ShatterConfig {
             Json5Utils.deserializeObject(configJson, this);
             this.save(configDir);
         } catch (Exception e) {
-            LOGGER.error("Failed to load config: {}, using defaults.", this.getPath(), e);
+            LOGGER.error("Failed to load config: {}, using defaults.", this.getFileName(), e);
             this.save(configDir);
         }
+    }
+
+    public String getFileName() {
+        String suffix = "-" + this.getSide().name().toLowerCase();
+        return this.getPath() + suffix + ".json5";
     }
 
     public abstract String getPath();

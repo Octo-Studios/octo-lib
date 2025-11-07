@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
@@ -23,11 +24,11 @@ public final class ShatterLib {
         registerCommands();
         registerEvents();
         ShatterLibNetwork.init();
-        ConfigManager.registerCommon(CONFIG);
-        CONFIG.load();
+        ConfigManager.register(CONFIG);
+        CONFIG.load(Platform.getConfigFolder());
     }
 
-    public static void main(String[] args) throws IllegalAccessException, IOException {
+    public static void main(String[] args) {
         CONFIG.load(Path.of("."));
         EXAMPLE_CONFIG.load(Path.of("."));
     }

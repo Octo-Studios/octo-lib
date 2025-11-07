@@ -194,9 +194,13 @@ public abstract class ShatterConfig {
         }
     }
 
-    public String getFileName() {
+    public final String getFileName() {
+        return this.getSuffixedName() + ".json5";
+    }
+
+    public final String getSuffixedName() {
         String suffix = "-" + this.getSide().name().toLowerCase();
-        return this.getPath() + suffix + ".json5";
+        return this.getPath() + suffix;
     }
 
     public abstract String getPath();
@@ -205,5 +209,7 @@ public abstract class ShatterConfig {
         return "";
     }
 
-    public abstract ConfigSide getSide();
+    public ConfigSide getSide() {
+        return ConfigSide.COMMON;
+    }
 }

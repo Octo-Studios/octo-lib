@@ -24,9 +24,9 @@ public class ConfigManager {
                     break;
                 }
 
-                CLIENT.put(config.getFileName(), config);
+                CLIENT.put(config.getSuffixedName(), config);
             }
-            case COMMON -> COMMON.put(config.getFileName(), config);
+            case COMMON -> COMMON.put(config.getSuffixedName(), config);
             case SERVER -> ShatterLib.LOGGER.warn("idk man");
         }
     }
@@ -57,6 +57,10 @@ public class ConfigManager {
 
     public static Set<String> getCommonPaths() {
         return COMMON.keySet();
+    }
+
+    public static Set<String> getClientPaths() {
+        return CLIENT.keySet();
     }
 
     public static boolean reload(String path) {

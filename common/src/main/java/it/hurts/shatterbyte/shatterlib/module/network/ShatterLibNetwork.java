@@ -14,10 +14,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.function.Supplier;
 
 public class ShatterLibNetwork {
-    public static void init() {
-        registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
-    }
-
     public static <T extends CustomPacketPayload> void registerS2C (
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,

@@ -31,6 +31,10 @@ public class ConfigManager {
         return COMMON.values();
     }
 
+    public static Collection<ShatterConfig> getClientConfigs() {
+        return CLIENT.values();
+    }
+
     public static Set<String> getCommonPaths() {
         return COMMON.keySet();
     }

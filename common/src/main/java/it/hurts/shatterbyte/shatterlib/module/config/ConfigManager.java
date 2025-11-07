@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import lombok.SneakyThrows;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
+import org.apache.commons.compress.archivers.sevenz.CLI;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -23,9 +24,9 @@ public class ConfigManager {
                     break;
                 }
 
-                CLIENT.put(config.getPath(), config);
+                CLIENT.put(config.getFileName(), config);
             }
-            case COMMON -> COMMON.put(config.getPath(), config);
+            case COMMON -> COMMON.put(config.getFileName(), config);
             case SERVER -> ShatterLib.LOGGER.warn("idk man");
         }
     }
@@ -50,11 +51,29 @@ public class ConfigManager {
 
     }
 
+    public static void syncConfigs(ServerPlayer serverPlayer) {
+
+    }
+
     public static Set<String> getCommonPaths() {
         return COMMON.keySet();
     }
 
-    public static void syncConfigs(ServerPlayer serverPlayer) {
+    public static boolean reload(String path) {
+        if (COMMON.containsKey(path)) {
+            COMMON.get(path).load(Platform.getConfigFolder());
+            return true;
+        }
 
+        if (Platform.getEnvironment() != Env.CLIENT) {
+            return false;
+        }
+
+        if (CLIENT.containsKey(path)) {
+            CLIENT.get(path).load(Platform.getConfigFolder());
+            return true;
+        }
+
+        return false;
     }
 }

@@ -6,6 +6,8 @@ import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.MyClientConfig;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.particle.trail.EntityTrailRegistry;
 import it.hurts.shatterbyte.shatterlib.module.particle.trail.TestArrowTrail;
@@ -21,6 +23,8 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(Boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
+
+        ConfigManager.register(new MyClientConfig());
     }
     
     private static void registerEvents() {

@@ -130,6 +130,9 @@ public class Json5Utils {
             if ((rawClass == Double.class || rawClass == double.class)) {
                 return (T) Double.valueOf(json.getAsDouble());
             }
+            if ((rawClass == Float.class || rawClass == float.class)) {
+                return (T) Float.valueOf(json.getAsFloat());
+            }
             if (rawClass.isEnum()) {
                 return (T) Enum.valueOf((Class<Enum>) rawClass, json.getAsString());
             }

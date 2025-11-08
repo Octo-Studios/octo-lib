@@ -1,17 +1,20 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
+import de.marhali.json5.Json5Object;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import lombok.SneakyThrows;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
-import org.apache.commons.compress.archivers.sevenz.CLI;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ConfigManager {
+    private static final Map<Class<? extends ShatterConfig>, Map<Integer, SchemaFixer>> SCHEMA_FIXERS = new HashMap<>();
+
     private static final Map<String, ShatterConfig> CLIENT = new HashMap<>();
     private static final Map<String, ShatterConfig> COMMON = new HashMap<>();
     public static final LevelResource SERVER_CONFIG = new LevelResource("serverconfig");
@@ -29,6 +32,8 @@ public class ConfigManager {
             case COMMON -> COMMON.put(config.getSuffixedName(), config);
             case SERVER -> ShatterLib.LOGGER.warn("idk man");
         }
+
+        SCHEMA_FIXERS.put(config.getClass(), new HashMap<>());
     }
 
     public static Collection<ShatterConfig> getCommonConfigs() {
@@ -79,5 +84,13 @@ public class ConfigManager {
         }
 
         return false;
+    }
+
+    public static void registerSchemaFixer(Class<? extends ShatterConfig> configClass, int from, int to, Consumer<Json5Object> fixer) {
+        SCHEMA_FIXERS.get(configClass).put(from, new SchemaFixer(from, to, fixer));
+    }
+
+    public static SchemaFixer getFixer(Class<? extends ShatterConfig> configClass, int from) {
+        return SCHEMA_FIXERS.get(configClass).get(from);
     }
 }

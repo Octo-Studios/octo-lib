@@ -25,5 +25,8 @@ public class ExampleConfig extends ShatterConfig {
         return ConfigSide.COMMON;
     }
 
-
+    @Override
+    public int getSchemaVersion() {
+        return 0;
+    }
 }

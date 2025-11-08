@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib;
 
+import de.marhali.json5.Json5Primitive;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -9,6 +10,8 @@ import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
+import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
+import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,6 +47,14 @@ public final class ShatterLib {
 
             LOGGER.info("Loading server configs");
             ConfigManager.loadAllServerConfigs(serverConfigFolder);
+        });
+
+        ConfigManager.registerSchemaFixer(MyConfig.class, 0, 1, json -> {
+            json.getAsJson5Object("colorMap").add("addedByFixer", Json5Utils.encode(ShatterColor.GREEN));
+        });
+
+        ConfigManager.registerSchemaFixer(MyConfig.class, 1, 2, json -> {
+            json.getAsJson5Object("colorMap").add("nextFixer", Json5Utils.encode(ShatterColor.WHITE));
         });
     }
 

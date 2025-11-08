@@ -31,12 +31,13 @@ public class MyConfig extends ShatterConfig {
                 """;
     }
 
-//    @Comment("Test comment!")
-//    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>() {{
-//        put("test1", ShatterColor.BLACK);
-//        put("test2", ShatterColor.RED);
-//        put("test3", ShatterColor.BLUE);
-//    }};
+    @Comment("Test comment!")
+    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>() {{
+        put("test1", ShatterColor.BLACK);
+        put("test2", ShatterColor.RED);
+        put("test3", ShatterColor.BLUE);
+        put("addedByFixer", ShatterColor.GREEN);
+    }};
 //
 //    private List<ShatterColor> colorList = new ArrayList<>() {{
 //        add(ShatterColor.WHITE);
@@ -82,5 +83,10 @@ public class MyConfig extends ShatterConfig {
     @Override
     public ConfigSide getSide() {
         return ConfigSide.COMMON;
+    }
+
+    @Override
+    public int getSchemaVersion() {
+        return 2;
     }
 }

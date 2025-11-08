@@ -9,6 +9,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibClientCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyClientConfig;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.particle.trail.EntityTrailRegistry;
@@ -17,6 +18,8 @@ import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.world.entity.EntityType;
 
 public final class ShatterLibClient {
+    public static final ShatterConfig CONFIG = new MyClientConfig();
+
     public static void init() {
         registerEvents();
         ClientCommandRegistrationEvent.EVENT.register(ShatterLibClientCommand::register);
@@ -27,7 +30,7 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(Boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
 
-        ConfigManager.register(new MyClientConfig());
+        ConfigManager.register(CONFIG);
     }
     
     private static void registerEvents() {

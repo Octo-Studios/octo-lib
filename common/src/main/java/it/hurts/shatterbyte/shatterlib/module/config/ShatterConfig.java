@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
 import dev.architectury.platform.Platform;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 
@@ -186,6 +187,20 @@ public abstract class ShatterConfig {
             }
 
             Json5Object configJson = parsedElement.getAsJson5Object();
+            int loadedSchemaVersion = configJson.get("schemaVersion") == null ? this.getSchemaVersion() : configJson.get("schemaVersion").getAsInt();
+            int currentSchemaVersion = this.getSchemaVersion();
+
+            while (loadedSchemaVersion < currentSchemaVersion) {
+                SchemaFixer fixer = ConfigManager.getFixer(this.getClass(), loadedSchemaVersion);
+                if (fixer == null) {
+                    loadedSchemaVersion++;
+                    continue;
+                }
+
+                loadedSchemaVersion = fixer.apply(configJson);
+                LOGGER.info("Applied a schema fixer for {}, from version {} to version {}", this.getSuffixedName(), fixer.from(), fixer.to());
+            }
+
             Json5Utils.deserializeObject(configJson, this);
             this.save(configDir);
         } catch (Exception e) {
@@ -212,4 +227,6 @@ public abstract class ShatterConfig {
     public ConfigSide getSide() {
         return ConfigSide.COMMON;
     }
+
+    public abstract int getSchemaVersion();
 }

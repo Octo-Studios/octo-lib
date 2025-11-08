@@ -18,4 +18,9 @@ public class MyClientConfig extends ShatterConfig {
     public ConfigSide getSide() {
         return ConfigSide.CLIENT;
     }
+
+    @Override
+    public int getSchemaVersion() {
+        return 0;
+    }
 }

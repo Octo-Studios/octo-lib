@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.module.config.util;
 
 import de.marhali.json5.*;
 import de.marhali.json5.config.Json5Options;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ResourceLocationAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
@@ -63,6 +64,12 @@ public class Json5Utils {
                 try {
                     Json5Object obj = new Json5Object();
                     Class<?> clazz = value.getClass();
+
+                    if (value instanceof ShatterConfig config) {
+                        Json5Element schemaVersion = Json5Primitive.fromNumber(config.getSchemaVersion());
+                        schemaVersion.setComment("DO NOT CHANGE");
+                        obj.add("schemaVersion", schemaVersion);
+                    }
 
                     for (Field field : getAllFields(clazz)) {
                         if (Modifier.isTransient(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {

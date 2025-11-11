@@ -158,6 +158,8 @@ public class ConfigManager {
                 if (Files.exists(overrideFile)) {
                     serverConfig.load(serverConfigFolder);
                 }
+
+                ConfigManager.syncServerConfig(server, path);
             }
 
             return true;

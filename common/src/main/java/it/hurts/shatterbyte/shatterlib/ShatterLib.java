@@ -9,6 +9,7 @@ import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.TestServerConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -30,6 +31,7 @@ public final class ShatterLib {
         registerEvents();
 
         registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
+        registerS2C(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC, SyncServerConfigPacket::handle);
 
         ConfigManager.register(CONFIG);
         ConfigManager.register(SERVER_CONFIG);

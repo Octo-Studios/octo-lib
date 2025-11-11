@@ -1,13 +1,12 @@
 package it.hurts.shatterbyte.shatterlib.module.config.dev;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 
-public class MyClientConfig extends ShatterConfig {
-    @Comment("bleh")
-    private PoseStack superClientThingy = new PoseStack();
+public class TestServerConfig extends ShatterConfig {
+    @Comment("Some value!")
+    private int someValue = 123;
 
     @Override
     public String getName() {
@@ -15,12 +14,12 @@ public class MyClientConfig extends ShatterConfig {
     }
 
     @Override
-    public ConfigSide getSide() {
-        return ConfigSide.CLIENT;
+    public int getSchemaVersion() {
+        return 0;
     }
 
     @Override
-    public int getSchemaVersion() {
-        return 0;
+    public ConfigSide getSide() {
+        return ConfigSide.SERVER;
     }
 }

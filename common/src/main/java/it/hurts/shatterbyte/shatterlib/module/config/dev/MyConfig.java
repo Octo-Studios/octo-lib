@@ -76,7 +76,7 @@ public class MyConfig extends ShatterConfig {
 
 
     @Override
-    public String getPath() {
+    public String getName() {
         return ShatterLib.MODID;
     }
 

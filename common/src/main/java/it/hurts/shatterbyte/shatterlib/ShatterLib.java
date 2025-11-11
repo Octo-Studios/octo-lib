@@ -1,6 +1,5 @@
 package it.hurts.shatterbyte.shatterlib;
 
-import de.marhali.json5.Json5Primitive;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -9,6 +8,7 @@ import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.TestServerConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -23,6 +23,7 @@ public final class ShatterLib {
     public static final String MODID = "shatterlib";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static MyConfig CONFIG = new MyConfig();
+    public static TestServerConfig SERVER_CONFIG = new TestServerConfig();
 
     public static void init() {
         registerCommands();
@@ -31,6 +32,7 @@ public final class ShatterLib {
         registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
 
         ConfigManager.register(CONFIG);
+        ConfigManager.register(SERVER_CONFIG);
 
         LifecycleEvent.SETUP.register(() -> {
             if (Platform.getEnvironment() == Env.CLIENT) {
@@ -40,13 +42,16 @@ public final class ShatterLib {
 
             LOGGER.info("Loading common configs");
             ConfigManager.loadAllCommonConfigs();
+
+            LOGGER.info("Loading server configs");
+            ConfigManager.loadAllServerConfigs();
         });
 
         LifecycleEvent.SERVER_BEFORE_START.register(serverState -> {
             Path serverConfigFolder = serverState.getWorldPath(ConfigManager.SERVER_CONFIG);
 
-            LOGGER.info("Loading server configs");
-            ConfigManager.loadAllServerConfigs(serverConfigFolder);
+            LOGGER.info("Loading server config overrides");
+            ConfigManager.loadServerConfigOverrides(serverConfigFolder);
         });
 
         ConfigManager.registerSchemaFixer(MyConfig.class, 0, 1, json -> {
@@ -63,7 +68,7 @@ public final class ShatterLib {
     }
     
     private static void registerEvents() {
-        PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncConfigs);
+        PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncServerConfigs);
     }
     
     private static void registerCommands() {

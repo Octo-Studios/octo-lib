@@ -1,14 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.*;
-import dev.architectury.platform.Platform;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,6 +18,8 @@ import static it.hurts.shatterbyte.shatterlib.ShatterLib.LOGGER;
 public abstract class ShatterConfig {
     @Exclude
     private Json5Object defaultSchema;
+    @Exclude
+    private Json5Object currentSchema;
 
     public static final Json5 JSON5 = Json5.builder(builder -> builder
             .quoteless()
@@ -35,7 +33,15 @@ public abstract class ShatterConfig {
     }
 
     public Json5Object getCurrentSchema() {
-        return Json5Utils.encode(this).getAsJson5Object();
+        if (this.currentSchema == null) {
+            this.updateSchemaCache();
+        }
+
+        return currentSchema;
+    }
+
+    public void updateSchemaCache() {
+        this.currentSchema = Json5Utils.encode(this).getAsJson5Object();
     }
 
     public Json5Object getDefaultSchema() {
@@ -147,6 +153,8 @@ public abstract class ShatterConfig {
     }
 
     public void save(Path configDir) {
+        this.updateSchemaCache();
+
         Path configFile = configDir.resolve(this.getFileName());
         try {
             Json5Object configJson = this.getCurrentSchema();
@@ -198,27 +206,35 @@ public abstract class ShatterConfig {
                 }
 
                 loadedSchemaVersion = fixer.apply(configJson);
-                LOGGER.info("Applied a schema fixer for {}, from version {} to version {}", this.getSuffixedName(), fixer.from(), fixer.to());
+                LOGGER.info("Applied a schema fixer for {}, from version {} to version {}", this.getPath(), fixer.from(), fixer.to());
             }
 
-            Json5Utils.deserializeObject(configJson, this);
-            this.save(configDir);
+            this.loadFromJson(configJson);
         } catch (Exception e) {
             LOGGER.error("Failed to load config: {}, using defaults.", this.getFileName(), e);
-            this.save(configDir);
         }
+
+        this.save(configDir);
+    }
+
+    public void loadFromJson(Json5Object root) {
+        Json5Utils.deserializeObject(root, this);
+    }
+
+    public void loadFromJson(String json) {
+        this.loadFromJson(JSON5.parse(json).getAsJson5Object());
     }
 
     public final String getFileName() {
-        return this.getSuffixedName() + ".json5";
+        return this.getPath() + ".json5";
     }
 
-    public final String getSuffixedName() {
+    public final String getPath() {
         String suffix = "-" + this.getSide().name().toLowerCase();
-        return this.getPath() + suffix;
+        return this.getName() + suffix;
     }
 
-    public abstract String getPath();
+    public abstract String getName();
 
     public String getComment() {
         return "";
@@ -226,6 +242,18 @@ public abstract class ShatterConfig {
 
     public ConfigSide getSide() {
         return ConfigSide.COMMON;
+    }
+
+    public final boolean isClient() {
+        return this.getSide() == ConfigSide.CLIENT;
+    }
+
+    public final boolean isCommon() {
+        return this.getSide() == ConfigSide.COMMON;
+    }
+
+    public final boolean isServer() {
+        return this.getSide() == ConfigSide.SERVER;
     }
 
     public abstract int getSchemaVersion();

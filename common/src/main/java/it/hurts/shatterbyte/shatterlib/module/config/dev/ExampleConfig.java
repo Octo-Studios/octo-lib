@@ -16,7 +16,7 @@ public class ExampleConfig extends ShatterConfig {
     }
 
     @Override
-    public String getPath() {
+    public String getName() {
         return "example";
     }
 

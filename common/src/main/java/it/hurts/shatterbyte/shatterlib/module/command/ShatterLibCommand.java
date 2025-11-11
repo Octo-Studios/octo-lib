@@ -33,8 +33,8 @@ public class ShatterLibCommand {
                                             int counter = 0;
                                             boolean isAdmin = context.getSource().hasPermission(4);
 
-                                            for (String path : ConfigManager.getCommonPaths()) {
-                                                if (!ConfigManager.reload(path)) {
+                                            for (String path : ConfigManager.getCommonAndServerPaths()) {
+                                                if (!ConfigManager.reload(path, context.getSource().getServer())) {
                                                     context.getSource().sendFailure(Component.literal("Failed to reload: ").append(Component.literal("["+path+"]").withStyle(ChatFormatting.GRAY)));
                                                     continue;
                                                 }
@@ -46,10 +46,10 @@ public class ShatterLibCommand {
                                             return Command.SINGLE_SUCCESS;
                                         }))
                                 .then(Commands.argument("path", StringArgumentType.string())
-                                        .suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getCommonPaths(), b))
+                                        .suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getCommonAndServerPaths(), b))
                                         .executes(context -> {
                                             String path = context.getArgument("path", String.class);
-                                            if (!ConfigManager.reload(path)) {
+                                            if (!ConfigManager.reload(path, context.getSource().getServer())) {
                                                 context.getSource().sendFailure(Component.literal("Failed to reload: "+path));
                                                 return 0;
                                             }

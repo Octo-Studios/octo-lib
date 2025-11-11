@@ -1,8 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
-import de.marhali.json5.Json5Element;
 import dev.architectury.platform.Platform;
-import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import lombok.SneakyThrows;
@@ -25,7 +23,7 @@ public class ConfigScreen extends Screen {
     Screen prevScreen;
 
     public ConfigScreen(ShatterConfig config, Screen prevScreen) {
-        super(Component.literal(config.getPath()));
+        super(Component.literal(config.getName()));
         this.config = config;
         this.prevScreen = prevScreen;
     }
@@ -111,7 +109,7 @@ public class ConfigScreen extends Screen {
                 (Supplier<T>) getter,
                 setter,
                 (int) (x + 20 * count), y, 64, 16,
-                config.getPath(),
+                config.getName(),
                 fieldName
         );
 

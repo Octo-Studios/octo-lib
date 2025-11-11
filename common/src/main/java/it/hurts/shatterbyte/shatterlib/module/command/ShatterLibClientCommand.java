@@ -17,7 +17,7 @@ public class ShatterLibClientCommand {
             int counter = 0;
 
             for (String path : ConfigManager.getClientPaths()) {
-                if (!ConfigManager.reload(path)) {
+                if (!ConfigManager.reload(path, null)) {
                     context.getSource().arch$getPlayer().displayClientMessage(Component.literal("Failed to reload: ").withStyle(ChatFormatting.RED).append(Component.literal("[" + path + "]")), true);
                     continue;
                 }
@@ -29,7 +29,7 @@ public class ShatterLibClientCommand {
             return Command.SINGLE_SUCCESS;
         })).then(ClientCommandRegistrationEvent.argument("path", StringArgumentType.string()).suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getClientPaths(), b)).executes(context -> {
             String path = context.getArgument("path", String.class);
-            if (!ConfigManager.reload(path)) {
+            if (!ConfigManager.reload(path, null)) {
                 context.getSource().arch$getPlayer().displayClientMessage(Component.literal("Failed to reload: ").withStyle(ChatFormatting.RED).append(Component.literal("[" + path + "]")), true);
                 return 0;
             }

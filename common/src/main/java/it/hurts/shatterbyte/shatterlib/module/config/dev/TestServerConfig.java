@@ -7,6 +7,9 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 public class TestServerConfig extends ShatterConfig {
     @Comment("Some value!")
     private int someValue = 123;
+    @Comment("Some other value!")
+    private String someOtherValue = "im a char array in disguise";
+
 
     @Override
     public String getName() {

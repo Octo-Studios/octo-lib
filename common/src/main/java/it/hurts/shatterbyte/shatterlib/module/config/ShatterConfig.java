@@ -176,11 +176,18 @@ public abstract class ShatterConfig {
     }
 
     public void load(Path configDir) {
+        this.load(configDir, true);
+    }
+
+    public void load(Path configDir, boolean withSave) {
         Path configFile = configDir.resolve(this.getFileName());
 
         if (!Files.exists(configFile)) {
-            LOGGER.info("Config file not found, creating default: {}", this.getFileName());
-            this.save(configDir);
+            if (withSave) {
+                LOGGER.info("Config file not found, creating default: {}", this.getFileName());
+                this.save(configDir);
+            }
+
             return;
         }
 
@@ -189,8 +196,10 @@ public abstract class ShatterConfig {
             Json5Element parsedElement = JSON5.parse(jsonString);
 
             if (!(parsedElement instanceof Json5Object)) {
-                LOGGER.warn("Config file is not a JSON object, resetting: {}", this.getFileName());
-                this.save(configDir);
+                if (withSave) {
+                    LOGGER.warn("Config file is not a JSON object, resetting: {}", this.getFileName());
+                    this.save(configDir);
+                }
                 return;
             }
 
@@ -214,7 +223,11 @@ public abstract class ShatterConfig {
             LOGGER.error("Failed to load config: {}, using defaults.", this.getFileName(), e);
         }
 
-        this.save(configDir);
+        if (withSave) {
+            this.save(configDir);
+        } else {
+            this.updateSchemaCache();
+        }
     }
 
     public void loadFromJson(Json5Object root) {

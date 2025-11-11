@@ -75,7 +75,7 @@ public class ConfigManager {
 
             Path overrideFile = serverConfigFolder.resolve(config.getFileName());
             if (Files.exists(overrideFile)) {
-                config.load(serverConfigFolder);
+                config.load(serverConfigFolder, false);
             }
         }
     }
@@ -156,7 +156,7 @@ public class ConfigManager {
                 Path serverConfigFolder = server.getWorldPath(SERVER_CONFIG);
                 Path overrideFile = serverConfigFolder.resolve(serverConfig.getFileName());
                 if (Files.exists(overrideFile)) {
-                    serverConfig.load(serverConfigFolder);
+                    serverConfig.load(serverConfigFolder, false);
                 }
 
                 ConfigManager.syncServerConfig(server, path);

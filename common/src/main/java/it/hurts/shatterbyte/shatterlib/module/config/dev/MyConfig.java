@@ -3,19 +3,12 @@ package it.hurts.shatterbyte.shatterlib.module.config.dev;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.dev.data.Inherite;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Rarity;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -77,7 +70,7 @@ public class MyConfig extends ShatterConfig {
 
     @Override
     public String getName() {
-        return ShatterLib.MODID;
+        return ShatterLib.MOD_ID;
     }
 
     @Override

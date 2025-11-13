@@ -12,17 +12,16 @@ import it.hurts.shatterbyte.shatterlib.module.config.dev.TestServerConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
+import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 
-import static it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork.registerS2C;
-
 public final class ShatterLib {
-    public static final String MODID = "shatterlib";
-    public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static final String MOD_ID = "shatterlib";
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static MyConfig CONFIG = new MyConfig();
     public static TestServerConfig SERVER_CONFIG = new TestServerConfig();
 
@@ -30,11 +29,11 @@ public final class ShatterLib {
         registerCommands();
         registerEvents();
 
-        registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
-        registerS2C(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC, SyncServerConfigPacket::handle);
+        ShatterLibNetwork.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
+        ShatterLibNetwork.registerS2CPayloadType(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC);
 
-        ConfigManager.register(CONFIG);
-        ConfigManager.register(SERVER_CONFIG);
+        ConfigManager.register(MOD_ID, CONFIG);
+        ConfigManager.register(MOD_ID, SERVER_CONFIG);
 
         LifecycleEvent.SETUP.register(() -> {
             if (Platform.getEnvironment() == Env.CLIENT) {

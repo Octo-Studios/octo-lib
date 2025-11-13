@@ -2,8 +2,6 @@ package it.hurts.shatterbyte.shatterlib.module.network;
 
 import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.ByteBuf;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.StreamDecoder;
@@ -22,20 +20,6 @@ public abstract class Packet implements CustomPacketPayload {
 
     public abstract void write(RegistryFriendlyByteBuf buf);
 
-    public final void handle(NetworkManager.PacketContext packetContext) {
-        switch (packetContext.getEnvironment()) {
-            case CLIENT -> this.handleClient(packetContext);
-            case SERVER -> this.handleServer(packetContext);
-        }
-    }
-
-    protected void handleClient(NetworkManager.PacketContext packetContext) {
-
-    }
-
-    protected void handleServer(NetworkManager.PacketContext packetContext) {
-
-    }
 
     public static <T extends Packet> Type<T> createType(String namespace, String path) {
         return new Type<>(ResourceLocation.fromNamespaceAndPath(namespace, path));

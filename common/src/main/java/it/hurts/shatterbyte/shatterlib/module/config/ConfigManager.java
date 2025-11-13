@@ -20,13 +20,18 @@ import java.util.function.Consumer;
 public class ConfigManager {
     private static final Map<Class<? extends ShatterConfig>, Map<Integer, SchemaFixer>> SCHEMA_FIXERS = new HashMap<>();
 
+    private static final Map<String, Collection<ShatterConfig>> CONFIGS_BY_MODID = new LinkedHashMap<>();
+
     private static final Map<String, ShatterConfig> CLIENT = new HashMap<>();
     private static final Map<String, ShatterConfig> COMMON = new HashMap<>();
     private static final Map<String, ShatterConfig> SERVER = new HashMap<>();
+
     public static final LevelResource SERVER_CONFIG = new LevelResource("serverconfig");
 
     @SneakyThrows
-    public static void register(ShatterConfig config) {
+    public static void register(String modId, ShatterConfig config) {
+        CONFIGS_BY_MODID.putIfAbsent(modId, new ArrayList<>());
+
         switch (config.getSide()) {
             case CLIENT -> {
                 if (Platform.getEnvironment() != Env.CLIENT) {
@@ -39,6 +44,7 @@ public class ConfigManager {
             case SERVER -> SERVER.put(config.getPath(), config);
         }
 
+        CONFIGS_BY_MODID.get(modId).add(config);
         SCHEMA_FIXERS.put(config.getClass(), new HashMap<>());
     }
 

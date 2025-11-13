@@ -27,7 +27,7 @@ public class TesselatorUtils {
             .withVertexShader("core/position_color")
             .withFragmentShader("core/position_color")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-            .withLocation(ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "trail"))
+            .withLocation(ResourceLocation.fromNamespaceAndPath(ShatterLib.MOD_ID, "trail"))
             .build();
 
     public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("shatterparticle_trail", 256, TRAIL_PIPELINE,

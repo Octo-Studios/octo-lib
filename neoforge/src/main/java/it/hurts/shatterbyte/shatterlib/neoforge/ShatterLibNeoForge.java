@@ -6,7 +6,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 
-@Mod(ShatterLib.MODID)
+@Mod(ShatterLib.MOD_ID)
 public final class ShatterLibNeoForge {
     public ShatterLibNeoForge(IEventBus modBus) {
         ShatterLib.init();

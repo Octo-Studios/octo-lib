@@ -15,8 +15,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.util.function.Supplier;
 
 public class ShatterLibNetwork {
-    //DeferredRegister<PacketPayloadInfo> register = DeferredRegister.create()
-
+    /**
+     * Registers a payload type on the server
+     */
     public static <T extends CustomPacketPayload> void registerS2CPayloadType (
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec
@@ -26,6 +27,9 @@ public class ShatterLibNetwork {
         }
     }
 
+    /**
+     * Registers a packet receiver on the client. Should be executed during client initialization.
+     */
     public static <T extends CustomPacketPayload> void registerS2CReceiver (
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,
@@ -34,6 +38,9 @@ public class ShatterLibNetwork {
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, type, codec, receiver);
     }
 
+    /**
+     * Registers a packet receiver on the server. Should be executed during common initialization.
+     */
     public static <T extends CustomPacketPayload> void registerC2SReceiver (
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,

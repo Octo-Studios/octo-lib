@@ -54,18 +54,6 @@ public final class ShatterLib {
             LOGGER.info("Loading server config overrides");
             ConfigManager.loadServerConfigOverrides(serverConfigFolder);
         });
-
-        ConfigManager.registerSchemaFixer(MyConfig.class, 0, 1, json -> {
-            json.getAsJson5Object("colorMap").add("addedByFixer", Json5Utils.encode(ShatterColor.GREEN));
-        });
-
-        ConfigManager.registerSchemaFixer(MyConfig.class, 1, 2, json -> {
-            json.getAsJson5Object("colorMap").add("nextFixer", Json5Utils.encode(ShatterColor.WHITE));
-        });
-    }
-
-    public static void main(String[] args) {
-        CONFIG.load(Path.of("."));
     }
     
     private static void registerEvents() {

@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -90,10 +91,12 @@ public class ConfigScreen extends Screen {
         Consumer<T> setter = setterHandle::invoke;
 
         String fieldName = field.getName();
+
         String newPath = path + "." + fieldName;
         if (newPath.startsWith(".")) {
             newPath = newPath.substring(1);
         }
+
 
         Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
 
@@ -104,6 +107,12 @@ public class ConfigScreen extends Screen {
         long count = newPath.chars()
                 .filter(c -> c == '.')
                 .count();
+
+        if (field.isAnnotationPresent(Name.class)) {
+            fieldName = field.getAnnotation(Name.class).value();
+        } else {
+            fieldName = AbstractEntryWidget.convertFromCamelCase(fieldName);
+        }
 
         AbstractEntryWidget<T> widget = factory.create(defaultValue.get(),
                 (Supplier<T>) getter,

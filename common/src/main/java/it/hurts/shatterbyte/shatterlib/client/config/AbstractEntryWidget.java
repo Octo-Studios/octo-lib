@@ -12,15 +12,18 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AbstractEntryWidget<E> extends AbstractWidget {
+    @Getter
     private Component description;
     private E cachedValue;
+
+    @Getter
     private final E defaultValue;
 
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
     public AbstractEntryWidget(E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height, String configPath, String fieldName) {
-        super(x, y, width, height, Component.translatable(getNameTranslationKey(configPath, fieldName)));
+        super(x, y, width, height, Component.literal(fieldName));
         this.defaultValue = defaultValue;
         this.getter = getter;
         this.setter = setter;
@@ -58,11 +61,9 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget {
         this.cachedValue = this.getter.get();
     }
 
-    private static String getNameTranslationKey(String configPath, String fieldName) {
-        return "config." + configPath.replace('/', '.') + "." + fieldName;
-    }
-
-    private static String getDescriptionTranslationKey(String configPath, String fieldName) {
-        return getNameTranslationKey(configPath, fieldName)+".description";
+    public static String convertFromCamelCase(String varName) {
+        String result = varName.replaceAll("([a-z])([A-Z])", "$1 $2");
+        result = result.substring(0, 1).toUpperCase() + result.substring(1);
+        return result;
     }
 }

@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Adds a comment to the field it's applied to in the config
+ * Defines a custom name of this field to display it in the Config UI
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Comment {
+public @interface Name {
     String value();
 }

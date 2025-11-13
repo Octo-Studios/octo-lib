@@ -5,6 +5,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
 
@@ -24,13 +25,13 @@ public class MyConfig extends ShatterConfig {
                 """;
     }
 
-    @Comment("Test comment!")
-    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>() {{
-        put("test1", ShatterColor.BLACK);
-        put("test2", ShatterColor.RED);
-        put("test3", ShatterColor.BLUE);
-        put("addedByFixer", ShatterColor.GREEN);
-    }};
+//    @Comment("Test comment!")
+//    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>() {{
+//        put("test1", ShatterColor.BLACK);
+//        put("test2", ShatterColor.RED);
+//        put("test3", ShatterColor.BLUE);
+//        put("addedByFixer", ShatterColor.GREEN);
+//    }};
 //
 //    private List<ShatterColor> colorList = new ArrayList<>() {{
 //        add(ShatterColor.WHITE);
@@ -60,6 +61,8 @@ public class MyConfig extends ShatterConfig {
 //    @Exclude
 //    private String superPrivateString = "pls don't";
     private String someString = "Test String!!!";
+
+    @Name("Some random test boolean")
     private boolean testBool = false;
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");

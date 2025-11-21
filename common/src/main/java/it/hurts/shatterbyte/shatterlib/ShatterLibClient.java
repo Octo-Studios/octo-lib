@@ -3,7 +3,6 @@ package it.hurts.shatterbyte.shatterlib;
 import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import it.hurts.shatterbyte.shatterlib.client.TestScreen;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
@@ -17,12 +16,9 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPac
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
-import it.hurts.shatterbyte.shatterlib.module.particle.trail.EntityTrailRegistry;
-import it.hurts.shatterbyte.shatterlib.module.particle.trail.TestArrowTrail;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EntityType;
 
 public final class ShatterLibClient {
     public static final ShatterConfig CONFIG = new MyClientConfig();

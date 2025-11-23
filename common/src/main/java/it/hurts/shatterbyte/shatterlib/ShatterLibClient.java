@@ -6,6 +6,7 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.CheckboxWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibClientCommand;
@@ -46,6 +47,7 @@ public final class ShatterLibClient {
 
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        EntryWidgetRegistry.register(Object.class, GenericObjectWidget::new);
         EntryWidgetRegistry.register(boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(Boolean.class, CheckboxWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);

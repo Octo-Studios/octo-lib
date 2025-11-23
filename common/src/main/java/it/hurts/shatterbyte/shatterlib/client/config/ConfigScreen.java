@@ -2,16 +2,8 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ConfigScreen extends Screen {
     ShatterConfig config;

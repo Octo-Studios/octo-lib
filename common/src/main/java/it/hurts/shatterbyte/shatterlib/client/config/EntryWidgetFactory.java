@@ -7,12 +7,5 @@ import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface EntryWidgetFactory<E> {
-    /**
-     * Create a widget for the given entry.
-     * @param x left coordinate
-     * @param y top coordinate
-     * @param width widget width
-     * @param height widget height
-     */
-    AbstractEntryWidget<E> create(E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height, String configPath, String fieldName);
+    AbstractEntryWidget<E> create(E defaultValue, Supplier<E> getter, Consumer<E> setter);
 }

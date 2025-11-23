@@ -5,14 +5,13 @@ import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
-    public CheckboxWidget(Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter, int x, int y, int width, int height, String configPath, String fieldName) {
-        super(defaultValue, getter, setter, x, y, width, height, configPath, fieldName);
+    public CheckboxWidget(Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+        super(defaultValue, getter, setter, 0, 0, 16, 16);
     }
 
     @Override

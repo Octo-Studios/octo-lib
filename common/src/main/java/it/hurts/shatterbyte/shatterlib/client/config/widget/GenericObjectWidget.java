@@ -2,7 +2,9 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
@@ -53,6 +55,27 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             }
 
             AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.config, privateLookup, field, object);
+
+            if (widget == null) {
+                continue;
+            }
+
+            String fieldName = field.getName();
+            String fieldDescription = "";
+
+            if (field.isAnnotationPresent(Name.class)) {
+                fieldName = field.getAnnotation(Name.class).value();
+            } else {
+                fieldName = AbstractEntryWidget.convertFromCamelCase(fieldName);
+            }
+
+            if (field.isAnnotationPresent(Comment.class)) {
+                fieldDescription = field.getAnnotation(Comment.class).value();
+            }
+
+            FieldInfo fieldInfo = new FieldInfo(fieldName, fieldDescription);
+
+            this.widgets.put(fieldInfo, widget);
         }
     }
 

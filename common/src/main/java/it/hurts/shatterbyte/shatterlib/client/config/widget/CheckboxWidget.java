@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
-    public CheckboxWidget(ShatterConfig config, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(config, defaultValue, getter, setter, 0, 0, 16, 16);
+    public CheckboxWidget(ShatterConfig config, String fieldName, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+        super(config, fieldName, defaultValue, getter, setter, 0, 0, 16, 16);
     }
 
     @Override

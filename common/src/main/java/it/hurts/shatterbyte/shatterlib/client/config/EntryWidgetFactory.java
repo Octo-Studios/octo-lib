@@ -8,5 +8,5 @@ import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface EntryWidgetFactory<E> {
-    AbstractEntryWidget<E> create(ShatterConfig config, E defaultValue, Supplier<E> getter, Consumer<E> setter);
+    AbstractEntryWidget<E> create(ShatterConfig config, String fieldName, E defaultValue, Supplier<E> getter, Consumer<E> setter);
 }

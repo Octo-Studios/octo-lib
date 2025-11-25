@@ -29,8 +29,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
-        super(config, defaultValue, getter, setter, 0, 0, 100, 100);
+    public GenericObjectWidget(ShatterConfig config, String fieldName, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+        super(config, fieldName, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
     }
 
@@ -54,7 +54,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.config, privateLookup, field, object);
+            AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.getPath(), this.config, privateLookup, field, object);
 
             if (widget == null) {
                 continue;
@@ -75,13 +75,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
             FieldInfo fieldInfo = new FieldInfo(fieldName, fieldDescription);
 
+            widget.setParent(this);
             this.widgets.put(fieldInfo, widget);
         }
     }
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-
+        this.widgets.values().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
     }
 
     @Override

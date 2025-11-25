@@ -3,7 +3,6 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,6 +20,7 @@ import java.util.function.Supplier;
 
 public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<GenericObjectWidget> {
     protected final ShatterConfig config;
+    protected final String fieldName;
 
     private GenericObjectWidget parent;
     private E cachedValue;
@@ -31,9 +31,10 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
-    public AbstractEntryWidget(ShatterConfig config, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
+    public AbstractEntryWidget(ShatterConfig config, String fieldName, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
         this.config = config;
+        this.fieldName = fieldName;
         this.defaultValue = defaultValue;
         this.getter = getter;
         this.setter = setter;
@@ -70,6 +71,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
         return factory.create(
                 config,
+                fieldName,
                 defaultValue.get(),
                 (Supplier<T>) getter,
                 setter
@@ -104,6 +106,19 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         String result = varName.replaceAll("([a-z])([A-Z])", "$1 $2");
         result = result.substring(0, 1).toUpperCase() + result.substring(1);
         return result;
+    }
+
+    public String getPath() {
+        GenericObjectWidget current = this.getParent();
+        StringBuilder path = new StringBuilder();
+
+        while (current != null) {
+            path.append(current.fieldName).append(".");
+            current = current.getParent();
+        }
+
+        path.append(this.fieldName);
+        return path.toString();
     }
 
     public void resetValue() {

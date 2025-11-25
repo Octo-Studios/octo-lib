@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import dev.architectury.platform.Platform;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -18,6 +19,7 @@ public class ConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        this.addRenderableWidget(new GenericObjectWidget(config, "", null, () -> config, config -> {}));
     }
 
     @Override

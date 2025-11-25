@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TextAreaWidget extends AbstractEntryWidget<String> {
-    public TextAreaWidget(ShatterConfig config, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
-        super(config, defaultValue, getter, setter, 0, 0, 256, 16);
+    public TextAreaWidget(ShatterConfig config, String fieldName, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
+        super(config, fieldName, defaultValue, getter, setter, 0, 0, 256, 16);
     }
 
     @Override

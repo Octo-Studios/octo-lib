@@ -62,12 +62,12 @@ public class MyConfig extends ShatterConfig {
 //    private String superPrivateString = "pls don't";
     private String someString = "Test String!!!";
 
+    private TestObject someObject = new TestObject();
     @Name("Some random test boolean")
     private boolean testBool = false;
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //
-    private TestObject someObject = new TestObject();
 //    private Inherite inheritanceTest = new Inherite();
 
 

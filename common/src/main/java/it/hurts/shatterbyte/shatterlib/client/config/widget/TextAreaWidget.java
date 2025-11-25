@@ -20,6 +20,6 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(Minecraft.getInstance().font, this.getValue(), 0, 0, 0xffffffff, true);
+        guiGraphics.drawString(Minecraft.getInstance().font, this.getValue(), this.getX(), this.getY(), 0xffcccccc, true);
     }
 }

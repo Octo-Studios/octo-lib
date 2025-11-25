@@ -16,12 +16,12 @@ public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.fill(0, 0, this.getWidth(), this.getHeight(), 0x88000000);
+        guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY() + this.getHeight(), 0x88000000);
 
         if (this.getValue()) {
-            RenderUtils.renderOutline(guiGraphics, 0, 0, this.getWidth(), this.getHeight(), 0xff00ff00);
+            RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xff00ff00);
         } else {
-            RenderUtils.renderOutline(guiGraphics, 0, 0, this.getWidth(), this.getHeight(), 0xffff0000);
+            RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
         }
     }
 

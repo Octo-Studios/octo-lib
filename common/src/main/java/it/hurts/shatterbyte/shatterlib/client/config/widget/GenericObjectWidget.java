@@ -7,10 +7,14 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.world.entity.vehicle.Minecart;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
@@ -32,6 +36,27 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public GenericObjectWidget(ShatterConfig config, String fieldName, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, fieldName, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
+        this.repositionWidgets();
+    }
+
+    public void repositionWidgets() {
+        int totalHeight = 8;
+        int maxWidth = 0;
+        Font font = Minecraft.getInstance().font;
+
+        for (Map.Entry<FieldInfo, AbstractEntryWidget<?>> entry : widgets.entrySet()) {
+            AbstractEntryWidget<?> widget = entry.getValue();
+            FieldInfo info = entry.getKey();
+
+            int width = font.width(info.name+": ");
+
+            widget.setPosition(4 + width, totalHeight);
+            maxWidth = Math.max(maxWidth, widget.getLocalX() + widget.getWidth() + 4);
+            totalHeight += widget.getHeight() + 4;
+        }
+
+        this.setWidth(maxWidth);
+        this.setHeight(totalHeight);
     }
 
     @SneakyThrows
@@ -82,7 +107,22 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.widgets.values().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
+        Font font = Minecraft.getInstance().font;
+
+        guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0x55000000);
+        this.widgets.forEach((info, widget) -> {
+            guiGraphics.drawString(font, info.name+": ", this.getX() + 4, widget.getY(), 0xffffffff, true);
+            widget.render(guiGraphics, mouseX, mouseY, partialTick);
+        });
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
+            return true;
+        }
+
+        return super.mouseClicked(event, isDoubleClick);
     }
 
     @Override

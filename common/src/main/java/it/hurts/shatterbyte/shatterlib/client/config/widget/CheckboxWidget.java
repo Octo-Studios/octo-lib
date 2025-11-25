@@ -1,17 +1,17 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
-    public CheckboxWidget(Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(defaultValue, getter, setter, 0, 0, 16, 16);
+    public CheckboxWidget(ShatterConfig config, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+        super(config, defaultValue, getter, setter, 0, 0, 16, 16);
     }
 
     @Override
@@ -23,11 +23,6 @@ public class CheckboxWidget extends AbstractEntryWidget<Boolean> {
         } else {
             RenderUtils.renderOutline(guiGraphics, 0, 0, this.getWidth(), this.getHeight(), 0xffff0000);
         }
-    }
-
-    @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
     }
 
     @Override

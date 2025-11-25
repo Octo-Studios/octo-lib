@@ -1,26 +1,59 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
+import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler {
+    Map<FieldInfo, AbstractEntryWidget<?>> widgets = new LinkedHashMap<>();
+
     AbstractEntryWidget<?> focused;
     boolean dragging = false;
 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
-        super(defaultValue, getter, setter, 0, 0, 100, 100);
+    public GenericObjectWidget(ShatterConfig config, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+        super(config, defaultValue, getter, setter, 0, 0, 100, 100);
+        this.populateWidget();
+    }
+
+    @SneakyThrows
+    private void populateWidget() {
+        Object object = this.getValue();
+        Class<?> clazz = object.getClass();
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
+
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            if (field.isAnnotationPresent(Exclude.class)) {
+                continue;
+            }
+
+            int mods = field.getModifiers();
+            if (Modifier.isTransient(mods) || Modifier.isStatic(mods)) {
+                continue;
+            }
+
+            AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.config, privateLookup, field, object);
+        }
     }
 
     @Override
@@ -29,13 +62,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
-    }
-
-    @Override
     public List<? extends GuiEventListener> children() {
-        return List.of();
+        return new ArrayList<>(widgets.values());
     }
 
     @Override
@@ -57,4 +85,6 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public void setFocused(@Nullable GuiEventListener focused) {
         this.focused = (AbstractEntryWidget<?>) focused;
     }
+
+    record FieldInfo(String name, String description) {}
 }

@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<FieldWidget> {
+    @Getter
+    private final ShatterConfig config;
     private FieldWidget parent;
     private E cachedValue;
 
@@ -29,8 +31,9 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
-    public AbstractEntryWidget(E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
+    public AbstractEntryWidget(ShatterConfig config, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
+        this.config = config;
         this.defaultValue = defaultValue;
         this.getter = getter;
         this.setter = setter;
@@ -66,6 +69,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         }
 
         return factory.create(
+                config,
                 defaultValue.get(),
                 (Supplier<T>) getter,
                 setter

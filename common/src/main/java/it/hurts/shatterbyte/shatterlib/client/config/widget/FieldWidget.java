@@ -7,7 +7,9 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import lombok.SneakyThrows;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -28,7 +30,10 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
     protected String fieldName = "";
-    List<GuiEventListener> widgets = new ArrayList<>();
+    AbstractEntryWidget<?> entryWidget;
+    ResetFieldButtonWidget resetButton;
+
+    Font font = Minecraft.getInstance().font;
 
     boolean dragging = false;
     GuiEventListener focused;
@@ -37,8 +42,15 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         super(0, 0, 16, 16, Component.empty());
     }
 
+    public void repositionElements() {
+        int nameWidth = font.width(info.name()+": ");
+
+        entryWidget.setPosition(nameWidth, 0);
+        resetButton.setPosition(nameWidth + 4, 0);
+    }
+
     @SneakyThrows
-    public static @Nullable FieldWidget createFromField(ShatterConfig config, Object parentObject, Field field) {
+    public static @Nullable FieldWidget createFromField(ShatterConfig config, String path, Object parentObject, Field field) {
         FieldWidget fieldWidget = new FieldWidget();
 
         Class<?> clazz = parentObject.getClass();
@@ -69,14 +81,16 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
         fieldWidget.info = new GenericObjectWidget.FieldInfo(prettyName, description);
 
-        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.getPath(), this.config, privateLookup, field, parentObject);
+        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(path, config, privateLookup, field, parentObject);
 
         if (widget == null) {
             return null;
         }
 
         widget.setParent(fieldWidget);
-        fieldWidget.widgets.add(widget);
+        fieldWidget.entryWidget = widget;
+        fieldWidget.resetButton = new ResetFieldButtonWidget(widget);
+        fieldWidget.resetButton.setParent(fieldWidget);
 
         return fieldWidget;
     }
@@ -93,7 +107,9 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-
+        guiGraphics.drawString(font, info.name(), this.getX(), this.getY(), 0xffffffff, true);
+        entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
@@ -103,7 +119,10 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return widgets;
+        List<GuiEventListener> children = new ArrayList<>();
+        children.add(entryWidget);
+        children.add(resetButton);
+        return children;
     }
 
     @Override
@@ -170,15 +189,16 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     public String getPath() {
-        GenericObjectWidget current = this.getParent();
-        StringBuilder path = new StringBuilder();
-
-        while (current != null) {
-            path.append(current.fieldName).append(".");
-            current = current.getParent();
+        if (parent == null) {
+            return fieldName;
         }
 
-        path.append(this.fieldName);
-        return path.toString();
+        String parentFieldPath = parent.getFieldPath();
+
+        if (parentFieldPath == null || parentFieldPath.isEmpty()) {
+            return fieldName;
+        }
+
+        return parentFieldPath + "." + fieldName;
     }
 }

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler {
-    Map<FieldInfo, AbstractEntryWidget<?>> widgets = new LinkedHashMap<>();
+    List<FieldWidget> widgets = new ArrayList<>();
 
     AbstractEntryWidget<?> focused;
     boolean dragging = false;
@@ -33,8 +33,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, String fieldName, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
-        super(config, fieldName, defaultValue, getter, setter, 0, 0, 100, 100);
+    public GenericObjectWidget(ShatterConfig config, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+        super(defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionWidgets();
     }
@@ -44,15 +44,10 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         int maxWidth = 0;
         Font font = Minecraft.getInstance().font;
 
-        for (Map.Entry<FieldInfo, AbstractEntryWidget<?>> entry : widgets.entrySet()) {
-            AbstractEntryWidget<?> widget = entry.getValue();
-            FieldInfo info = entry.getKey();
-
-            int width = font.width(info.name+": ");
-
-            widget.setPosition(4 + width, totalHeight);
-            maxWidth = Math.max(maxWidth, widget.getLocalX() + widget.getWidth() + 4);
-            totalHeight += widget.getHeight() + 4;
+        for (FieldWidget field : widgets) {
+            field.setPosition(4 + width, totalHeight);
+            maxWidth = Math.max(maxWidth, field.getLocalX() + field.getWidth() + 4);
+            totalHeight += field.getHeight() + 4;
         }
 
         this.setWidth(maxWidth);
@@ -64,44 +59,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         Object object = this.getValue();
         Class<?> clazz = object.getClass();
 
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
-
         for (Field field : clazz.getDeclaredFields()) {
-            field.setAccessible(true);
-
-            if (field.isAnnotationPresent(Exclude.class)) {
-                continue;
-            }
-
-            int mods = field.getModifiers();
-            if (Modifier.isTransient(mods) || Modifier.isStatic(mods)) {
-                continue;
-            }
-
-            AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(this.getPath(), this.config, privateLookup, field, object);
-
-            if (widget == null) {
-                continue;
-            }
-
-            String fieldName = field.getName();
-            String fieldDescription = "";
-
-            if (field.isAnnotationPresent(Name.class)) {
-                fieldName = field.getAnnotation(Name.class).value();
-            } else {
-                fieldName = AbstractEntryWidget.convertFromCamelCase(fieldName);
-            }
-
-            if (field.isAnnotationPresent(Comment.class)) {
-                fieldDescription = field.getAnnotation(Comment.class).value();
-            }
-
-            FieldInfo fieldInfo = new FieldInfo(fieldName, fieldDescription);
-
-            widget.setParent(this);
-            this.widgets.put(fieldInfo, widget);
+            FieldWidget.createFromField(config, object, field);
         }
     }
 
@@ -151,4 +110,12 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     }
 
     record FieldInfo(String name, String description) {}
+
+    public String getPath() {
+        if (this.getParent() != null) {
+            return this.getParent().getPath();
+        }
+
+        return "";
+    }
 }

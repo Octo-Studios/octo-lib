@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
+import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -18,11 +19,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<GenericObjectWidget> {
-    protected final ShatterConfig config;
-    protected final String fieldName;
-
-    private GenericObjectWidget parent;
+public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<FieldWidget> {
+    private FieldWidget parent;
     private E cachedValue;
 
     @Getter
@@ -31,10 +29,8 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
-    public AbstractEntryWidget(ShatterConfig config, String fieldName, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
+    public AbstractEntryWidget(E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
-        this.config = config;
-        this.fieldName = fieldName;
         this.defaultValue = defaultValue;
         this.getter = getter;
         this.setter = setter;
@@ -44,7 +40,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    protected static <T> AbstractEntryWidget<T> tryCreate(String path, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
+    public static <T> AbstractEntryWidget<T> tryCreate(String path, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
         EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(field.getType());
         if (factory == null) {
             return null;
@@ -70,8 +66,6 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         }
 
         return factory.create(
-                config,
-                fieldName,
                 defaultValue.get(),
                 (Supplier<T>) getter,
                 setter
@@ -108,30 +102,17 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         return result;
     }
 
-    public String getPath() {
-        GenericObjectWidget current = this.getParent();
-        StringBuilder path = new StringBuilder();
-
-        while (current != null) {
-            path.append(current.fieldName).append(".");
-            current = current.getParent();
-        }
-
-        path.append(this.fieldName);
-        return path.toString();
-    }
-
     public void resetValue() {
         this.setValue(this.getDefaultValue());
     }
 
     @Override
-    public @Nullable GenericObjectWidget getParent() {
+    public @Nullable FieldWidget getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(GenericObjectWidget parent) {
+    public void setParent(FieldWidget parent) {
         this.parent = parent;
     }
 

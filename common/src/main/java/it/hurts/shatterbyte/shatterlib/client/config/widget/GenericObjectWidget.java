@@ -18,14 +18,14 @@ import java.util.function.Supplier;
 public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler {
     List<FieldWidget> widgets = new ArrayList<>();
 
-    AbstractEntryWidget<?> focused;
+    FieldWidget focused;
     boolean dragging = false;
 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
-        super(config, defaultValue, getter, setter, 0, 0, 100, 100);
+    public GenericObjectWidget(ShatterConfig config, FieldWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+        super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionWidgets();
     }
@@ -35,11 +35,10 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         int maxWidth = 0;
 
         for (FieldWidget field : widgets) {
-            field.setPosition(6 + width, totalHeight);
-
             field.repositionElements();
+            field.setPosition(6, totalHeight);
 
-            maxWidth = Math.max(maxWidth, field.getLocalX() + field.getWidth() + 4);
+            //maxWidth = Math.max(maxWidth, field.getLocalX() + field.getWidth() + 4);
             totalHeight += field.getHeight() + 4;
         }
 
@@ -54,18 +53,18 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         String path = this.getFieldPath();
 
         for (Field field : clazz.getDeclaredFields()) {
-            FieldWidget fieldWidget = FieldWidget.createFromField(this.getConfig(), path, object, field);
+            FieldWidget fieldWidget = FieldWidget.createFromField(this.getConfig(), path, object, field, this);
             if (fieldWidget == null) {
                 continue;
             }
 
-            fieldWidget.setParent(this);
             this.widgets.add(fieldWidget);
         }
     }
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.repositionWidgets();
         guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0x55000000);
         this.widgets.forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
     }
@@ -101,7 +100,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
-        this.focused = (AbstractEntryWidget<?>) focused;
+        this.focused = (FieldWidget) focused;
     }
 
     public String getFieldPath() {
@@ -110,6 +109,11 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         }
 
         return this.getParent().getPath();
+    }
+
+    @Override
+    public void resetValue() {
+        this.widgets.forEach(fieldWidget -> fieldWidget.entryWidget.resetValue());
     }
 
     record FieldInfo(String name, String description) {}

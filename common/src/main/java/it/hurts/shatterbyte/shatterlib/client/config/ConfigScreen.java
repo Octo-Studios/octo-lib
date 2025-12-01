@@ -19,7 +19,10 @@ public class ConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.addRenderableWidget(new GenericObjectWidget(config, null, () -> config, config -> {}));
+        GenericObjectWidget configWidget = new GenericObjectWidget(config, null, null, () -> config, config -> {});
+        configWidget.setWidth(this.width);
+        configWidget.repositionWidgets();
+        this.addRenderableWidget(configWidget);
     }
 
     @Override

@@ -43,14 +43,17 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     public void repositionElements() {
-        int nameWidth = font.width(info.name()+": ");
+        this.setWidth(400);
 
-        entryWidget.setPosition(nameWidth, 0);
-        resetButton.setPosition(nameWidth + 4, 0);
+        entryWidget.setPosition(this.width - 4 - this.entryWidget.getWidth() - 4 - resetButton.getWidth(), 0);
+        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 0);
+
+        //this.setWidth(resetButton.getLocalX() + resetButton.getWidth() + 4);
+        this.setHeight(Math.max(this.height, entryWidget.getHeight()+4));
     }
 
     @SneakyThrows
-    public static @Nullable FieldWidget createFromField(ShatterConfig config, String path, Object parentObject, Field field) {
+    public static @Nullable FieldWidget createFromField(ShatterConfig config, String path, Object parentObject, Field field, GenericObjectWidget parent) {
         FieldWidget fieldWidget = new FieldWidget();
 
         Class<?> clazz = parentObject.getClass();
@@ -80,14 +83,14 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
                 : "";
 
         fieldWidget.info = new GenericObjectWidget.FieldInfo(prettyName, description);
+        fieldWidget.setParent(parent);
 
-        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(path, config, privateLookup, field, parentObject);
+        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(path, fieldWidget, config, privateLookup, field, parentObject);
 
         if (widget == null) {
             return null;
         }
 
-        widget.setParent(fieldWidget);
         fieldWidget.entryWidget = widget;
         fieldWidget.resetButton = new ResetFieldButtonWidget(widget);
         fieldWidget.resetButton.setParent(fieldWidget);

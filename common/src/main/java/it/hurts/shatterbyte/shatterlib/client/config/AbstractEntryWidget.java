@@ -31,8 +31,10 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
-    public AbstractEntryWidget(ShatterConfig config, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
+    public AbstractEntryWidget(ShatterConfig config, FieldWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
+        this.setParent(parent);
+
         this.config = config;
         this.defaultValue = defaultValue;
         this.getter = getter;
@@ -43,7 +45,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> AbstractEntryWidget<T> tryCreate(String path, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
+    public static <T> AbstractEntryWidget<T> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
         EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(field.getType());
         if (factory == null) {
             return null;
@@ -70,6 +72,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
         return factory.create(
                 config,
+                parent,
                 defaultValue.get(),
                 (Supplier<T>) getter,
                 setter

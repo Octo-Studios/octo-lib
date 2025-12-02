@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget> {
+public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, HasStuffInside {
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
     protected String fieldName = "";
@@ -42,14 +42,22 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         super(0, 0, 16, 16, Component.empty());
     }
 
+    @Override
     public void repositionElements() {
-        this.setWidth(400);
+        this.setWidth(this.getParent().getWidth() - 8);
 
-        entryWidget.setPosition(this.width - 4 - this.entryWidget.getWidth() - 4 - resetButton.getWidth(), 0);
-        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 0);
+        if (entryWidget instanceof HasStuffInside stuffInside) {
+            stuffInside.repositionElements();
+        }
 
-        //this.setWidth(resetButton.getLocalX() + resetButton.getWidth() + 4);
-        this.setHeight(Math.max(this.height, entryWidget.getHeight()+4));
+        int y = 0;
+        if (entryWidget.getWidth() > this.getWidth() - font.width(info.name()+": ")) {
+            y = 12;
+        }
+        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), y);
+        entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), y);
+
+        this.setHeight(Math.max(this.height, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
     }
 
     @SneakyThrows

@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler {
+public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, HasStuffInside {
     List<FieldWidget> widgets = new ArrayList<>();
 
     FieldWidget focused;
@@ -27,22 +27,23 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public GenericObjectWidget(ShatterConfig config, FieldWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
-        this.repositionWidgets();
+        this.repositionElements();
     }
 
-    public void repositionWidgets() {
+    @Override
+    public void repositionElements() {
         int totalHeight = 8;
-        int maxWidth = 0;
+        if (this.getParent() != null) {
+            this.setWidth(this.getParent().getWidth() - 10 - 20);
+        }
 
         for (FieldWidget field : widgets) {
             field.repositionElements();
             field.setPosition(6, totalHeight);
 
-            //maxWidth = Math.max(maxWidth, field.getLocalX() + field.getWidth() + 4);
             totalHeight += field.getHeight() + 4;
         }
 
-        this.setWidth(maxWidth);
         this.setHeight(totalHeight);
     }
 
@@ -64,7 +65,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.repositionWidgets();
+        //this.repositionWidgets();
         guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0x55000000);
         this.widgets.forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
     }

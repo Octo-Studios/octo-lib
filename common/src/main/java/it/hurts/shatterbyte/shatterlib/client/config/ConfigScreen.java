@@ -21,7 +21,7 @@ public class ConfigScreen extends Screen {
         super.init();
         GenericObjectWidget configWidget = new GenericObjectWidget(config, null, null, () -> config, config -> {});
         configWidget.setWidth(this.width);
-        configWidget.repositionWidgets();
+        configWidget.repositionElements();
         this.addRenderableWidget(configWidget);
     }
 

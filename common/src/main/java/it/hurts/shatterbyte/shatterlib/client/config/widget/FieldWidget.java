@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, HasStuffInside {
+public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, DynamicallySized {
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
     protected String fieldName = "";
@@ -46,7 +46,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     public void repositionElements() {
         this.setWidth(this.getParent().getWidth() - 8);
 
-        if (entryWidget instanceof HasStuffInside stuffInside) {
+        if (entryWidget instanceof DynamicallySized stuffInside) {
             stuffInside.repositionElements();
         }
 

@@ -1,5 +1,5 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
-public interface HasStuffInside {
+public interface DynamicallySized {
     void repositionElements();
 }

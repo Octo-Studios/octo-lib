@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, HasStuffInside {
+public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, DynamicallySized {
     List<FieldWidget> widgets = new ArrayList<>();
 
     FieldWidget focused;
@@ -34,7 +34,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public void repositionElements() {
         int totalHeight = 8;
         if (this.getParent() != null) {
-            this.setWidth(this.getParent().getWidth() - 10 - 20);
+            this.setWidth(this.getParent().getWidth() - 10 - 14);
         }
 
         for (FieldWidget field : widgets) {

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 
 public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlice {
     @Getter
@@ -30,8 +29,8 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height) {
-            guiGraphics.blit(pipeline, this.atlas.location, x, y, this.x, this.y, width, height, this.width, this.height, this.atlas.textureWidth, this.atlas.textureHeight);
+        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
+            guiGraphics.blit(pipeline, this.atlas.location, x, y, this.x, this.y, width, height, this.width, this.height, this.atlas.textureWidth, this.atlas.textureHeight, color);
         }
     }
 
@@ -67,7 +66,7 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height) {
+        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
             // source sizes from regions
             int leftW = topLeft.width;
             int rightW = topRight.width;
@@ -95,55 +94,72 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
             // top-left
             guiGraphics.blit(pipeline, this.atlas.location, xLeft, yTop,
                     topLeft.x, topLeft.y, topLeft.width, topLeft.height,
-                    topLeft.width, topLeft.height, texW, texH);
+                    topLeft.width, topLeft.height, texW, texH, color);
 
             // top (stretched horizontally to centerW)
             if (centerW > 0) {
-                guiGraphics.blit(pipeline, this.atlas.location, xCenter, yTop,
-                        top.x, top.y, centerW, top.height,
-                        top.width, top.height, texW, texH);
+                if (top.shouldTile) {
+                    RenderUtils.renderTilingTexture(pipeline, this.atlas.location, guiGraphics, xCenter, yTop, top.x, top.y, texW, texH, centerW, top.height, color, true, false);
+                } else {
+                    guiGraphics.blit(pipeline, this.atlas.location, xCenter, yTop,
+                            top.x, top.y, centerW, top.height,
+                            top.width, top.height, texW, texH, color);
+                }
             }
 
             // top-right
             guiGraphics.blit(pipeline, this.atlas.location, xRight, yTop,
                     topRight.x, topRight.y, topRight.width, topRight.height,
-                    topRight.width, topRight.height, texW, texH);
+                    topRight.width, topRight.height, texW, texH, color);
 
             // middle row
-            // left (stretched vertically to centerH)
             if (centerH > 0) {
-                guiGraphics.blit(pipeline, this.atlas.location, xLeft, yCenter,
-                        left.x, left.y, left.width, centerH,
-                        left.width, left.height, texW, texH);
+                if (left.shouldTile) {
+                    RenderUtils.renderTilingTexture(pipeline, this.atlas.location, guiGraphics, xLeft, yCenter, left.x, left.y, texW, texH, left.width, centerH, color, false, true);
+                } else {
+                    guiGraphics.blit(pipeline, this.atlas.location, xLeft, yCenter,
+                            left.x, left.y, left.width, centerH,
+                            left.width, left.height, texW, texH, color);
+                }
 
-                // center (stretched both axes)
-                guiGraphics.blit(pipeline, this.atlas.location, xCenter, yCenter,
-                        center.x, center.y, centerW, centerH,
-                        center.width, center.height, texW, texH);
+                if (center.shouldTile) {
+                    RenderUtils.renderTilingTexture(pipeline, this.atlas.location, guiGraphics, xCenter, yCenter, center.x, center.y, texW, texH, centerW, centerH, color, true, true);
+                } else {
+                    guiGraphics.blit(pipeline, this.atlas.location, xCenter, yCenter,
+                            center.x, center.y, centerW, centerH,
+                            center.width, center.height, texW, texH, color);
+                }
 
-                // right (stretched vertically)
-                guiGraphics.blit(pipeline, this.atlas.location, xRight, yCenter,
-                        right.x, right.y, right.width, centerH,
-                        right.width, right.height, texW, texH);
+                if (right.shouldTile) {
+                    RenderUtils.renderTilingTexture(pipeline, this.atlas.location, guiGraphics, xRight, yCenter, right.x, right.y, texW, texH, right.width, centerH, color, false, true);
+                } else {
+                    guiGraphics.blit(pipeline, this.atlas.location, xRight, yCenter,
+                            right.x, right.y, right.width, centerH,
+                            right.width, right.height, texW, texH, color);
+                }
             }
 
             // bottom row
             // bottom-left
             guiGraphics.blit(pipeline, this.atlas.location, xLeft, yBottom,
                     bottomLeft.x, bottomLeft.y, bottomLeft.width, bottomLeft.height,
-                    bottomLeft.width, bottomLeft.height, texW, texH);
+                    bottomLeft.width, bottomLeft.height, texW, texH, color);
 
             // bottom (stretched horizontally)
             if (centerW > 0) {
-                guiGraphics.blit(pipeline, this.atlas.location, xCenter, yBottom,
-                        bottom.x, bottom.y, centerW, bottom.height,
-                        bottom.width, bottom.height, texW, texH);
+                if (bottom.shouldTile) {
+                    RenderUtils.renderTilingTexture(pipeline, this.atlas.location, guiGraphics, xCenter, yBottom, bottom.x, bottom.y, texW, texH, centerW, bottom.height, color, true, false);
+                } else {
+                    guiGraphics.blit(pipeline, this.atlas.location, xCenter, yBottom,
+                            bottom.x, bottom.y, centerW, bottom.height,
+                            bottom.width, bottom.height, texW, texH, color);
+                }
             }
 
             // bottom-right
             guiGraphics.blit(pipeline, this.atlas.location, xRight, yBottom,
                     bottomRight.x, bottomRight.y, bottomRight.width, bottomRight.height,
-                    bottomRight.width, bottomRight.height, texW, texH);
+                    bottomRight.width, bottomRight.height, texW, texH, color);
         }
 
         public static class Region {
@@ -160,24 +176,32 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
                 this.height = height;
             }
 
-            public Region(int x, int y, int width, int height, boolean shouldTile) {
-                this.x = x;
-                this.y = y;
-                this.width = width;
-                this.height = height;
-                this.shouldTile = shouldTile;
-            }
+//            public Region(int x, int y, int width, int height, boolean shouldTile) {
+//                this.x = x;
+//                this.y = y;
+//                this.width = width;
+//                this.height = height;
+//                this.shouldTile = shouldTile;
+//            }
         }
     }
 
-    public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y) {
+    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int color) {
         if (this instanceof UISprite.Single single) {
-            this.render(guiGraphics, pipeline, x, y, single.getWidth(), single.getHeight());
+            this.render(guiGraphics, pipeline, x, y, single.getWidth(), single.getHeight(), color);
             return;
         }
 
         throw new IllegalArgumentException("Tried to render a nine-slice sprite without specifying width and height.");
     }
 
-    public abstract void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height);
+    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y) {
+        this.render(guiGraphics, pipeline, x, y, 0xffffffff);
+    }
+
+    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height) {
+        this.render(guiGraphics, pipeline, x, y, width, height, 0xffffffff);
+    }
+
+    public abstract void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color);
 }

@@ -20,13 +20,13 @@ public class UIElements {
 
     public static final UISprite TEST = new UISprite.NineSlice(ConfigScreen.ATLAS,
             new UISprite.NineSlice.Region(112, 16, 4, 4),
-            new UISprite.NineSlice.Region(117, 16, 5, 4),
+            new UISprite.NineSlice.Region(117, 16, 5, 4, true),
             new UISprite.NineSlice.Region(123, 16, 4, 4),
-            new UISprite.NineSlice.Region(112, 21, 4, 5),
-            new UISprite.NineSlice.Region(117, 21, 5, 5),
-            new UISprite.NineSlice.Region(123, 21, 4, 5),
+            new UISprite.NineSlice.Region(112, 21, 4, 5, true),
+            new UISprite.NineSlice.Region(117, 21, 5, 5, true),
+            new UISprite.NineSlice.Region(123, 21, 4, 5, true),
             new UISprite.NineSlice.Region(112, 27, 4, 4),
-            new UISprite.NineSlice.Region(117, 27, 5, 4),
+            new UISprite.NineSlice.Region(117, 27, 5, 4, true),
             new UISprite.NineSlice.Region(123, 27, 4, 4)
     );
 }

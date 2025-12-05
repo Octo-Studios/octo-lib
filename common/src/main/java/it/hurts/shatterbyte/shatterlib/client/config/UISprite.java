@@ -176,13 +176,13 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
                 this.height = height;
             }
 
-//            public Region(int x, int y, int width, int height, boolean shouldTile) {
-//                this.x = x;
-//                this.y = y;
-//                this.width = width;
-//                this.height = height;
-//                this.shouldTile = shouldTile;
-//            }
+            public Region(int x, int y, int width, int height, boolean shouldTile) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.shouldTile = shouldTile;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.config.UISprite;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,14 +22,15 @@ public class IconButtonWidget extends AbstractFieldElementWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // TODO: render button
-        RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff00ffff);
+        //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff00ffff);
+        UIElements.BUTTON.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height+1, 0xff666666);
 
         if (icon == null) {
             return;
         }
 
         int x = this.width / 2 - icon.getWidth() / 2 + this.getX();
-        int y = this.height / 2 - icon.getHeight() / 2 + this.getY();
+        int y = this.height / 2 - icon.getHeight() / 2 + this.getY() - 1;
         icon.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x, y);
     }
 

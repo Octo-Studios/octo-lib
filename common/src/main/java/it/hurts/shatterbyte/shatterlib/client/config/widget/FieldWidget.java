@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
+import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -47,18 +48,29 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     public void repositionElements() {
         this.setWidth(this.getParent().getWidth() - 8);
 
+        boolean moveDown = false;
+        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
+        if (entryWidget.getWidth() > this.getWidth() - font.width(info.name()+": ") || entryWidget instanceof DynamicallySized) {
+            moveDown = true;
+        }
+
         if (entryWidget instanceof DynamicallySized stuffInside) {
+            if (moveDown) {
+                entryWidget.setWidth(this.width - 8);
+            } else {
+                entryWidget.setWidth(this.resetButton.getLocalX() - 8);
+            }
+
             stuffInside.repositionElements();
         }
 
-        int y = 0;
-        if (entryWidget.getWidth() > this.getWidth() - font.width(info.name()+": ")) {
-            y = 12;
+        if (moveDown) {
+            entryWidget.setPosition(4, 16);
+        } else {
+            entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), 4);
         }
-        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), y);
-        entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), y);
 
-        this.setHeight(Math.max(this.height, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
+        this.setHeight(Math.max(15, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
     }
 
     @SneakyThrows
@@ -119,7 +131,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(font, info.name(), this.getX(), this.getY(), 0xffffffff, true);
+        RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x33ffffff);
+        guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
     }

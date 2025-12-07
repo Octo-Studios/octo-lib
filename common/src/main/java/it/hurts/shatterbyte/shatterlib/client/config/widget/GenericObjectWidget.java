@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,14 +34,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void repositionElements() {
-        int totalHeight = 8;
-        if (this.getParent() != null) {
-            this.setWidth(this.getParent().getWidth() - 10 - 14);
-        }
+        int totalHeight = 4;
+//        if (this.getParent() != null) {
+//            this.setWidth(this.getParent().getWidth() - 10 - 14);
+//        }
 
         for (FieldWidget field : widgets) {
             field.repositionElements();
-            field.setPosition(6, totalHeight);
+            field.setPosition(4, totalHeight);
 
             totalHeight += field.getHeight() + 4;
         }
@@ -67,7 +68,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //this.repositionWidgets();
-        guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0x55000000);
+        RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x77ff0000);
         this.widgets.forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
     }
 

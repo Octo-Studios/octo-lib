@@ -18,7 +18,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     Font font = Minecraft.getInstance().font;
 
     public TextAreaWidget(ShatterConfig config, FieldWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
-        super(config, parent, defaultValue, getter, setter, 0, 0, 256, 16);
+        super(config, parent, defaultValue, getter, setter, 0, 0, 256, 10);
     }
 
     @Override

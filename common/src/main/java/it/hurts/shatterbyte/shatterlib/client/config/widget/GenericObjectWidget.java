@@ -34,7 +34,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void repositionElements() {
-        int totalHeight = 4;
+        int totalHeight = 5;
 //        if (this.getParent() != null) {
 //            this.setWidth(this.getParent().getWidth() - 10 - 14);
 //        }
@@ -43,7 +43,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             field.repositionElements();
             field.setPosition(4, totalHeight);
 
-            totalHeight += field.getHeight() + 4;
+            totalHeight += field.getHeight() + 5;
         }
 
         this.setHeight(totalHeight);
@@ -68,8 +68,12 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //this.repositionWidgets();
-        RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x77ff0000);
-        this.widgets.forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
+        //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x77ff0000);
+        this.widgets.forEach(widget -> {
+            widget.render(guiGraphics, mouseX, mouseY, partialTick);
+            guiGraphics.hLine(this.getX(), this.getX() + this.width, widget.getY() + widget.getHeight() + 2, 0xff1f1e23);
+            guiGraphics.hLine(this.getX(), this.getX() + this.width, widget.getY() + widget.getHeight() + 3, 0xff3c3c42);
+        });
     }
 
     @Override

@@ -65,7 +65,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
 
         if (moveDown) {
-            entryWidget.setPosition(4, 16);
+            entryWidget.setPosition(4, 20);
         } else {
             entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), 4);
         }
@@ -131,7 +131,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x33ffffff);
+        //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x33ffffff);
         guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);

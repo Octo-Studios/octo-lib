@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -212,4 +213,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
         return parentFieldPath + "." + fieldName;
     }
+
+    @Override
+    public void playDownSound(SoundManager handler) {}
 }

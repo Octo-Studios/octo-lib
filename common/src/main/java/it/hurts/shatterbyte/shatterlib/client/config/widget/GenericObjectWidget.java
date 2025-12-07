@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -117,6 +117,9 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public void resetValue() {
         this.widgets.forEach(fieldWidget -> fieldWidget.entryWidget.resetValue());
     }
+
+    @Override
+    public void playDownSound(SoundManager handler) {}
 
     record FieldInfo(String name, String description) {}
 }

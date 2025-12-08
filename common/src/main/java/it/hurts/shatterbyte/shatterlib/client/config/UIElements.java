@@ -42,5 +42,17 @@ public class UIElements {
             new UISprite.NineSlice.Region(92, 28, 3, 4)
     );
 
+    public static final UISprite TEXT_AREA = new UISprite.NineSlice(ConfigScreen.ATLAS,
+            new UISprite.NineSlice.Region(24, 23, 4, 4),
+            new UISprite.NineSlice.Region(29, 23, 1, 4),
+            new UISprite.NineSlice.Region(31, 23, 4, 4),
+            new UISprite.NineSlice.Region(24, 28, 4, 15),
+            new UISprite.NineSlice.Region(29, 28, 1, 15),
+            new UISprite.NineSlice.Region(31, 28, 4, 15),
+            new UISprite.NineSlice.Region(24, 44, 4, 5),
+            new UISprite.NineSlice.Region(29, 44, 1, 5),
+            new UISprite.NineSlice.Region(31, 44, 4, 5)
+    );
+
     public static final UISprite.Single ICON_RESET = new UISprite.Single(ConfigScreen.ATLAS, 128, 3, 9, 9);
 }

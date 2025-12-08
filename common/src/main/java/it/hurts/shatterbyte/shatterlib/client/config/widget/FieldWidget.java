@@ -50,7 +50,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
         boolean moveDown = false;
         resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
-        if (entryWidget.getWidth() > this.getWidth() - font.width(info.name()+": ") || entryWidget instanceof DynamicallySized) {
+        if (entryWidget.getWidth() > (this.getWidth() - font.width(info.name()+": ") - 12 - resetButton.getWidth()) || entryWidget instanceof DynamicallySized) {
             moveDown = true;
         }
 

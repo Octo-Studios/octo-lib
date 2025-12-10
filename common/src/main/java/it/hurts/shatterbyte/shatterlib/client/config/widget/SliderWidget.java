@@ -3,7 +3,6 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -52,7 +51,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         double pct = (max == min) ? 0.0 : (current - min) / (max - min);
         pct = Math.max(0.0, Math.min(1.0, pct));
 
-        int fillX = (int) (this.getX()+this.getWidth()*pct);
+        int fillX = (int) (this.getX()+this.getWidth()*pct)-1;
 
         UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2);
         guiGraphics.enableScissor(this.getX(), this.getY(), fillX, this.getY()+this.getHeight());

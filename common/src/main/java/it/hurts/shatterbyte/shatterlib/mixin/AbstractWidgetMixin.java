@@ -2,10 +2,14 @@ package it.hurts.shatterbyte.shatterlib.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.HasRenderMatrix;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.phys.Vec2;
 import org.objectweb.asm.Opcodes;
@@ -13,12 +17,31 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractWidget.class)
 public abstract class AbstractWidgetMixin {
     @Shadow public abstract boolean isMouseOver(double mouseX, double mouseY);
     @Shadow protected boolean isHovered;
+
+    @Shadow
+    public abstract int getX();
+
+    @Shadow
+    public abstract int getY();
+
+    @Shadow
+    public abstract int getWidth();
+
+    @Shadow
+    public abstract int getHeight();
+
+    @Shadow
+    public abstract boolean isHovered();
+
+    @Shadow
+    public abstract boolean isFocused();
 
     @Accessor("x")
     public abstract int getLocalX();
@@ -29,6 +52,21 @@ public abstract class AbstractWidgetMixin {
     private void inject(MouseButtonEvent event, boolean isDoubleClick, CallbackInfoReturnable<Boolean> cir) {
         if (this instanceof Child<?>) {
             cir.setReturnValue(this.isMouseOver(event.x(), event.y()));
+        }
+    }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    private void debugHoverRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        if (!Platform.isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
+            return;
+        }
+
+        if (this.isHovered()) {
+            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x55ff0000);
+        }
+
+        if (this.isFocused()) {
+            RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
         }
     }
 

@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
 
@@ -65,6 +66,9 @@ public class MyConfig extends ShatterConfig {
     private TestObject someObject = new TestObject();
     @Name("Some random test boolean")
     private boolean testBool = false;
+
+    @Range(min = 0, max = 10, step = 0.1d)
+    private float testValue = 3.5f;
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //

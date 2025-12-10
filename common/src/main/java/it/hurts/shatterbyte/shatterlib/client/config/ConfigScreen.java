@@ -31,6 +31,7 @@ public class ConfigScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        this.repositionElements();
 
     }
 

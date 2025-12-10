@@ -2,8 +2,11 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
+import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,6 +15,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -46,16 +50,34 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static <T> AbstractEntryWidget<T> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
-        EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(field.getType());
-        if (factory == null) {
+        Class<?> type = field.getType();
+
+        boolean hasRangeAndNumeric = field.isAnnotationPresent(Range.class) && isNumericType(type);
+        EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(type);
+
+        if (factory == null && !hasRangeAndNumeric) {
             return null;
         }
 
+        // create getter and setter handles bound to the target object
         MethodHandle getterHandle = privateLookup.unreflectGetter(field).bindTo(object);
         MethodHandle setterHandle = privateLookup.unreflectSetter(field).bindTo(object);
 
-        Supplier<Object> getter = getterHandle::invoke;
-        Consumer<T> setter = setterHandle::invoke;
+        Supplier<T> getter = () -> {
+            try {
+                return (T) getterHandle.invoke();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        Consumer<T> setter = (v) -> {
+            try {
+                setterHandle.invoke(v);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        };
 
         String fieldName = field.getName();
 
@@ -70,13 +92,43 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
             throw new RuntimeException("Default value for " + newPath + " not found.");
         }
 
-        return factory.create(
+        if (hasRangeAndNumeric) {
+            // ensure runtime value is a Number
+            Object dv = defaultValue.get();
+            if (!(dv instanceof Number defaultNumber)) {
+                throw new RuntimeException("Default value for " + newPath + " is not a Number but field is numeric.");
+            }
+
+            Supplier<Number> numGetter = () -> (Number) getter.get();
+            Consumer<Number> numSetter = (num) -> setter.accept((T) num);
+
+            SliderWidget<Number> slider = new SliderWidget<>(config, parent, defaultNumber, numGetter, numSetter);
+
+            Range rangeAnn = field.getAnnotation(Range.class);
+            slider.setRange(rangeAnn.min(), rangeAnn.max(), rangeAnn.step());
+
+            // safe-ish unchecked cast to match return type
+            return (AbstractEntryWidget<T>) slider;
+        }
+
+        AbstractEntryWidget<T> widget = factory.create(
                 config,
                 parent,
                 defaultValue.get(),
-                (Supplier<T>) getter,
+                getter,
                 setter
         );
+
+        return widget;
+    }
+
+    private static boolean isNumericType(Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            return clazz == byte.class || clazz == short.class || clazz == int.class || clazz == long.class
+                    || clazz == float.class || clazz == double.class;
+        } else {
+            return Number.class.isAssignableFrom(clazz);
+        }
     }
 
     @Override

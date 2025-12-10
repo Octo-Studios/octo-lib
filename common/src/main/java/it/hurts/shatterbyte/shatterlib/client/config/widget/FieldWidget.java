@@ -131,7 +131,6 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0x33ffffff);
         guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -210,7 +209,10 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public void setFocused(boolean focused) {
-        ContainerEventHandler.super.setFocused(focused);
+        super.setFocused(focused);
+        if (!focused) {
+            this.setFocused(null);
+        }
     }
 
     public String getPath() {

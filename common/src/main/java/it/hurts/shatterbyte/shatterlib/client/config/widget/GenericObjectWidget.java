@@ -5,9 +5,11 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
@@ -79,13 +81,41 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);
     }
 
+    @Nullable
+    @Override
+    public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+        return ContainerEventHandler.super.nextFocusPath(event);
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
-            return true;
-        }
+        super.mouseClicked(event, isDoubleClick);
+        return ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+    }
 
-        return super.mouseClicked(event, isDoubleClick);
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        super.mouseReleased(event);
+        return ContainerEventHandler.super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        super.mouseDragged(event, mouseX, mouseY);
+        return ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean isFocused() {
+        return ContainerEventHandler.super.isFocused();
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if (!focused) {
+            this.setFocused(null);
+        }
     }
 
     @Override
@@ -95,7 +125,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean isDragging() {
-        return this.dragging;
+        return dragging;
     }
 
     @Override
@@ -103,13 +133,23 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         this.dragging = isDragging;
     }
 
+    @Nullable
     @Override
-    public @Nullable GuiEventListener getFocused() {
+    public FieldWidget getFocused() {
         return this.focused;
     }
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
+        if (this.focused instanceof FieldWidget field) {
+            field.setFocused(false);
+            field.setFocused(null);
+        }
+
+        if (focused != null) {
+            focused.setFocused(true);
+        }
+
         this.focused = (FieldWidget) focused;
     }
 

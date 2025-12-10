@@ -6,6 +6,10 @@ public class UIElements {
     public static final UISprite TOGGLE_DISABLED = new UISprite.Single(ConfigScreen.ATLAS, 108, 16, 20, 10);
     public static final UISprite TOGGLE_ENABLED = new UISprite.Single(ConfigScreen.ATLAS, 108, 27, 20, 10);
 
+    public static final UISprite SLIDER_FULL = new UISprite.Single(ConfigScreen.ATLAS, 24, 50, 225, 6);
+    public static final UISprite SLIDER_EMPTY = new UISprite.Single(ConfigScreen.ATLAS, 24, 57, 225, 6);
+    public static final UISprite SLIDER_THINGY = new UISprite.Single(ConfigScreen.ATLAS, 16, 50, 7, 9);
+
     public static final UISprite BUTTON = new UISprite.NineSlice(ConfigScreen.ATLAS,
             new UISprite.NineSlice.Region(56, 18, 5, 5),
             new UISprite.NineSlice.Region(62, 18, 1, 5),

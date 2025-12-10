@@ -52,28 +52,20 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         }
 
         if (open) {
-            int optionH = h;
-            int listX = x;
-            int listY = y + h;
-            int listW = w;
+            Rectangle r = getPopupBounds();
+            int listX = r.x;
+            int listY = r.y;
+            int listW = r.width;
+            int optionH = this.getHeight();
             int maxToShow = values.size();
-            int listH = optionH * maxToShow;
 
-            guiGraphics.fill(listX, listY, listX + listW, listY + listH, 0xFF1E1E1E);
-
-            int relativeY = mouseY - listY;
-            if (relativeY >= 0 && relativeY < listH) {
-                hoveredIndex = Math.min(maxToShow - 1, relativeY / optionH);
-            } else {
-                hoveredIndex = -1;
-            }
+            guiGraphics.fill(listX, listY, listX + listW, listY + optionH * maxToShow, 0xFF1E1E1E);
 
             for (int i = 0; i < values.size(); i++) {
                 int oy = listY + i * optionH;
-                if (i == hoveredIndex) {
+                if (mouseX >= listX && mouseX < listX + listW && mouseY >= oy && mouseY < oy + optionH && i == hoveredIndex) {
                     guiGraphics.fill(listX, oy, listX + listW, oy + optionH, 0x40FFFFFF);
                 }
-
                 String opt = convertFromCamelCase(values.get(i).name());
                 guiGraphics.drawString(Minecraft.getInstance().font, opt, listX + 6, oy + (optionH - 8) / 2, 0xFFFFFFFF, true);
             }
@@ -87,28 +79,17 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
             return true;
         }
 
-        // if open and click inside options, pick option
         if (open) {
-            int x = this.getX();
-            int y = this.getY();
-            int w = this.getWidth();
-            int h = this.getHeight();
-
-            int listX = x;
-            int listY = y + h;
-            int optionH = h;
-            int listW = w;
-            int listH = optionH * values.size();
-
-            if (event.x() >= listX && event.x() < listX + listW && event.y() >= listY && event.y() < listY + listH) {
-                int idx = (int) ((event.y() - listY) / optionH);
+            Rectangle r = getPopupBounds();
+            if (event.x() >= r.x && event.x() < r.x + r.width && event.y() >= r.y && event.y() < r.y + r.height) {
+                int optionH = this.getHeight();
+                int idx = (int) ((event.y() - r.y) / optionH);
                 idx = Math.max(0, Math.min(values.size() - 1, idx));
                 E chosen = values.get(idx);
                 setValue(chosen);
                 open = false;
                 return true;
             } else {
-                // click outside -> close dropdown
                 open = false;
                 return false;
             }

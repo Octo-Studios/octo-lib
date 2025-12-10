@@ -54,7 +54,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         if (this.children().stream().anyMatch(widget -> widget.isMouseOver(mouseX, mouseY))) {
-            return true;
+            return false;
         }
 
         return super.isMouseOver(mouseX, mouseY);
@@ -98,20 +98,28 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        super.mouseClicked(event, isDoubleClick);
-        return ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
+            return false;
+        }
+
+        return super.mouseClicked(event, isDoubleClick);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        super.mouseReleased(event);
-        return ContainerEventHandler.super.mouseReleased(event);
+        if (ContainerEventHandler.super.mouseReleased(event)) {
+            return false;
+        }
+
+        return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        super.mouseDragged(event, mouseX, mouseY);
-        return ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
+        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
+            return false;
+        }
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override

@@ -1,12 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
-import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +13,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;

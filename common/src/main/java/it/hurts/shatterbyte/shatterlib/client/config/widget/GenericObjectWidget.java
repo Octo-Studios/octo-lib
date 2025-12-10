@@ -51,6 +51,15 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         this.setHeight(totalHeight);
     }
 
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (this.children().stream().anyMatch(widget -> widget.isMouseOver(mouseX, mouseY))) {
+            return true;
+        }
+
+        return super.isMouseOver(mouseX, mouseY);
+    }
+
     @SneakyThrows
     private void populateWidget() {
         Object object = this.getValue();
@@ -73,9 +82,9 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
         this.widgets.forEach(widget -> {
-            widget.render(guiGraphics, mouseX, mouseY, partialTick);
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() + widget.getHeight() + 1, 0xff1c1c17);
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() +widget.getHeight() + 2, 0xff3c3c42);
+            widget.render(guiGraphics, mouseX, mouseY, partialTick);
         });
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff1f1e23);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);

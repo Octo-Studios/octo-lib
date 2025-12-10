@@ -208,6 +208,15 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        if (this.children().stream().anyMatch(widget -> widget.isMouseOver(mouseX, mouseY))) {
+            return true;
+        }
+
+        return super.isMouseOver(mouseX, mouseY);
+    }
+
+    @Override
     public void setFocused(boolean focused) {
         super.setFocused(focused);
         if (!focused) {

@@ -9,6 +9,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
+import net.minecraft.world.item.Rarity;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class MyConfig extends ShatterConfig {
 
     @Range(min = 0, max = 10, step = 0.1d)
     private float testValue = 3.5f;
+
+    private Rarity testRarity = Rarity.EPIC;
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //

@@ -5,6 +5,7 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.EnumDropdownWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ToggleWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
@@ -51,6 +52,7 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
+        EntryWidgetRegistry.register(Enum.class, EnumDropdownWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

@@ -76,6 +76,9 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         if (isInside(event.x(), event.y())) {
             open = !open;
+            if (open) {
+                this.getParent().moveToTheTop();
+            }
             return true;
         }
 

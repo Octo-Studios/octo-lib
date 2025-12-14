@@ -184,6 +184,11 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         return ContainerEventHandler.super.nextFocusPath(event);
     }
 
+    public void moveToTheTop() {
+        this.parent.widgets.remove(this);
+        this.parent.widgets.addFirst(this);
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
@@ -217,11 +222,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (this.children().stream().anyMatch(widget -> widget.isMouseOver(mouseX, mouseY))) {
-            return false;
-        }
-
-        return super.isMouseOver(mouseX, mouseY);
+        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
     }
 
     @Override

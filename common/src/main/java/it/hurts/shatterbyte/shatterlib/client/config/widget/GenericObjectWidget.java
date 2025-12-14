@@ -53,11 +53,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (this.children().stream().anyMatch(widget -> widget.isMouseOver(mouseX, mouseY))) {
-            return false;
-        }
-
-        return super.isMouseOver(mouseX, mouseY);
+        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
     }
 
     @SneakyThrows

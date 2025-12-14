@@ -137,6 +137,14 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         return new Rectangle(x, y, w, h);
     }
 
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if (!focused) {
+            this.open = false;
+        }
+    }
+
     private boolean isInsidePopup(double mouseX, double mouseY) {
         Rectangle r = getPopupBounds();
         return mouseX >= r.x && mouseX < r.x + r.width && mouseY >= r.y && mouseY < r.y + r.height;

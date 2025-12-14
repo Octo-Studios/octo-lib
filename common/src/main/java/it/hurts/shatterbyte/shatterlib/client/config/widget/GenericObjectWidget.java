@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, DynamicallySized {
     List<FieldWidget> widgets = new ArrayList<>();
+    List<FieldWidget> renderables = new ArrayList<>();
 
     FieldWidget focused;
     boolean dragging = false;
@@ -69,6 +70,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             }
 
             this.widgets.add(fieldWidget);
+            this.renderables.add(fieldWidget);
         }
     }
 
@@ -77,7 +79,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         //this.repositionWidgets();
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
-        this.widgets.reversed().forEach(widget -> {
+        this.renderables.reversed().forEach(widget -> {
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() + widget.getHeight() + 1, 0xff1c1c17);
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() +widget.getHeight() + 2, 0xff3c3c42);
             widget.render(guiGraphics, mouseX, mouseY, partialTick);

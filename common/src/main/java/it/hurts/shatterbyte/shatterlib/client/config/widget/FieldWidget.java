@@ -185,8 +185,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     public void moveToTheTop() {
-        this.parent.widgets.remove(this);
-        this.parent.widgets.addFirst(this);
+        this.parent.renderables.remove(this);
+        this.parent.renderables.addFirst(this);
     }
 
     @Override

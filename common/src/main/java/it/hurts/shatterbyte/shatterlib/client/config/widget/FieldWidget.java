@@ -132,8 +132,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
-        entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
+        entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

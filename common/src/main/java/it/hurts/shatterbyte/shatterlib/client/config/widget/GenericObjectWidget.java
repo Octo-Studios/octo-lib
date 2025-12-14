@@ -77,7 +77,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         //this.repositionWidgets();
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
-        this.widgets.forEach(widget -> {
+        this.widgets.reversed().forEach(widget -> {
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() + widget.getHeight() + 1, 0xff1c1c17);
             guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() +widget.getHeight() + 2, 0xff3c3c42);
             widget.render(guiGraphics, mouseX, mouseY, partialTick);

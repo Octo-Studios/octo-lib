@@ -4,12 +4,13 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.config.UISprite;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
 
-public class IconButtonWidget extends AbstractFieldElementWidget {
+public class IconButtonWidget<E extends AbstractWidget> extends AbstractFieldElementWidget<E> {
     UISprite.Single icon;
     final Runnable onPress;
 
@@ -22,7 +23,6 @@ public class IconButtonWidget extends AbstractFieldElementWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // TODO: render button
-        //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff00ffff);
         UIElements.BUTTON.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height+1, 0xff666666);
 
         if (icon == null) {

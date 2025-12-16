@@ -2,7 +2,6 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.config.UISprite;
-import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -10,7 +9,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
 
-public class IconButtonWidget<E extends AbstractWidget> extends AbstractFieldElementWidget<E> {
+public class IconButtonWidget<E extends AbstractWidget> extends AbstractChildWidget<E> {
     UISprite.Single icon;
     final Runnable onPress;
 

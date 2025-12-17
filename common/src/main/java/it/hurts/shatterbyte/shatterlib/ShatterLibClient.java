@@ -5,10 +5,7 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.EnumDropdownWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.ToggleWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibClientCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
@@ -21,6 +18,8 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+
+import java.util.ArrayList;
 
 public final class ShatterLibClient {
     public static final ShatterConfig CONFIG = new MyClientConfig();
@@ -53,6 +52,7 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
         EntryWidgetRegistry.register(Enum.class, EnumDropdownWidget::new);
+        EntryWidgetRegistry.register(ArrayList.class, ListWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

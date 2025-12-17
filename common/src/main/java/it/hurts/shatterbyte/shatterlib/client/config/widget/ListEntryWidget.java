@@ -39,7 +39,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         E value = parent.getValue().get(index);
 
         entryWidget = (AbstractEntryWidget<E>) EntryWidgetRegistry
-                .getFactory(value.getClass())
+                .getFactory(parent.getElementClass())
                 .create(
                         parent.getConfig(),
                         parent.getParent(),
@@ -57,6 +57,9 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         down = new IconButtonWidget<>(0, 0, 14, 14, () -> parent.moveIndex(index, index + 1), UIElements.ICON_DOWN);
         remove = new IconButtonWidget<>(0, 0, 14, 14, () -> parent.removeIndex(index), UIElements.ICON_MINUS);
 
+        up.setParent(this);
+        down.setParent(this);
+        remove.setParent(this);
         entryWidget.setParent(parent.getParent());
     }
 

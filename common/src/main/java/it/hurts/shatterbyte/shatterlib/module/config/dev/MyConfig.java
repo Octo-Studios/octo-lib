@@ -11,6 +11,7 @@ import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Getter;
 import net.minecraft.world.item.Rarity;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -72,6 +73,12 @@ public class MyConfig extends ShatterConfig {
     private float testValue = 3.5f;
 
     private Rarity testRarity = Rarity.EPIC;
+
+    private ArrayList<String> stringList = new ArrayList<>() {{
+        add("abc");
+        add("def");
+        add("ghi");
+    }};
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //

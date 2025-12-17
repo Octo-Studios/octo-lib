@@ -52,7 +52,7 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
         EntryWidgetRegistry.register(Enum.class, EnumDropdownWidget::new);
-        EntryWidgetRegistry.register(ArrayList.class, ListWidget::new);
+        //EntryWidgetRegistry.register(ArrayList.class, ListWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

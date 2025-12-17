@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -20,14 +21,19 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
     private boolean dragging;
     private GuiEventListener focused;
 
+    @Getter
+    private final Class<E> elementClass;
+
     public ListWidget(
             ShatterConfig config,
             FieldWidget parent,
             ArrayList<E> defaultValue,
             Supplier<ArrayList<E>> getter,
-            Consumer<ArrayList<E>> setter
+            Consumer<ArrayList<E>> setter,
+            Class<E> elementClass
     ) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
+        this.elementClass = elementClass;
         rebuild();
     }
 

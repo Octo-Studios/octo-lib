@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.ListWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -16,6 +17,10 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -60,6 +65,15 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         MethodHandle getterHandle = privateLookup.unreflectGetter(field).bindTo(object);
         MethodHandle setterHandle = privateLookup.unreflectSetter(field).bindTo(object);
 
+        String fieldName = field.getName();
+
+        String newPath = path + "." + fieldName;
+        if (newPath.startsWith(".")) {
+            newPath = newPath.substring(1);
+        }
+
+        Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
+
         Supplier<T> getter = () -> {
             try {
                 return (T) getterHandle.invoke();
@@ -76,14 +90,44 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
             }
         };
 
-        String fieldName = field.getName();
+        if (List.class.isAssignableFrom(type)) {
+            if (!(field.getGenericType() instanceof ParameterizedType pt)) {
+                throw new RuntimeException("List field without generic type: " + field);
+            }
 
-        String newPath = path + "." + fieldName;
-        if (newPath.startsWith(".")) {
-            newPath = newPath.substring(1);
+            Type arg = pt.getActualTypeArguments()[0];
+
+            Class<?> rawElementClass;
+            if (arg instanceof Class<?> c) {
+                rawElementClass = c;
+            } else if (arg instanceof ParameterizedType p) {
+                rawElementClass = (Class<?>) p.getRawType();
+            } else {
+                throw new RuntimeException("Unsupported list element type: " + arg);
+            }
+
+            @SuppressWarnings("unchecked")
+            Class<Object> elementClass = (Class<Object>) rawElementClass;
+
+            @SuppressWarnings("unchecked")
+            ArrayList<Object> dv = (ArrayList<Object>) defaultValue.get();
+
+            Supplier<ArrayList<Object>> listGetter =
+                    () -> (ArrayList<Object>) getter.get();
+
+            Consumer<ArrayList<Object>> listSetter =
+                    v -> setter.accept((T) v);
+
+            return (AbstractEntryWidget<T>) new ListWidget<>(
+                    config,
+                    parent,
+                    dv,
+                    listGetter,
+                    listSetter,
+                    elementClass
+            );
         }
 
-        Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
 
         if (defaultValue.isEmpty()) {
             throw new RuntimeException("Default value for " + newPath + " not found.");

@@ -29,7 +29,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, FieldWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+    public GenericObjectWidget(ShatterConfig config, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionElements();

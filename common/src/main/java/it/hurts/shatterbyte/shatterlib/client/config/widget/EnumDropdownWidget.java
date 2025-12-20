@@ -1,10 +1,12 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -17,7 +19,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
     private boolean open = false;
     private int hoveredIndex = -1;
 
-    public EnumDropdownWidget(ShatterConfig config, FieldWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
+    public EnumDropdownWidget(ShatterConfig config, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 18);
 
         Class<E> enumClass = defaultValue.getDeclaringClass();
@@ -32,10 +34,13 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int x = this.getX();
         int y = this.getY();
         int w = this.getWidth();
-        int h = 18;
+        int h = this.getHeight();
 
-        // background box
-        guiGraphics.fill(x, y, x + w, y + h, 0xFF2B2B2B);
+        guiGraphics.fill(x, y, x + w, y + h, 0xff1f1e23);
+
+        if (isMouseOver(mouseX, mouseY)) {
+            guiGraphics.fill(x, y, x + w, y + h, 0x20FFFFFF);
+        }
 
         // draw selected value text
         E current = getValue();
@@ -47,8 +52,8 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int ay = y + (h / 2) - 2;
         guiGraphics.fill(ax, ay, ax + arrowW, ay + 4, 0xFF7A7A7A);
 
-        if (isMouseOver(mouseX, mouseY)) {
-            guiGraphics.fill(x, y, x + w, y + h, 0x20FFFFFF);
+        if (!open) {
+            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, h + 2);
         }
 
         if (open) {
@@ -59,16 +64,18 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
             int optionH = this.getHeight();
             int maxToShow = values.size();
 
-            guiGraphics.fill(listX, listY, listX + listW, listY + optionH * maxToShow, 0xFF1E1E1E);
+            //guiGraphics.fill(listX, listY, listX + listW, listY + optionH * maxToShow, 0xFF1E1E1E);
 
             for (int i = 0; i < values.size(); i++) {
                 int oy = listY + i * optionH;
+                guiGraphics.fill(listX, oy, listX + listW, oy + optionH, i % 2 == 0 ? 0xff131418 : 0xff1f1e23);
                 if (mouseX >= listX && mouseX < listX + listW && mouseY >= oy && mouseY < oy + optionH && i == hoveredIndex) {
                     guiGraphics.fill(listX, oy, listX + listW, oy + optionH, 0x40FFFFFF);
                 }
                 String opt = convertFromCamelCase(values.get(i).name());
                 guiGraphics.drawString(Minecraft.getInstance().font, opt, listX + 6, oy + (optionH - 8) / 2, 0xFFFFFFFF, true);
             }
+            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, optionH * maxToShow + 2 + h);
         }
     }
 

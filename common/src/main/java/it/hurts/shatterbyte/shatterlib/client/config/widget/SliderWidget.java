@@ -17,7 +17,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     private boolean dragging = false;
     private final Class<?> valueClass;
 
-    public SliderWidget(ShatterConfig config, FieldWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
+    public SliderWidget(ShatterConfig config, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 225, 8);
         this.valueClass = defaultValue != null ? defaultValue.getClass() : Double.class;
         clampCachedToRange();

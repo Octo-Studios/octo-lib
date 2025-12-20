@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ToggleWidget extends AbstractEntryWidget<Boolean> {
-    public ToggleWidget(ShatterConfig config, FieldWidget parent, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+    public ToggleWidget(ShatterConfig config, PathContainerWidget parent, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 20, 10);
     }
 

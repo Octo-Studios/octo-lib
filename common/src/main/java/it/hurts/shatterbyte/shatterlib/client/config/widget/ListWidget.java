@@ -3,9 +3,12 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
 
     public ListWidget(
             ShatterConfig config,
-            FieldWidget parent,
+            PathContainerWidget parent,
             ArrayList<E> defaultValue,
             Supplier<ArrayList<E>> getter,
             Consumer<ArrayList<E>> setter,
@@ -42,6 +45,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
 
     private void rebuild() {
         entries.clear();
+        renderables.clear();
 
         ArrayList<E> list = getValue();
         for (int i = 0; i < list.size(); i++) {
@@ -104,13 +108,85 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
     /* ---------- container ---------- */
 
     @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+    }
+
+
+
+    @Override
     public List<? extends GuiEventListener> children() {
         return entries;
+    }
+
+    @Nullable
+    @Override
+    public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+        return ContainerEventHandler.super.nextFocusPath(event);
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
+            return false;
+        }
+
+        return super.mouseClicked(event, isDoubleClick);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (ContainerEventHandler.super.mouseReleased(event)) {
+            return false;
+        }
+
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
+            return false;
+        }
+        return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean isFocused() {
+        return ContainerEventHandler.super.isFocused();
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if (!focused) {
+            this.setFocused(null);
+        }
     }
 
     @Override public boolean isDragging() { return dragging; }
     @Override public void setDragging(boolean d) { dragging = d; }
 
     @Override public @Nullable GuiEventListener getFocused() { return focused; }
-    @Override public void setFocused(@Nullable GuiEventListener f) { focused = f; }
+
+    @Override
+    public void setFocused(@Nullable GuiEventListener focused) {
+        if (this.focused instanceof ListEntryWidget field) {
+            field.setFocused(false);
+            field.setFocused(null);
+        }
+
+        if (focused != null) {
+            focused.setFocused(true);
+        }
+
+        this.focused = focused;
+    }
+
+    @Override
+    public void resetValue() {
+        this.entries.forEach(entry -> entry.entryWidget.resetValue());
+        super.resetValue();
+        this.rebuild();
+    }
 }

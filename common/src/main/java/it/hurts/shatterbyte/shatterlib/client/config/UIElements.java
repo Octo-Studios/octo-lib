@@ -58,6 +58,18 @@ public class UIElements {
             new UISprite.NineSlice.Region(31, 44, 4, 5)
     );
 
+    public static final UISprite FRAME = new UISprite.NineSlice(ConfigScreen.ATLAS,
+            new UISprite.NineSlice.Region(5, 3, 4, 4),
+            new UISprite.NineSlice.Region(10, 3, 1, 4),
+            new UISprite.NineSlice.Region(12, 3, 4, 4),
+            new UISprite.NineSlice.Region(5, 8, 4, 24),
+            new UISprite.NineSlice.Region(10, 8, 1, 24),
+            new UISprite.NineSlice.Region(12, 8, 4, 24),
+            new UISprite.NineSlice.Region(5, 33, 4, 5),
+            new UISprite.NineSlice.Region(10, 33, 1, 5),
+            new UISprite.NineSlice.Region(12, 33, 4, 5)
+    );
+
     public static final UISprite.Single ICON_RESET = new UISprite.Single(ConfigScreen.ATLAS, 128, 3, 9, 9);
     public static final UISprite.Single ICON_UP = new UISprite.Single(ConfigScreen.ATLAS, 106, 3, 9, 9);
     public static final UISprite.Single ICON_DOWN = new UISprite.Single(ConfigScreen.ATLAS, 95, 3, 9, 9);

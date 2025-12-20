@@ -4,11 +4,14 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,13 +76,13 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         x += up.getWidth() + 2;
 
         down.setPosition(x, 2);
-        x += down.getWidth() + 2;
-
-        remove.setPosition(x, 2);
-        x += remove.getWidth() + 6;
+        x += down.getWidth() + 4;
 
         entryWidget.setPosition(x, 2);
-        entryWidget.setWidth(this.width - x - 4);
+        entryWidget.setWidth(this.width - x - 4 - (remove.getWidth() + 4));
+        x += entryWidget.getWidth() + 4;
+
+        remove.setPosition(x, 2);
 
         if (entryWidget instanceof DynamicallySized ds) {
             ds.repositionElements();
@@ -92,7 +95,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override
     protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float pt) {
-        g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
+        //g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
 
         up.render(g, mouseX, mouseY, pt);
         down.render(g, mouseX, mouseY, pt);
@@ -119,18 +122,41 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         return List.of(up, down, remove, entryWidget);
     }
 
-    @Override public boolean isDragging() { return dragging; }
-    @Override public void setDragging(boolean d) { dragging = d; }
-
-    @Override public @Nullable GuiEventListener getFocused() { return focused; }
-    @Override public void setFocused(@Nullable GuiEventListener f) { focused = f; }
-
     @Override
-    public String getPath() {
-        return this.getParent().getParent().getPath()+"["+index+"]";
+    public boolean isDragging() {
+        return dragging;
     }
 
     @Override
+    public void setDragging(boolean isDragging) {
+        this.dragging = isDragging;
+    }
+
+    @Nullable
+    @Override
+    public GuiEventListener getFocused() {
+        return this.focused;
+    }
+
+    @Override
+    public void setFocused(@Nullable GuiEventListener focused) {
+        if (this.focused != null) {
+            this.focused.setFocused(false);
+        }
+
+        if (focused != null) {
+            focused.setFocused(true);
+        }
+
+        this.focused = focused;
+    }
+
+    @Nullable
+    @Override
+    public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+        return ContainerEventHandler.super.nextFocusPath(event);
+    }
+
     public void moveToTheTop() {
         if (this.parent == null) {
             return;
@@ -142,5 +168,53 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         if (this.parent.getParent() instanceof PathContainerWidget widget) {
             widget.moveToTheTop();
         }
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
+            return false;
+        }
+
+        return super.mouseClicked(event, isDoubleClick);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (ContainerEventHandler.super.mouseReleased(event)) {
+            return false;
+        }
+
+        return super.mouseReleased(event);
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
+            return false;
+        }
+        return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean isFocused() {
+        return ContainerEventHandler.super.isFocused();
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if (!focused) {
+            this.setFocused(null);
+        }
+    }
+    @Override
+    public String getPath() {
+        return this.getParent().getParent().getPath()+"["+index+"]";
     }
 }

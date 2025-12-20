@@ -6,7 +6,6 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
-import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -28,7 +27,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, DynamicallySized {
+public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, DynamicallySized, PathContainerWidget {
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
     protected String fieldName = "";
@@ -185,8 +184,16 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     public void moveToTheTop() {
+        if (this.parent == null) {
+            return;
+        }
+
         this.parent.renderables.remove(this);
         this.parent.renderables.addFirst(this);
+
+        if (this.parent.getParent() instanceof PathContainerWidget widget) {
+            widget.moveToTheTop();
+        }
     }
 
     @Override
@@ -233,6 +240,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
     }
 
+    @Override
     public String getPath() {
         if (parent == null) {
             return fieldName;

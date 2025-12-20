@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ListWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.PathContainerWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -25,10 +26,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<FieldWidget> {
+public abstract class AbstractEntryWidget<E> extends AbstractWidget implements Child<PathContainerWidget> {
     @Getter
     private final ShatterConfig config;
-    private FieldWidget parent;
+    private PathContainerWidget parent;
     private E cachedValue;
 
     @Getter
@@ -37,7 +38,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     private final Supplier<E> getter;
     private final Consumer<E> setter;
 
-    public AbstractEntryWidget(ShatterConfig config, FieldWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
+    public AbstractEntryWidget(ShatterConfig config, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
         this.setParent(parent);
 
@@ -207,12 +208,12 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     }
 
     @Override
-    public @Nullable FieldWidget getParent() {
+    public @Nullable PathContainerWidget getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(FieldWidget parent) {
+    public void setParent(PathContainerWidget parent) {
         this.parent = parent;
     }
 

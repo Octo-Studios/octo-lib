@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidget<E>>, ContainerEventHandler, DynamicallySized {
+public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidget<E>>, ContainerEventHandler, DynamicallySized, PathContainerWidget {
     private ListWidget<E> parent;
     private final int index;
 
@@ -60,7 +60,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         up.setParent(this);
         down.setParent(this);
         remove.setParent(this);
-        entryWidget.setParent(parent.getParent());
+        entryWidget.setParent(this);
     }
 
     /* ---------- layout ---------- */
@@ -124,4 +124,23 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override public @Nullable GuiEventListener getFocused() { return focused; }
     @Override public void setFocused(@Nullable GuiEventListener f) { focused = f; }
+
+    @Override
+    public String getPath() {
+        return this.getParent().getParent().getPath()+"["+index+"]";
+    }
+
+    @Override
+    public void moveToTheTop() {
+        if (this.parent == null) {
+            return;
+        }
+
+        this.parent.renderables.remove(this);
+        this.parent.renderables.addFirst(this);
+
+        if (this.parent.getParent() instanceof PathContainerWidget widget) {
+            widget.moveToTheTop();
+        }
+    }
 }

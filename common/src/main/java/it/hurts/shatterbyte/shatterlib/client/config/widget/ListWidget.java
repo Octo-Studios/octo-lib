@@ -16,7 +16,8 @@ import java.util.function.Supplier;
 public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
         implements DynamicallySized, ContainerEventHandler {
 
-    private final List<ListEntryWidget<E>> entries = new ArrayList<>();
+    public final List<ListEntryWidget<E>> entries = new ArrayList<>();
+    public final List<ListEntryWidget<E>> renderables = new ArrayList<>();
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -46,6 +47,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
         for (int i = 0; i < list.size(); i++) {
             ListEntryWidget<E> entry = new ListEntryWidget<>(this, i);
             entries.add(entry);
+            renderables.add(entry);
         }
 
         repositionElements();
@@ -88,11 +90,14 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
     /* ---------- render ---------- */
 
     @Override
-    protected void renderEntry(GuiGraphics g, int mouseX, int mouseY, float pt) {
-        g.fill(getX(), getY(), getX() + width, getY() + height, 0x22000000);
-
-        for (ListEntryWidget<E> entry : entries) {
-            entry.render(g, mouseX, mouseY, pt);
+    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float pt) {
+        //guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0x22000000);
+        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
+        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        for (ListEntryWidget<E> widget : renderables.reversed()) {
+            guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() + widget.getHeight() + 1, 0xff1c1c17);
+            guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() +widget.getHeight() + 2, 0xff3c3c42);
+            widget.render(guiGraphics, mouseX, mouseY, pt);
         }
     }
 

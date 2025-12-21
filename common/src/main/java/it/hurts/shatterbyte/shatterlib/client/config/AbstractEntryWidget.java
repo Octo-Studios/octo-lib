@@ -50,6 +50,13 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         this.updateCachedValue();
     }
 
+    protected void requestRelayout() {
+        PathContainerWidget parent = this.parent;
+        if (parent != null) {
+            parent.requestRelayout();
+        }
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public static <T> AbstractEntryWidget<T> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {

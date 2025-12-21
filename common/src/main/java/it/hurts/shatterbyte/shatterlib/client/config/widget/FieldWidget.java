@@ -72,6 +72,14 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         this.setHeight(Math.max(15, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
     }
 
+    public void requestRelayout() {
+        //this.repositionElements();
+
+        if (parent != null) {
+            parent.repositionElements();
+        }
+    }
+
     @SneakyThrows
     public static @Nullable FieldWidget createFromField(ShatterConfig config, String path, Object parentObject, Field field, GenericObjectWidget parent) {
         FieldWidget fieldWidget = new FieldWidget();

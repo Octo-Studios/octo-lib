@@ -55,6 +55,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
         }
 
         repositionElements();
+        requestRelayout();
     }
 
     void removeIndex(int index) {

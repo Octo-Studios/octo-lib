@@ -124,17 +124,17 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
-        // if popup would run off bottom, try to open upward instead
-        if (y + h > screenH) {
-            int altY = this.getY() - h;
-            if (altY >= 0) {
-                y = altY;
-            } else {
-                // clamp height if both up and down overflow
-                h = Math.max(0, screenH - 4); // small padding
-                if (y + h > screenH) h = screenH - y;
-            }
-        }
+//        // if popup would run off bottom, try to open upward instead
+//        if (y + h > screenH) {
+//            int altY = this.getY() - h;
+//            if (altY >= 0) {
+//                y = altY;
+//            } else {
+//                // clamp height if both up and down overflow
+//                h = Math.max(0, screenH - 4); // small padding
+//                if (y + h > screenH) h = screenH - y;
+//            }
+//        }
 
         // horizontal clamp (rare)
         if (x + w > screenW) {

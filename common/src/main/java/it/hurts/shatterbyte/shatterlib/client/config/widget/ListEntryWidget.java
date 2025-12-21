@@ -56,14 +56,22 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
                 );
 
         // buttons
-        up = new IconButtonWidget<>(0, 0, 14, 14, () -> parent.moveIndex(index, index - 1), UIElements.ICON_UP);
-        down = new IconButtonWidget<>(0, 0, 14, 14, () -> parent.moveIndex(index, index + 1), UIElements.ICON_DOWN);
-        remove = new IconButtonWidget<>(0, 0, 14, 14, () -> parent.removeIndex(index), UIElements.ICON_MINUS);
+        up = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.moveIndex(index, index - 1), UIElements.ICON_UP);
+        down = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.moveIndex(index, index + 1), UIElements.ICON_DOWN);
+        remove = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.removeIndex(index), UIElements.ICON_MINUS);
 
         up.setParent(this);
         down.setParent(this);
         remove.setParent(this);
         entryWidget.setParent(this);
+    }
+
+    public void requestRelayout() {
+        //this.repositionElements();
+
+        if (parent != null) {
+            parent.repositionElements();
+        }
     }
 
     /* ---------- layout ---------- */
@@ -78,11 +86,13 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         down.setPosition(x, 2);
         x += down.getWidth() + 4;
 
-        entryWidget.setPosition(x, 2);
-        entryWidget.setWidth(this.width - x - 4 - (remove.getWidth() + 4));
-        x += entryWidget.getWidth() + 4;
+        remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
 
-        remove.setPosition(x, 2);
+        entryWidget.setPosition(x, 2);
+        if (entryWidget instanceof DynamicallySized dynamicallySized) {
+            entryWidget.setWidth(this.width - x - 4 - (remove.getWidth() + 4));
+            dynamicallySized.repositionElements();
+        }
 
         if (entryWidget instanceof DynamicallySized ds) {
             ds.repositionElements();

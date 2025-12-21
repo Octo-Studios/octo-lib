@@ -76,6 +76,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        //guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.width, this.getY()+this.height, 0x20000000);
         //this.repositionWidgets();
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);

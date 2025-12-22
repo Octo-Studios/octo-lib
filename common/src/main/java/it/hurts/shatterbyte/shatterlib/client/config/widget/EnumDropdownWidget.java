@@ -47,10 +47,10 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         String label = current == null ? "<null>" : convertFromCamelCase(current.name());
         guiGraphics.drawString(Minecraft.getInstance().font, label, x + 6, y + (h - 8) / 2, 0xFFFFFFFF, true);
 
-        int arrowW = 10;
+        int arrowW = 9;
         int ax = x + w - arrowW - 6;
         int ay = y + (h / 2) - 2;
-        guiGraphics.fill(ax, ay, ax + arrowW, ay + 4, 0xFF7A7A7A);
+        (open ? UIElements.ICON_UP : UIElements.ICON_DOWN).render(guiGraphics, RenderPipelines.GUI_TEXTURED, ax, ay-3);
 
         if (!open) {
             UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, h + 2);

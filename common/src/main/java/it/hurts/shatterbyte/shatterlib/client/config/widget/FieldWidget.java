@@ -48,7 +48,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         this.setWidth(this.getParent().getWidth() - 8);
 
         boolean moveDown = false;
-        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
+        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 1);
         if (entryWidget.getWidth() > (this.getWidth() - font.width(info.name()+": ") - 12 - resetButton.getWidth()) || entryWidget instanceof DynamicallySized) {
             moveDown = true;
         }
@@ -69,7 +69,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
             entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), 4);
         }
 
-        this.setHeight(Math.max(15, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
+        this.setHeight(Math.max(16, entryWidget.getHeight() + 4 + entryWidget.getLocalY()));
     }
 
     public void requestRelayout() {

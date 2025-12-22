@@ -74,8 +74,6 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         }
     }
 
-    /* ---------- layout ---------- */
-
     @Override
     public void repositionElements() {
         int x = 4;
@@ -101,8 +99,6 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         this.setHeight(Math.max(16, entryWidget.getHeight() + 4));
     }
 
-    /* ---------- render ---------- */
-
     @Override
     protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float pt) {
         //g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
@@ -117,8 +113,6 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
     }
-
-    /* ---------- container ---------- */
 
     @Override public ListWidget<E> getParent() { return parent; }
 

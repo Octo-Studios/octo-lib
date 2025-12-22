@@ -14,7 +14,6 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     private double min = 0;
     private double max = 100;
     private double step = 0;
-    private boolean dragging = false;
     private final Class<?> valueClass;
 
     public SliderWidget(ShatterConfig config, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
@@ -62,35 +61,25 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (isInside(event.x(), event.y())) {
-            updateFromMouse(event.x());
-            dragging = true;
-            return true;
-        }
-        return false;
+    public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
+        super.onClick(event, isDoubleClick);
+        updateFromMouse(event.x());
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        if (dragging) {
-            dragging = false;
-            return true;
-        }
-        return false;
+    public void onRelease(MouseButtonEvent event) {
+        super.onRelease(event);
+    }
+
+    @Override
+    protected void onDrag(MouseButtonEvent event, double mouseX, double mouseY) {
+        super.onDrag(event, mouseX, mouseY);
+        updateFromMouse(event.x());
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (dragging) {
-            updateFromMouse(event.x());
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isInside(double mouseX, double mouseY) {
-        return mouseX >= this.getX() && mouseX < this.getX() + this.getWidth() && mouseY >= this.getY() && mouseY < this.getY() + this.getHeight();
+        return super.mouseDragged(event, mouseX, mouseY);
     }
 
     private void updateFromMouse(double mouseX) {

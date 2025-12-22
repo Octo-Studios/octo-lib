@@ -23,9 +23,9 @@ public class UIElements {
     );
 
     public static final UISprite BUTTON_HOVERED = new UISprite.NineSlice(ConfigScreen.ATLAS,
-            new UISprite.NineSlice.Region(72, 19, 4, 4),
-            new UISprite.NineSlice.Region(77, 19, 1, 4),
-            new UISprite.NineSlice.Region(79, 19, 4, 4),
+            new UISprite.NineSlice.Region(72, 18, 4, 5),
+            new UISprite.NineSlice.Region(77, 18, 1, 5),
+            new UISprite.NineSlice.Region(79, 18, 4, 5),
             new UISprite.NineSlice.Region(72, 24, 4, 1),
             new UISprite.NineSlice.Region(77, 24, 1, 1),
             new UISprite.NineSlice.Region(79, 24, 4, 1),
@@ -35,9 +35,9 @@ public class UIElements {
     );
 
     public static final UISprite BUTTON_PRESSED = new UISprite.NineSlice(ConfigScreen.ATLAS,
-            new UISprite.NineSlice.Region(86, 22, 3, 3),
-            new UISprite.NineSlice.Region(90, 22, 1, 3),
-            new UISprite.NineSlice.Region(92, 22, 3, 3),
+            new UISprite.NineSlice.Region(86, 20, 3, 5),
+            new UISprite.NineSlice.Region(90, 20, 1, 5),
+            new UISprite.NineSlice.Region(92, 20, 3, 5),
             new UISprite.NineSlice.Region(86, 26, 3, 1),
             new UISprite.NineSlice.Region(90, 26, 1, 1),
             new UISprite.NineSlice.Region(92, 26, 3, 1),

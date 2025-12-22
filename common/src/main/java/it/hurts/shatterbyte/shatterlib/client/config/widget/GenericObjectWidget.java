@@ -157,9 +157,9 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
-        if (this.focused instanceof FieldWidget field) {
-            field.setFocused(false);
-            field.setFocused(null);
+        if (this.focused != null) {
+            this.focused.setFocused(false);
+            this.focused.setFocused(null);
         }
 
         if (focused != null) {

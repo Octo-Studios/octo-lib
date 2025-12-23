@@ -102,6 +102,11 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     @Override
     protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float pt) {
         //g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
+        if (this.index == 0) {
+            up.active = false;
+        } else {
+            up.active = true;
+        }
 
         up.render(g, mouseX, mouseY, pt);
         down.render(g, mouseX, mouseY, pt);

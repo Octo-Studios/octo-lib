@@ -74,4 +74,5 @@ public class UIElements {
     public static final UISprite.Single ICON_UP = new UISprite.Single(ConfigScreen.ATLAS, 106, 3, 9, 9);
     public static final UISprite.Single ICON_DOWN = new UISprite.Single(ConfigScreen.ATLAS, 95, 3, 9, 9);
     public static final UISprite.Single ICON_MINUS = new UISprite.Single(ConfigScreen.ATLAS, 160, 3, 9, 9);
+    public static final UISprite.Single ICON_PLUS = new UISprite.Single(ConfigScreen.ATLAS, 73, 3, 9, 9);
 }

@@ -47,6 +47,9 @@ public final class ShatterLibClient {
 
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+
+        EntryWidgetRegistry.registerConstructor(Enum.class, clazz -> clazz.getEnumConstants()[0]);
+
         EntryWidgetRegistry.register(Object.class, GenericObjectWidget::new);
         EntryWidgetRegistry.register(boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);

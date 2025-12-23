@@ -146,9 +146,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
                 buffer.write(matrixTranslation, now);
             } else {
                 var distSq = head.position().distanceToSqr(matrixTranslation);
-                if (distSq < minDistanceSq) {
-                    growingNow = false;
-                } else if (now > head.time()) {
+                if (distSq >= minDistanceSq && now > head.time()) {
                     var samplesPerTick = Math.max(1, getTrailSamplesPerTick());
                     var sampleInterval = 1.0 / samplesPerTick;
                     var deltaTime = Math.max(1e-6, now - head.time());
@@ -159,9 +157,10 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
                         var steps = Math.min(stepsByTime, Math.max(1, stepsByDistance));
                         
                         for (int i = 1; i <= steps; i++) {
-                            double t = i / (double) steps;
+                            var sampleTime = head.time() + sampleInterval * i;
+                            if (sampleTime > now) break;
+                            double t = (sampleTime - head.time()) / deltaTime;
                             var samplePos = head.position().lerp(matrixTranslation, t);
-                            var sampleTime = head.time() + deltaTime * t;
                             buffer.write(samplePos, sampleTime);
                         }
                     }
@@ -176,9 +175,13 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         var points = new ArrayList<Vec3>();
         var lifeFractions = new ArrayList<Float>();
         
-        if (growingNow) {
+        if (aliveNow) {
+            var headLife = 0f;
+            if (!growingNow && buffer.peekFirst() != null) {
+                headLife = (float) Mth.clamp((now - buffer.peekFirst().time()) / maxAge, 0.0, 1.0);
+            }
             points.add(Vec3.ZERO);
-            lifeFractions.add(0f);
+            lifeFractions.add(headLife);
         }
 
         for (var sample : buffer) {

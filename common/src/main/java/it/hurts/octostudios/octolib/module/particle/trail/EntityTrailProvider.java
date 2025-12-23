@@ -17,7 +17,7 @@ public abstract class EntityTrailProvider<T extends Entity> extends TrailProvide
 
     @Override
     public int getTrailUpdateFrequency() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -27,6 +27,7 @@ public abstract class EntityTrailProvider<T extends Entity> extends TrailProvide
 
     @Override
     public boolean isTrailGrowing() {
-        return entity.tickCount > 0 && entity.getDeltaMovement().length() > 0;
+        var minMotion = Math.max(1e-4, getTrailMinSampleDistance() * 0.1);
+        return entity.tickCount > 0 && entity.getDeltaMovement().length() > minMotion;
     }
 }

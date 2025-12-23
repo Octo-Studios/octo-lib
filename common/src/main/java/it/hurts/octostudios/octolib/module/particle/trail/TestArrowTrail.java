@@ -16,7 +16,7 @@ public class TestArrowTrail extends EntityTrailProvider<Arrow> {
 
     @Override
     public int getTrailMaxLength() {
-        return 10;
+        return 5;
     }
 
     @Override

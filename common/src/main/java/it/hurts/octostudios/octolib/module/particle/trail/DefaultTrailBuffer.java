@@ -1,7 +1,6 @@
 package it.hurts.octostudios.octolib.module.particle.trail;
 
 import lombok.Data;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayDeque;
@@ -10,7 +9,7 @@ import java.util.Iterator;
 
 @Data
 public class DefaultTrailBuffer<T> implements TrailBuffer {
-    private Deque<Vec3> points = new ArrayDeque<>();
+    private Deque<TrailSample> points = new ArrayDeque<>();
 
     private final int maxSize;
 
@@ -19,11 +18,9 @@ public class DefaultTrailBuffer<T> implements TrailBuffer {
     }
 
     @Override
-    public void write(Vec3 vec3) {
-        if (size() >= maxSize)
-            remove();
-
-        points.push(vec3);
+    public void write(TrailSample sample) {
+        if (size() >= maxSize) remove();
+        points.addFirst(sample);
     }
 
     @Override
@@ -37,7 +34,41 @@ public class DefaultTrailBuffer<T> implements TrailBuffer {
     }
 
     @Override
-    public @NotNull Iterator<Vec3> iterator() {
+    public void removeFirst() {
+        points.pollFirst();
+    }
+
+    @Override
+    public TrailSample peekFirst() {
+        return points.peekFirst();
+    }
+
+    @Override
+    public TrailSample peekLast() {
+        return points.peekLast();
+    }
+
+    @Override
+    public void pruneOlderThan(double minTime) {
+        while (!points.isEmpty()) {
+            var last = points.peekLast();
+
+            if (last == null || last.time() >= minTime)
+                break;
+
+            points.removeLast();
+        }
+    }
+
+    @Override
+    public void trimToSize(int max) {
+        while (points.size() > Math.max(0, max)) {
+            points.removeLast();
+        }
+    }
+
+    @Override
+    public @NotNull Iterator<TrailSample> iterator() {
         return points.iterator();
     }
 }

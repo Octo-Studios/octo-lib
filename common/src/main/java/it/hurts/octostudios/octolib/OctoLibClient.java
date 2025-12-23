@@ -16,7 +16,7 @@ public final class OctoLibClient {
 
     public static void init() {
         registerEvents();
-
+        //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
         TweenSystem.init();
     }
     

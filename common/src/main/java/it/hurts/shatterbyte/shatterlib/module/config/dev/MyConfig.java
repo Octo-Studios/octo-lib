@@ -4,7 +4,6 @@ import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import lombok.Getter;
 import net.minecraft.world.item.Rarity;
@@ -62,17 +61,14 @@ public class MyConfig extends ShatterConfig {
     private String someString = "Test String!!!";
 
     private TestObject someObject = new TestObject();
-    @Name("Some random test boolean")
-    private boolean testBool = false;
 
     @Range(min = 0, max = 10, step = 0.1d)
     private float testValue = 3.5f;
 
-
-    private ArrayList<Rarity> enumList = new ArrayList<>() {{
-        add(Rarity.COMMON);
-        add(Rarity.EPIC);
-        add(Rarity.UNCOMMON);
+    private ArrayList<Boolean> list = new ArrayList<>() {{
+        add(false);
+        add(true);
+        add(true);
     }};
 
     private Rarity testRarity = Rarity.EPIC;

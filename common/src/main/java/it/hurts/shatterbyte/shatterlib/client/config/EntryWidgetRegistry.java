@@ -47,12 +47,21 @@ public final class EntryWidgetRegistry {
 
     @SuppressWarnings("unchecked")
     public static <E> E getDefaultValue(Class<E> clazz) {
-        if (clazz.isEnum()) {
-            return (E) DEFAULT_CONSTRUCTORS.get(Enum.class).apply(clazz);
-        }
+        Class<?> current = clazz;
+        while (current != null) {
+            Function<Class<?>, ?> factory = DEFAULT_CONSTRUCTORS.get(current);
+            if (factory != null) {
+                return (E) factory.apply(clazz);
+            }
 
-        if (DEFAULT_CONSTRUCTORS.containsKey(clazz)) {
-            return (E) DEFAULT_CONSTRUCTORS.get(clazz).apply(clazz);
+            for (Class<?> interfaceClass : current.getInterfaces()) {
+                factory = DEFAULT_CONSTRUCTORS.get(interfaceClass);
+                if (factory != null) {
+                    return (E) factory.apply(clazz);
+                }
+            }
+
+            current = current.getSuperclass();
         }
 
         try {

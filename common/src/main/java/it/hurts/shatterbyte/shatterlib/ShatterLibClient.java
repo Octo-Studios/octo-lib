@@ -20,6 +20,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public final class ShatterLibClient {
     public static final ShatterConfig CONFIG = new MyClientConfig();
@@ -48,7 +49,10 @@ public final class ShatterLibClient {
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
 
+        EntryWidgetRegistry.registerConstructor(Number.class, clazz -> 0);
+        EntryWidgetRegistry.registerConstructor(Boolean.class, clazz -> false);
         EntryWidgetRegistry.registerConstructor(Enum.class, clazz -> clazz.getEnumConstants()[0]);
+        EntryWidgetRegistry.registerConstructor(String.class, clazz -> "");
 
         EntryWidgetRegistry.register(Object.class, GenericObjectWidget::new);
         EntryWidgetRegistry.register(boolean.class, ToggleWidget::new);

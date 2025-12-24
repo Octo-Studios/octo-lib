@@ -200,7 +200,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
 
     @Override
     public void resetValue() {
-        this.entries.forEach(entry -> entry.entryWidget.resetValue());
+        //this.entries.forEach(entry -> entry.entryWidget.resetValue());
         super.resetValue();
         this.rebuild();
     }

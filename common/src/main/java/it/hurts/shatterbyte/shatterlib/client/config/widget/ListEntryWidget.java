@@ -108,6 +108,12 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
             up.active = true;
         }
 
+        if ((this.index + 1) >= this.parent.entries.size()) {
+            down.active = false;
+        } else {
+            down.active = true;
+        }
+
         up.render(g, mouseX, mouseY, pt);
         down.render(g, mouseX, mouseY, pt);
         remove.render(g, mouseX, mouseY, pt);

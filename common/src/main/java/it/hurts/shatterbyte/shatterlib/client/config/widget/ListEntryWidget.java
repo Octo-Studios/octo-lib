@@ -39,14 +39,20 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
         // create entry widget via factory using indexed path
         String path = parent.getParent().getPath() + "[" + index + "]";
-        E value = parent.getValue().get(index);
+        E defaultValue;
+        if (index < parent.getDefaultValue().size()) {
+            defaultValue = parent.getDefaultValue().get(index);
+        } else {
+            defaultValue = EntryWidgetRegistry.getDefaultValue(parent.getElementClass());
+        }
 
         entryWidget = (AbstractEntryWidget<E>) EntryWidgetRegistry
                 .getFactory(parent.getElementClass())
                 .create(
                         parent.getConfig(),
+                        parent.getAnnotations(),
                         parent.getParent(),
-                        value,
+                        defaultValue,
                         () -> parent.getValue().get(index),
                         v -> {
                             ArrayList<E> list = new ArrayList<>(parent.getValue());

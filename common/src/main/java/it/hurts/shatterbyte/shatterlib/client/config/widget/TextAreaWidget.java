@@ -15,13 +15,14 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.vehicle.Minecart;
 
+import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TextAreaWidget extends AbstractEntryWidget<String> {
     Font font = Minecraft.getInstance().font;
 
-    public TextAreaWidget(ShatterConfig config, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
+    public TextAreaWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 14);
     }
 

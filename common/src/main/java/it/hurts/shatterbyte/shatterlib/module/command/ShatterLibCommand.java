@@ -68,10 +68,6 @@ public class ShatterLibCommand {
 
                         NetworkManager.sendToPlayer(component.getSource().getPlayer(), new TestScreenPacket());
                         return Command.SINGLE_SUCCESS;
-                    }))
-                    .then(Commands.literal("testConfigValue").executes(context -> {
-                        context.getSource().sendSystemMessage(Component.literal(ShatterLib.CONFIG.getSomeString()));
-                        return Command.SINGLE_SUCCESS;
                     }));
         }
 

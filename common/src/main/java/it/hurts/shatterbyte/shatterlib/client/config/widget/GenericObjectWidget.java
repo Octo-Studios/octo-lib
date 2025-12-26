@@ -14,6 +14,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
@@ -29,7 +30,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+    public GenericObjectWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionElements();

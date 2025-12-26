@@ -11,6 +11,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.lang.annotation.Annotation;
+
 public class ConfigScreen extends Screen {
     public static final Atlas ATLAS = new Atlas(ResourceLocation.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/config_atlas.png"), 263, 76);
     ShatterConfig config;
@@ -22,7 +24,7 @@ public class ConfigScreen extends Screen {
         this.config = config;
         this.prevScreen = prevScreen;
 
-        object = new GenericObjectWidget(config, null, null, () -> config, conf -> {});
+        object = new GenericObjectWidget(config, new Annotation[]{}, null, null, () -> config, conf -> {});
         this.addRenderableWidget(object);
 
         repositionElements();

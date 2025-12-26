@@ -62,10 +62,9 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     public static <T> AbstractEntryWidget<T> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
         Class<?> type = field.getType();
 
-        boolean hasRangeAndNumeric = field.isAnnotationPresent(Range.class) && isNumericType(type);
         EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(type);
 
-        if (factory == null && !hasRangeAndNumeric) {
+        if (factory == null) {
             return null;
         }
 
@@ -128,6 +127,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
             return (AbstractEntryWidget<T>) new ListWidget<>(
                     config,
+                    field.getDeclaredAnnotations(),
                     parent,
                     dv,
                     listGetter,
@@ -141,27 +141,28 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
             throw new RuntimeException("Default value for " + newPath + " not found.");
         }
 
-        if (hasRangeAndNumeric) {
-            // ensure runtime value is a Number
-            Object dv = defaultValue.get();
-            if (!(dv instanceof Number defaultNumber)) {
-                throw new RuntimeException("Default value for " + newPath + " is not a Number but field is numeric.");
-            }
-
-            Supplier<Number> numGetter = () -> (Number) getter.get();
-            Consumer<Number> numSetter = (num) -> setter.accept((T) num);
-
-            SliderWidget<Number> slider = new SliderWidget<>(config, parent, defaultNumber, numGetter, numSetter);
-
-            Range rangeAnn = field.getAnnotation(Range.class);
-            slider.setRange(rangeAnn.min(), rangeAnn.max(), rangeAnn.step());
-
-            // safe-ish unchecked cast to match return type
-            return (AbstractEntryWidget<T>) slider;
-        }
+//        if (hasRangeAndNumeric) {
+//            // ensure runtime value is a Number
+//            Object dv = defaultValue.get();
+//            if (!(dv instanceof Number defaultNumber)) {
+//                throw new RuntimeException("Default value for " + newPath + " is not a Number but field is numeric.");
+//            }
+//
+//            Supplier<Number> numGetter = () -> (Number) getter.get();
+//            Consumer<Number> numSetter = (num) -> setter.accept((T) num);
+//
+//            SliderWidget<Number> slider = new SliderWidget<>(config, parent, defaultNumber, numGetter, numSetter);
+//
+//            Range rangeAnn = field.getAnnotation(Range.class);
+//            slider.setRange(rangeAnn.min(), rangeAnn.max(), rangeAnn.step());
+//
+//            // safe-ish unchecked cast to match return type
+//            return (AbstractEntryWidget<T>) slider;
+//        }
 
         AbstractEntryWidget<T> widget = factory.create(
                 config,
+                field.getDeclaredAnnotations(),
                 parent,
                 defaultValue.get(),
                 getter,

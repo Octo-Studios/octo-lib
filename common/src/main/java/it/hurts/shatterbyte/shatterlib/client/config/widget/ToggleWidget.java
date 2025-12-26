@@ -13,6 +13,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
 
+import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -23,7 +24,7 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
     @Setter
     float progress = 0f;
 
-    public ToggleWidget(ShatterConfig config, PathContainerWidget parent, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
+    public ToggleWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 20, 10);
         if (this.getValue()) {
             progress = 1f;

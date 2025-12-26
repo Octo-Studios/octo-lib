@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.config.dev;
 
+import io.netty.channel.ChannelHandler;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -58,17 +59,18 @@ public class MyConfig extends ShatterConfig {
 //
 //    @Exclude
 //    private String superPrivateString = "pls don't";
-    private String someString = "Test String!!!";
+    //private String someString = "Test String!!!";
 
     private TestObject someObject = new TestObject();
 
     @Range(min = 0, max = 10, step = 0.1d)
     private float testValue = 3.5f;
 
-    private ArrayList<Boolean> list = new ArrayList<>() {{
-        add(false);
-        add(true);
-        add(true);
+    @Range(min = 0, max = 5, step = 0.5f)
+    private ArrayList<Float> list = new ArrayList<>() {{
+        add(1f);
+        add(3f);
+        add(2.5f);
     }};
 
     private Rarity testRarity = Rarity.EPIC;

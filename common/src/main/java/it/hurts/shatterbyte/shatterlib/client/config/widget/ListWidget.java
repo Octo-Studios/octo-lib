@@ -13,6 +13,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,10 +30,14 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
     private GuiEventListener focused;
 
     @Getter
+    private Annotation[] annotations;
+
+    @Getter
     private final Class<E> elementClass;
 
     public ListWidget(
             ShatterConfig config,
+            Annotation[] annotations,
             PathContainerWidget parent,
             ArrayList<E> defaultValue,
             Supplier<ArrayList<E>> getter,
@@ -42,6 +47,7 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         addButton.setParent(this);
         this.elementClass = elementClass;
+        this.annotations = annotations;
         rebuild();
     }
 

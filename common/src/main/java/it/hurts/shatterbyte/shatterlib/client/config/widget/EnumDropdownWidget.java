@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 
 import java.awt.*;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,7 +21,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
     private boolean open = false;
     private int hoveredIndex = -1;
 
-    public EnumDropdownWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
+    public EnumDropdownWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 18);
 
         Class<E> enumClass = defaultValue.getDeclaringClass();

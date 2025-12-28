@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -31,7 +32,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
-    public GenericObjectWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
+    public GenericObjectWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionElements();

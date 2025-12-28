@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.vehicle.Minecart;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -28,7 +29,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     @Setter
     Predicate<String> predicate = s -> true;
 
-    public TextAreaWidget(ShatterConfig config, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
+    public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 14);
     }
 

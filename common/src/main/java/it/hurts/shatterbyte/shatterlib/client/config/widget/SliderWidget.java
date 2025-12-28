@@ -3,10 +3,12 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 
+import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -16,9 +18,11 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     private double step = 0;
     private final Class<?> valueClass;
 
-    public SliderWidget(ShatterConfig config, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
+    public SliderWidget(ShatterConfig config, Range range, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 225, 8);
         this.valueClass = defaultValue != null ? defaultValue.getClass() : Double.class;
+        this.setRange(range.min(), range.max(), range.step());
+
         //clampCachedToRange();
     }
 

@@ -65,7 +65,7 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);
         EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
-        EntryWidgetRegistry.register(Number.class, (config, annotations, parent, defaultValue, getter, setter) -> {
+        EntryWidgetRegistry.register(Number.class, (config, type, annotations, parent, defaultValue, getter, setter) -> {
             boolean hasRange = false;
             Range range = null;
             for (Annotation annotation : annotations) {
@@ -79,12 +79,11 @@ public final class ShatterLibClient {
                 return null;
             }
 
-            var widget = new SliderWidget<>(config, parent, defaultValue, getter, setter);
-            widget.setRange(range.min(), range.max(), range.step());
-            return widget;
+            return new SliderWidget<>(config, range, parent, defaultValue, getter, setter);
         });
+
         EntryWidgetRegistry.register(Enum.class, EnumDropdownWidget::new);
-        //EntryWidgetRegistry.register(ArrayList.class, ListWidget::new);
+        EntryWidgetRegistry.register(List.class, ListWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

@@ -97,79 +97,19 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
             }
         };
 
-        if (List.class.isAssignableFrom(type)) {
-            if (!(field.getGenericType() instanceof ParameterizedType pt)) {
-                throw new RuntimeException("List field without generic type: " + field);
-            }
-
-            Type arg = pt.getActualTypeArguments()[0];
-
-            Class<?> rawElementClass;
-            if (arg instanceof Class<?> c) {
-                rawElementClass = c;
-            } else if (arg instanceof ParameterizedType p) {
-                rawElementClass = (Class<?>) p.getRawType();
-            } else {
-                throw new RuntimeException("Unsupported list element type: " + arg);
-            }
-
-            @SuppressWarnings("unchecked")
-            Class<Object> elementClass = (Class<Object>) rawElementClass;
-
-            @SuppressWarnings("unchecked")
-            ArrayList<Object> dv = (ArrayList<Object>) defaultValue.get();
-
-            Supplier<ArrayList<Object>> listGetter =
-                    () -> (ArrayList<Object>) getter.get();
-
-            Consumer<ArrayList<Object>> listSetter =
-                    v -> setter.accept((T) v);
-
-            return (AbstractEntryWidget<T>) new ListWidget<>(
-                    config,
-                    field.getDeclaredAnnotations(),
-                    parent,
-                    dv,
-                    listGetter,
-                    listSetter,
-                    elementClass
-            );
-        }
-
-
         if (defaultValue.isEmpty()) {
             throw new RuntimeException("Default value for " + newPath + " not found.");
         }
 
-//        if (hasRangeAndNumeric) {
-//            // ensure runtime value is a Number
-//            Object dv = defaultValue.get();
-//            if (!(dv instanceof Number defaultNumber)) {
-//                throw new RuntimeException("Default value for " + newPath + " is not a Number but field is numeric.");
-//            }
-//
-//            Supplier<Number> numGetter = () -> (Number) getter.get();
-//            Consumer<Number> numSetter = (num) -> setter.accept((T) num);
-//
-//            SliderWidget<Number> slider = new SliderWidget<>(config, parent, defaultNumber, numGetter, numSetter);
-//
-//            Range rangeAnn = field.getAnnotation(Range.class);
-//            slider.setRange(rangeAnn.min(), rangeAnn.max(), rangeAnn.step());
-//
-//            // safe-ish unchecked cast to match return type
-//            return (AbstractEntryWidget<T>) slider;
-//        }
-
-        AbstractEntryWidget<T> widget = factory.create(
+        return factory.create(
                 config,
+                field.getGenericType(),
                 field.getDeclaredAnnotations(),
                 parent,
                 defaultValue.get(),
                 getter,
                 setter
         );
-
-        return widget;
     }
 
     private static boolean isNumericType(Class<?> clazz) {

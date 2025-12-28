@@ -14,12 +14,14 @@ import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
+public class ListWidget<E> extends AbstractEntryWidget<List<Object>>
         implements DynamicallySized, ContainerEventHandler {
 
     public final List<ListEntryWidget<E>> entries = new ArrayList<>();
@@ -37,14 +39,33 @@ public class ListWidget<E> extends AbstractEntryWidget<ArrayList<E>>
 
     public ListWidget(
             ShatterConfig config,
+            Type type,
             Annotation[] annotations,
             PathContainerWidget parent,
-            ArrayList<E> defaultValue,
-            Supplier<ArrayList<E>> getter,
-            Consumer<ArrayList<E>> setter,
-            Class<E> elementClass
+            List<Object> defaultValue,
+            Supplier<List<Object>> getter,
+            Consumer<List<Object>> setter
     ) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
+
+        if (!(field.getGenericType() instanceof ParameterizedType pt)) {
+            throw new RuntimeException("List field without generic type: " + field);
+        }
+
+        Type arg = pt.getActualTypeArguments()[0];
+
+        Class<?> rawElementClass;
+        if (arg instanceof Class<?> c) {
+            rawElementClass = c;
+        } else if (arg instanceof ParameterizedType p) {
+            rawElementClass = (Class<?>) p.getRawType();
+        } else {
+            throw new RuntimeException("Unsupported list element type: " + arg);
+        }
+
+        @SuppressWarnings("unchecked")
+        Class<Object> elementClass = (Class<Object>) rawElementClass;
+
         addButton.setParent(this);
         this.elementClass = elementClass;
         this.annotations = annotations;

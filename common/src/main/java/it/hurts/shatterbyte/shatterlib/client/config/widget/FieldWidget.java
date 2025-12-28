@@ -16,6 +16,7 @@ import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -141,6 +142,11 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        GuiEventListener widget = this.getFocused();
+        if (widget instanceof AbstractWidget w) {
+            guiGraphics.fill(w.getX(), w.getY(), w.getX()+w.getWidth(), w.getY()+w.getHeight(), 0x5500ff00);
+        }
     }
 
     @Override
@@ -228,6 +234,15 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
             return false;
         }
         return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (ContainerEventHandler.super.charTyped(event)) {
+            return false;
+        }
+
+        return super.charTyped(event);
     }
 
     @Override

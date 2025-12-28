@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
@@ -120,6 +121,15 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             return false;
         }
         return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (ContainerEventHandler.super.charTyped(event)) {
+            return false;
+        }
+
+        return super.charTyped(event);
     }
 
     @Override

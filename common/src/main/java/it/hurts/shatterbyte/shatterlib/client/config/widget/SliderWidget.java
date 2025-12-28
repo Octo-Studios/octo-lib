@@ -19,7 +19,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     public SliderWidget(ShatterConfig config, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 225, 8);
         this.valueClass = defaultValue != null ? defaultValue.getClass() : Double.class;
-        clampCachedToRange();
+        //clampCachedToRange();
     }
 
     public void setRange(double min, double max, double step) {
@@ -27,11 +27,13 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
             this.min = min;
             this.max = max;
         }
+
         if (step > 0) {
             this.step = step;
         } else {
             this.step = 0;
         }
+
         clampCachedToRange();
     }
 

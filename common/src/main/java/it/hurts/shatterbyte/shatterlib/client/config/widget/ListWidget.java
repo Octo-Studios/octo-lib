@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ListWidget<E> extends AbstractEntryWidget<List<Object>>
+public class ListWidget<E> extends AbstractEntryWidget<List>
         implements DynamicallySized, ContainerEventHandler {
 
     public final List<ListEntryWidget<E>> entries = new ArrayList<>();
@@ -37,19 +37,22 @@ public class ListWidget<E> extends AbstractEntryWidget<List<Object>>
     @Getter
     private final Class<E> elementClass;
 
+    @Getter
+    private final Type elementGenericType;
+
     public ListWidget(
             ShatterConfig config,
             Type type,
             Annotation[] annotations,
             PathContainerWidget parent,
-            List<Object> defaultValue,
-            Supplier<List<Object>> getter,
-            Consumer<List<Object>> setter
+            List defaultValue,
+            Supplier<List> getter,
+            Consumer<List> setter
     ) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
 
-        if (!(field.getGenericType() instanceof ParameterizedType pt)) {
-            throw new RuntimeException("List field without generic type: " + field);
+        if (!(type instanceof ParameterizedType pt)) {
+            throw new RuntimeException("List field without generic type");
         }
 
         Type arg = pt.getActualTypeArguments()[0];
@@ -67,7 +70,9 @@ public class ListWidget<E> extends AbstractEntryWidget<List<Object>>
         Class<Object> elementClass = (Class<Object>) rawElementClass;
 
         addButton.setParent(this);
-        this.elementClass = elementClass;
+        this.elementClass = (Class<E>) elementClass;
+        this.elementGenericType = arg;
+
         this.annotations = annotations;
         rebuild();
     }
@@ -78,7 +83,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List<Object>>
         entries.clear();
         renderables.clear();
 
-        ArrayList<E> list = getValue();
+        ArrayList<E> list = (ArrayList<E>) getValue();
         for (int i = 0; i < list.size(); i++) {
             ListEntryWidget<E> entry = new ListEntryWidget<>(this, i);
             entries.add(entry);

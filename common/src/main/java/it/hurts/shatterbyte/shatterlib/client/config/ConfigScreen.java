@@ -24,7 +24,7 @@ public class ConfigScreen extends Screen {
         this.config = config;
         this.prevScreen = prevScreen;
 
-        object = new GenericObjectWidget(config, new Annotation[]{}, null, null, () -> config, conf -> {});
+        object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {});
         this.addRenderableWidget(object);
 
         repositionElements();

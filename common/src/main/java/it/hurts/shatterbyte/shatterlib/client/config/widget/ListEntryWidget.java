@@ -41,7 +41,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         String path = parent.getParent().getPath() + "[" + index + "]";
         E defaultValue;
         if (index < parent.getDefaultValue().size()) {
-            defaultValue = parent.getDefaultValue().get(index);
+            defaultValue = (E) parent.getDefaultValue().get(index);
         } else {
             defaultValue = EntryWidgetRegistry.getDefaultValue(parent.getElementClass());
         }
@@ -50,6 +50,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
                 .getFactory(parent.getElementClass())
                 .create(
                         parent.getConfig(),
+                        parent.getElementGenericType(),
                         parent.getAnnotations(),
                         parent.getParent(),
                         defaultValue,

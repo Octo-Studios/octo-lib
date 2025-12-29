@@ -10,5 +10,5 @@ import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface EntryWidgetFactory<E> {
-    AbstractEntryWidget<E> create(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter);
+    AbstractEntryWidget<?> create(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter);
 }

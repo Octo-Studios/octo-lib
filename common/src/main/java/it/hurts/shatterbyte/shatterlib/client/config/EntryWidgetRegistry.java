@@ -15,7 +15,7 @@ public final class EntryWidgetRegistry {
 
     private EntryWidgetRegistry() {}
 
-    public static <E> void register(Class<E> entryClass, EntryWidgetFactory<E> factory) {
+    public static <E> void register(Class<E> entryClass, EntryWidgetFactory<?> factory) {
         FACTORIES.put(entryClass, factory);
     }
 

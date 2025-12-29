@@ -59,7 +59,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> AbstractEntryWidget<T> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
+    public static <T> AbstractEntryWidget<?> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
         Class<?> type = field.getType();
 
         EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(type);

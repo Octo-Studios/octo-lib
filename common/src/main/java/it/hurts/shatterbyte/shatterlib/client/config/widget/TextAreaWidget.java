@@ -45,12 +45,55 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        String newString = this.getValue() + event.toString();
+        String newString = this.getValue() + event.codepointAsString();
         if (!predicate.test(newString)) {
             return false;
         }
 
         this.setValue(newString);
         return true;
+    }
+
+    public static Predicate<String> integerPredicate() {
+        return s -> s.isEmpty() || s.matches("-?\\d+");
+    }
+
+    public static Predicate<String> floatPredicate() {
+        return s -> s.isEmpty() || s.matches("-?\\d*(\\.\\d*)?");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <N extends Number> N parseNumber(Type type, String s) {
+        if (type == int.class || type == Integer.class) {
+            return (N) Integer.valueOf(s);
+        }
+        if (type == float.class || type == Float.class) {
+            return (N) Float.valueOf(s);
+        }
+        if (type == double.class || type == Double.class) {
+            return (N) Double.valueOf(s);
+        }
+        if (type == long.class || type == Long.class) {
+            return (N) Long.valueOf(s);
+        }
+        if (type == short.class || type == Short.class) {
+            return (N) Short.valueOf(s);
+        }
+        if (type == byte.class || type == Byte.class) {
+            return (N) Byte.valueOf(s);
+        }
+
+        throw new IllegalArgumentException("unsupported number type: " + type);
+    }
+
+    public static Predicate<String> numericPredicateFor(Type type) {
+        if (type == int.class || type == Integer.class ||
+                type == long.class || type == Long.class ||
+                type == short.class || type == Short.class ||
+                type == byte.class || type == Byte.class) {
+            return TextAreaWidget.integerPredicate();
+        }
+
+        return TextAreaWidget.floatPredicate();
     }
 }

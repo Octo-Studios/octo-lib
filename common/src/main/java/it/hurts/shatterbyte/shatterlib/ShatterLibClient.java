@@ -62,10 +62,11 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.registerConstructor(String.class, clazz -> "");
 
         EntryWidgetRegistry.register(Object.class, GenericObjectWidget::new);
-        EntryWidgetRegistry.register(boolean.class, ToggleWidget::new);
-        EntryWidgetRegistry.register(Boolean.class, ToggleWidget::new);
-        EntryWidgetRegistry.register(String.class, TextAreaWidget::new);
-        EntryWidgetRegistry.register(Number.class, (config, type, annotations, parent, defaultValue, getter, setter) -> {
+        EntryWidgetRegistry.register(boolean.class, (EntryWidgetFactory<Boolean>) ToggleWidget::new);
+        EntryWidgetRegistry.register(Boolean.class, (EntryWidgetFactory<Boolean>) ToggleWidget::new);
+        EntryWidgetRegistry.register(String.class, (EntryWidgetFactory<String>) TextAreaWidget::new);
+
+        EntryWidgetFactory<Number> numberFactory = (config, type, annotations, parent, defaultValue, getter, setter) -> {
             boolean hasRange = false;
             Range range = null;
             for (Annotation annotation : annotations) {
@@ -76,14 +77,36 @@ public final class ShatterLibClient {
             }
 
             if (!hasRange) {
-                return null;
+                TextAreaWidget text = new TextAreaWidget(
+                        config,
+                        type,
+                        annotations,
+                        parent,
+                        String.valueOf(defaultValue),
+                        () -> String.valueOf(getter.get()),
+                        s -> {
+                            try {
+                                setter.accept(TextAreaWidget.parseNumber(type, s));
+                            } catch (NumberFormatException ignored) {}
+                        }
+                );
+
+                text.setPredicate(TextAreaWidget.numericPredicateFor(type));
+                return text;
             }
 
             return new SliderWidget<>(config, range, parent, defaultValue, getter, setter);
-        });
+        };
 
-        EntryWidgetRegistry.register(Enum.class, EnumDropdownWidget::new);
-        EntryWidgetRegistry.register(List.class, ListWidget::new);
+        EntryWidgetRegistry.register(Number.class, numberFactory);
+        EntryWidgetRegistry.register(float.class, numberFactory);
+        EntryWidgetRegistry.register(double.class, numberFactory);
+        EntryWidgetRegistry.register(int.class, numberFactory);
+        EntryWidgetRegistry.register(short.class, numberFactory);
+        EntryWidgetRegistry.register(byte.class, numberFactory);
+
+        EntryWidgetRegistry.register(Enum.class, (EntryWidgetFactory<Enum>) EnumDropdownWidget::new);
+        EntryWidgetRegistry.register(List.class, (EntryWidgetFactory<List>) ListWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

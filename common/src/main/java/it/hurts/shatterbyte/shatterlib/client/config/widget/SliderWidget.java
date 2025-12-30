@@ -1,9 +1,13 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -18,10 +22,15 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     private double step = 0;
     private final Class<?> valueClass;
 
+    @Setter
+    double visualValue;
+    Tween tween = Tween.create();
+
     public SliderWidget(ShatterConfig config, Range range, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 225, 8);
         this.valueClass = defaultValue != null ? defaultValue.getClass() : Double.class;
         this.setRange(range.min(), range.max(), range.step());
+        this.visualValue = this.getValue() == null ? 0d : numberToDouble(this.getValue());
 
         //clampCachedToRange();
     }
@@ -41,6 +50,26 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         clampCachedToRange();
     }
 
+    @Override
+    public void setValue(N value) {
+        super.setValue(value);
+    }
+
+    @Override
+    public void resetValue() {
+        super.resetValue();
+        this.animate(this.getValue());
+    }
+
+    private void animate(N newValue) {
+        tween.kill();
+        tween = Tween.create();
+        tween.tweenMethod(this::setVisualValue, visualValue, numberToDouble(newValue), 0.25d)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.EXPO);
+        tween.start();
+    }
+
     private void clampCachedToRange() {
         N current = getValue();
         if (current == null) return;
@@ -52,18 +81,21 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        double current = numberToDouble(getValue());
+        double current = visualValue;
         double pct = (max == min) ? 0.0 : (current - min) / (max - min);
         pct = Math.max(0.0, Math.min(1.0, pct));
 
-        int fillX = (int) (this.getX()+this.getWidth()*pct)-1;
+        float fillX = (float) (this.getX()+this.getWidth()*pct-1);
 
         UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2);
-        guiGraphics.enableScissor(this.getX(), this.getY(), fillX, this.getY()+this.getHeight());
+        guiGraphics.enableScissor(this.getX(), this.getY(), (int) fillX, this.getY()+this.getHeight());
         UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2);
         guiGraphics.disableScissor();
 
-        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, fillX-2, this.getY());
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(fillX, 0);
+        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, -2, this.getY());
+        guiGraphics.pose().popMatrix();
     }
 
     @Override
@@ -101,6 +133,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         }
 
         setValue(convertDoubleToNumber(value));
+        this.animate(this.getValue());
     }
 
     private double numberToDouble(Number n) {

@@ -54,7 +54,9 @@ public final class ShatterLibClient {
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
 
-        EntryWidgetRegistry.registerConstructor(Number.class, clazz -> 0);
+        EntryWidgetRegistry.registerConstructor(Number.class, clazz -> {
+            return 0d;
+        });
         EntryWidgetRegistry.registerConstructor(List.class, clazz -> new ArrayList<>());
         EntryWidgetRegistry.registerConstructor(Map.class, clazz -> new HashMap<>());
         EntryWidgetRegistry.registerConstructor(Boolean.class, clazz -> false);

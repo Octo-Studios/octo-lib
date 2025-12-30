@@ -5,12 +5,14 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Setter;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
@@ -25,6 +27,7 @@ import java.util.function.Supplier;
 
 public class TextAreaWidget extends AbstractEntryWidget<String> {
     Font font = Minecraft.getInstance().font;
+    int cursorPos;
 
     @Setter
     Predicate<String> predicate = s -> true;
@@ -33,25 +36,84 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 14);
     }
 
+    public boolean seek(int where) {
+        int oldPos = this.cursorPos;
+        this.cursorPos = Math.clamp(where, 0, this.getValue().length());
+        return oldPos != this.cursorPos;
+    }
+
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        String value = this.getValue();
+
         UIElements.TEXT_AREA.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        guiGraphics.drawString(Minecraft.getInstance().font, this.getValue(), this.getX()+4, this.getY()+4, 0xffcccccc, true);
+        guiGraphics.drawString(font, value, this.getX()+4, this.getY()+4, 0xffcccccc, true);
 
         if (this.isFocused()) {
-
+            String before = value.substring(0, cursorPos);
+            guiGraphics.vLine(this.getX() + font.width(before) + 3, this.getY() + 1, this.getY() + height - 2, 0xdd999999);
         }
     }
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        String newString = this.getValue() + event.codepointAsString();
+        String value = this.getValue();
+        String insert = event.codepointAsString();
+
+        // split around cursor
+        String before = value.substring(0, cursorPos);
+        String after = value.substring(cursorPos);
+
+        String newString = before + insert + after;
+
         if (!predicate.test(newString)) {
             return false;
         }
 
         this.setValue(newString);
+        this.seek(cursorPos + insert.length());
         return true;
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (event.isLeft()) {
+            if (this.seek(this.cursorPos - 1)) {
+                return true;
+            }
+        }
+
+        if (event.isRight()) {
+            if (this.seek(this.cursorPos + 1)) {
+                return true;
+            }
+        }
+
+        // backspace
+        if (event.key() == 259) {
+            if (cursorPos == 0) {
+                return true;
+            }
+
+            String value = this.getValue();
+
+            int deleteFrom = value.offsetByCodePoints(cursorPos, -1);
+
+            String before = value.substring(0, deleteFrom);
+            String after = value.substring(cursorPos);
+
+            String newString = before + after;
+
+            if (!predicate.test(newString)) {
+                return false;
+            }
+
+            this.setValue(newString);
+            this.seek(deleteFrom);
+            return true;
+        }
+
+        return false;
     }
 
     public static Predicate<String> integerPredicate() {

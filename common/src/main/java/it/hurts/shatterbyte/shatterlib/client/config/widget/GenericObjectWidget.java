@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
@@ -114,6 +115,24 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
         ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
         return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        ContainerEventHandler.super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        ContainerEventHandler.super.keyPressed(event);
+        return super.keyPressed(event);
+    }
+
+    @Override
+    public boolean keyReleased(KeyEvent event) {
+        ContainerEventHandler.super.keyReleased(event);
+        return super.keyReleased(event);
     }
 
     @Override

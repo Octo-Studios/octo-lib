@@ -1,5 +1,8 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
@@ -7,10 +10,12 @@ import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Setter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -18,6 +23,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.vehicle.Minecart;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -28,18 +34,55 @@ import java.util.function.Supplier;
 public class TextAreaWidget extends AbstractEntryWidget<String> {
     Font font = Minecraft.getInstance().font;
     int cursorPos;
+    @Setter
+    double visualCursorPos;
+
+    Tween cursorTween = Tween.create();
 
     @Setter
     Predicate<String> predicate = s -> true;
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 14);
+        this.visualCursorPos = this.getValue().length();
+        this.seek(this.getValue().length());
     }
 
     public boolean seek(int where) {
         int oldPos = this.cursorPos;
         this.cursorPos = Math.clamp(where, 0, this.getValue().length());
-        return oldPos != this.cursorPos;
+
+        boolean hasChanged = oldPos != this.cursorPos;
+        cursorTween.kill();
+        cursorTween = Tween.create();
+        cursorTween.tweenMethod(this::setVisualCursorPos, this.visualCursorPos, (double) this.cursorPos, 0.25)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.EXPO);
+        cursorTween.start();
+
+        return hasChanged;
+    }
+
+    private double getCursorPixelX(String value) {
+        int cpCount = value.codePointCount(0, value.length());
+
+        double clamped = Math.clamp(visualCursorPos, 0.0, cpCount);
+
+        int leftCps = (int) Math.floor(clamped);
+        double frac = clamped - leftCps;
+
+        int leftIndex = value.offsetByCodePoints(0, leftCps);
+        String left = value.substring(0, leftIndex);
+
+        double x = font.width(left);
+
+        if (frac > 0 && leftIndex < value.length()) {
+            int nextIndex = value.offsetByCodePoints(leftIndex, 1);
+            String nextChar = value.substring(leftIndex, nextIndex);
+            x += font.width(nextChar) * frac;
+        }
+
+        return x;
     }
 
     @Override
@@ -50,33 +93,44 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         guiGraphics.drawString(font, value, this.getX()+4, this.getY()+4, 0xffcccccc, true);
 
         if (this.isFocused()) {
-            String before = value.substring(0, cursorPos);
-            guiGraphics.vLine(this.getX() + font.width(before) + 3, this.getY() + 1, this.getY() + height - 2, 0xdd999999);
+            double cursorX = getCursorPixelX(value);
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate((float) cursorX, 0);
+            guiGraphics.vLine(
+                    this.getX() + 3,
+                    this.getY() + 2,
+                    this.getY() + this.height - 3,
+                    0xddffffff
+            );
+            guiGraphics.pose().popMatrix();
         }
     }
 
     @Override
     public boolean charTyped(CharacterEvent event) {
         String value = this.getValue();
+
+        int insertIndex = value.offsetByCodePoints(0, cursorPos);
         String insert = event.codepointAsString();
 
-        // split around cursor
-        String before = value.substring(0, cursorPos);
-        String after = value.substring(cursorPos);
-
-        String newString = before + insert + after;
+        String newString =
+                value.substring(0, insertIndex)
+                        + insert
+                        + value.substring(insertIndex);
 
         if (!predicate.test(newString)) {
-            return false;
+            return true;
         }
 
         this.setValue(newString);
-        this.seek(cursorPos + insert.length());
+        this.seek(cursorPos + 1);
         return true;
     }
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        this.seek(cursorPos);
+
         if (event.isLeft()) {
             if (this.seek(this.cursorPos - 1)) {
                 return true;
@@ -114,6 +168,17 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         }
 
         return false;
+    }
+
+    @Override
+    public @Nullable ComponentPath nextFocusPath(FocusNavigationEvent event) {
+        return super.getCurrentFocusPath();
+    }
+
+    @Override
+    public void setValue(String value) {
+        super.setValue(value);
+        this.seek(cursorPos);
     }
 
     public static Predicate<String> integerPredicate() {

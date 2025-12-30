@@ -142,11 +142,6 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         guiGraphics.drawString(font, info.name(), this.getX()+4, this.getY()+4, 0xffffffff, true);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-
-        GuiEventListener widget = this.getFocused();
-        if (widget instanceof AbstractWidget w) {
-            guiGraphics.fill(w.getX(), w.getY(), w.getX()+w.getWidth(), w.getY()+w.getHeight(), 0x5500ff00);
-        }
     }
 
     @Override
@@ -180,15 +175,17 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
-        if (this.focused != null) {
-            this.focused.setFocused(false);
-        }
+        if (this.focused != focused) {
+            if (this.focused != null) {
+                this.focused.setFocused(false);
+            }
 
-        if (focused != null) {
-            focused.setFocused(true);
-        }
+            if (focused != null) {
+                focused.setFocused(true);
+            }
 
-        this.focused = focused;
+            this.focused = focused;
+        }
     }
 
     @Nullable
@@ -212,36 +209,25 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         return super.mouseClicked(event, isDoubleClick);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (ContainerEventHandler.super.mouseReleased(event)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseReleased(event);
         return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
-            return false;
-        }
+        ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
         return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        if (ContainerEventHandler.super.charTyped(event)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.charTyped(event);
         return super.charTyped(event);
     }
 

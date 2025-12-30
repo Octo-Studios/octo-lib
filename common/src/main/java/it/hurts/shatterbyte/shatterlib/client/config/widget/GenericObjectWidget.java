@@ -100,36 +100,25 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         return super.mouseClicked(event, isDoubleClick);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (ContainerEventHandler.super.mouseReleased(event)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseReleased(event);
         return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
-            return false;
-        }
+        ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
         return super.mouseDragged(event, mouseX, mouseY);
     }
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        if (ContainerEventHandler.super.charTyped(event)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.charTyped(event);
         return super.charTyped(event);
     }
 
@@ -169,16 +158,17 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
-        if (this.focused != null) {
-            this.focused.setFocused(false);
-            this.focused.setFocused(null);
-        }
+        if (this.focused != focused) {
+            if (this.focused != null) {
+                this.focused.setFocused(false);
+            }
 
-        if (focused != null) {
-            focused.setFocused(true);
-        }
+            if (focused != null) {
+                focused.setFocused(true);
+            }
 
-        this.focused = (FieldWidget) focused;
+            this.focused = (FieldWidget) focused;
+        }
     }
 
     public String getFieldPath() {

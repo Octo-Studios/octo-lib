@@ -68,6 +68,8 @@ public class MyConfig extends ShatterConfig {
 
     private float testWithoutRange = 3.25f;
 
+    private Rarity testRarity = Rarity.EPIC;
+
     @Range(min = 0, max = 5, step = 0.5f)
     private ArrayList<Float> list = new ArrayList<>() {{
         add(1f);
@@ -75,7 +77,6 @@ public class MyConfig extends ShatterConfig {
         add(2.5f);
     }};
 
-    private Rarity testRarity = Rarity.EPIC;
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //
 //    private Inherite inheritanceTest = new Inherite();

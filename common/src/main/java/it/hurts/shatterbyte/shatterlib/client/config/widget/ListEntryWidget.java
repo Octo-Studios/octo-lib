@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -194,28 +195,26 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (ContainerEventHandler.super.mouseClicked(event, isDoubleClick)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         return super.mouseClicked(event, isDoubleClick);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (ContainerEventHandler.super.mouseReleased(event)) {
-            return false;
-        }
-
+        ContainerEventHandler.super.mouseReleased(event);
         return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY)) {
-            return false;
-        }
+        ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
         return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        ContainerEventHandler.super.charTyped(event);
+        return super.charTyped(event);
     }
 
     @Override

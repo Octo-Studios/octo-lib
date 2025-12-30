@@ -217,16 +217,17 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {
-        if (this.focused instanceof ListEntryWidget field) {
-            field.setFocused(false);
-            field.setFocused(null);
-        }
+        if (this.focused != focused) {
+            if (this.focused != null) {
+                this.focused.setFocused(false);
+            }
 
-        if (focused != null) {
-            focused.setFocused(true);
-        }
+            if (focused != null) {
+                focused.setFocused(true);
+            }
 
-        this.focused = focused;
+            this.focused = focused;
+        }
     }
 
     @Override

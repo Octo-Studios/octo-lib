@@ -74,6 +74,8 @@ public class MapEntryWidget<V> extends AbstractWidget
                 UIElements.ICON_MINUS
         );
 
+        up.setParent(this);
+        down.setParent(this);
         keyWidget.setParent(this);
         entryWidget.setParent(this);
         remove.setParent(this);

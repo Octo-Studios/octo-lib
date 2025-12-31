@@ -71,6 +71,7 @@ public class MyConfig extends ShatterConfig {
 
     private Rarity testRarity = Rarity.EPIC;
 
+    @Range(min = 0, max = 5, step = 0.25f)
     private LinkedHashMap<String, Float> map = new LinkedHashMap<>() {{
         put("abc", 1f);
         put("def", 2f);

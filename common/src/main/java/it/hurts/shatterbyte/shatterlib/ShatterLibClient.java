@@ -20,6 +20,7 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import org.apache.logging.log4j.core.jackson.MapEntry;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -109,6 +110,7 @@ public final class ShatterLibClient {
 
         EntryWidgetRegistry.register(Enum.class, (EntryWidgetFactory<Enum>) EnumDropdownWidget::new);
         EntryWidgetRegistry.register(List.class, (EntryWidgetFactory<List>) ListWidget::new);
+        EntryWidgetRegistry.register(Map.class, (EntryWidgetFactory<Map>) MapWidget::new);
 
         ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
     }

@@ -10,6 +10,7 @@ import lombok.Getter;
 import net.minecraft.world.item.Rarity;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 @Getter
 public class MyConfig extends ShatterConfig {
@@ -70,12 +71,18 @@ public class MyConfig extends ShatterConfig {
 
     private Rarity testRarity = Rarity.EPIC;
 
-    @Range(min = 0, max = 5, step = 0.5f)
-    private ArrayList<Float> list = new ArrayList<>() {{
-        add(1f);
-        add(3f);
-        add(2.5f);
+    private LinkedHashMap<String, Float> map = new LinkedHashMap<>() {{
+        put("abc", 1f);
+        put("def", 2f);
+        put("ghi", 3.5f);
     }};
+
+//    @Range(min = 0, max = 5, step = 0.5f)
+//    private ArrayList<Float> list = new ArrayList<>() {{
+//        add(1f);
+//        add(3f);
+//        add(2.5f);
+//    }};
 
 //    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
 //

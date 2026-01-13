@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.particle;
 
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Vector2f;
 
 import java.util.Random;
@@ -11,7 +11,7 @@ public class GalacticUIParticle extends ExtendedUIParticle {
     private static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     public GalacticUIParticle(float maxSpeed, int maxLifetime, float xStart, float yStart, Layer layer, float zOffset) {
-        super(new Texture2D(ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix(ALPHABET[RANDOM.nextInt(ALPHABET.length)] + ".png"),
+        super(new Texture2D(Identifier.withDefaultNamespace("textures/particle/sga_").withSuffix(ALPHABET[RANDOM.nextInt(ALPHABET.length)] + ".png"),
                         0, 0, 8, 8, 5, 7),
                 maxSpeed,
                 maxLifetime,

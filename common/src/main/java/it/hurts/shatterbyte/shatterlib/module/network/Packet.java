@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.StreamDecoder;
 import net.minecraft.network.codec.StreamMemberEncoder;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class Packet implements CustomPacketPayload {
     protected Packet() {
@@ -39,7 +39,7 @@ public abstract class Packet implements CustomPacketPayload {
     }
 
     public static <T extends Packet> Type<T> createType(String namespace, String path) {
-        return new Type<>(ResourceLocation.fromNamespaceAndPath(namespace, path));
+        return new Type<>(Identifier.fromNamespaceAndPath(namespace, path));
     }
 
     public static <B extends ByteBuf, T extends Packet> StreamCodec<B, T> createCodec(StreamMemberEncoder<B, T> encoder, StreamDecoder<B, T> decoder) {

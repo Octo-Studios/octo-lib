@@ -14,6 +14,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 
 public class ShatterLibCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
@@ -21,13 +22,13 @@ public class ShatterLibCommand {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> getBuilder() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("shatterlib").requires(s -> s.hasPermission(2))
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("shatterlib").requires(s -> s.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
                                 .then(Commands.literal("all")
                                         .executes(conComponent -> {
                                             int counter = 0;
-                                            boolean isAdmin = conComponent.getSource().hasPermission(4);
+                                            boolean isAdmin = conComponent.getSource().permissions().hasPermission(Permissions.COMMANDS_OWNER);
 
                                             for (var path : ConfigManager.getAllPaths()) {
                                                 try {
@@ -58,7 +59,7 @@ public class ShatterLibCommand {
                                         .suggests((c, b) -> SharedSuggestionProvider.suggest(ConfigManager.getAllPaths(), b))
                                         .executes(c -> {
                                             var path = StringArgumentType.getString(c, "path");
-                                            boolean isAdmin = c.getSource().hasPermission(4);
+                                            boolean isAdmin = c.getSource().permissions().hasPermission(Permissions.COMMANDS_OWNER);
 
                                             if (!ConfigManager.getAllPaths().contains(path)) {
                                                 c.getSource().sendFailure(Component.literal("Config by path \"" + path + "\" does not exist"));

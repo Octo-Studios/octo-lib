@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.module.particle.trail;
 
-import net.minecraft.world.entity.projectile.Arrow;
+
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 
 public class TestArrowTrail extends EntityTrailProvider<Arrow> {
     public TestArrowTrail(Arrow entity) {

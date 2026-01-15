@@ -22,9 +22,9 @@
     "shatterlib-fabric.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.21.9",
+    "minecraft": ">=1.21.11",
     "java": ">=21",
-    "architectury": ">=18.0.4",
+    "architectury": ">=19.0.1",
     "fabric-api": "*"
   },
   "suggests": {

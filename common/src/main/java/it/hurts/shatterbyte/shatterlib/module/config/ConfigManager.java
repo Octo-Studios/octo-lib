@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class ConfigManager {
     private static final Map<Class<? extends ShatterConfig>, Map<Integer, SchemaFixer>> SCHEMA_FIXERS = new HashMap<>();
 
-    private static final Map<String, Collection<ShatterConfig>> CONFIGS_BY_MODID = new LinkedHashMap<>();
+    private static final Map<String, List<ShatterConfig>> CONFIGS_BY_MODID = new LinkedHashMap<>();
 
     private static final Map<String, ShatterConfig> CLIENT = new HashMap<>();
     private static final Map<String, ShatterConfig> COMMON = new HashMap<>();
@@ -60,6 +60,13 @@ public class ConfigManager {
         return CLIENT.values();
     }
 
+    public static List<ShatterConfig> getConfigsForMod(String modId) {
+        return CONFIGS_BY_MODID.get(modId);
+    }
+
+    public static ShatterConfig getFirstForMod(String modId) {
+        return getConfigsForMod(modId).getFirst();
+    }
 
     public static void loadAllCommonConfigs() {
         ConfigManager.getCommonConfigs().forEach(config -> config.load(Platform.getConfigFolder()));

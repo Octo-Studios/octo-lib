@@ -4,6 +4,7 @@ import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.DynamicallySized;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.ScrollableWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -18,14 +19,16 @@ public class ConfigScreen extends Screen {
     ShatterConfig config;
     Screen prevScreen;
     GenericObjectWidget object;
+    ScrollableWidget scrollingObject;
 
     public ConfigScreen(ShatterConfig config, Screen prevScreen) {
-        super(Component.literal(config.getName()));
+        super(Component.empty());
         this.config = config;
         this.prevScreen = prevScreen;
 
         object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {});
-        this.addRenderableWidget(object);
+        scrollingObject = new ScrollableWidget(0, 0, this.width, this.height, object);
+        this.addRenderableWidget(scrollingObject);
 
         repositionElements();
     }
@@ -39,8 +42,13 @@ public class ConfigScreen extends Screen {
 
     @Override
     protected void repositionElements() {
-        object.setWidth(this.width);
+        scrollingObject.setWidth(this.width);
+        //scrollingObject.setX(128);
+        scrollingObject.setHeight(this.height);
+        object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
+        scrollingObject.maxScrollY = Math.max(0, object.getHeight() - this.height);
+        object.clamp(-scrollingObject.maxScrollY, 0);
     }
 
     @Override

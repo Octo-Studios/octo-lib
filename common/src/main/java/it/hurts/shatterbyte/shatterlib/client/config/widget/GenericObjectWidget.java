@@ -1,9 +1,13 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +27,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, DynamicallySized {
+public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, DynamicallySized, Scrollable {
     List<FieldWidget> widgets = new ArrayList<>();
     List<FieldWidget> renderables = new ArrayList<>();
 
@@ -33,10 +37,17 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Getter
     public boolean collapsed = true;
 
+    private double scrollOffset;
+
     public GenericObjectWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.populateWidget();
         this.repositionElements();
+    }
+
+    @Override
+    public int getY() {
+        return super.getY() + (int) getScrollOffset();
     }
 
     @Override
@@ -205,6 +216,16 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void playDownSound(SoundManager handler) {}
+
+    @Override
+    public double getScrollOffset() {
+        return scrollOffset;
+    }
+
+    @Override
+    public void setScrollOffset(double offset) {
+        this.scrollOffset = offset;
+    }
 
     record FieldInfo(String name, String description) {}
 }

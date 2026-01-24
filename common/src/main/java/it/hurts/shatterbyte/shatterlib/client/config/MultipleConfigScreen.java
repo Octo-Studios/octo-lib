@@ -6,25 +6,31 @@ import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ScrollableWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MultipleConfigScreen extends ConfigScreen {
     ScrollableWidget configButtons;
+    Map<ShatterConfig, GenericObjectWidget> cache = new HashMap<>();
 
     public MultipleConfigScreen(String modId, Screen prevScreen) {
-        super(ConfigManager.getFirstForMod(modId), prevScreen);
+        super(null, prevScreen);
 
         int y = 4;
         this.configButtons = new ScrollableWidget(0, 0, 128, this.height);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
-            ConfigButton button = new ConfigButton(config, 4, y, 120, 20, () -> this.changeConfig(config));
+            ConfigButton button = new ConfigButton(config, 4, y, 120, 24, () -> this.changeConfig(config));
             button.setParent(configButtons);
             configButtons.children().add(button);
-            y += 24;
+            y += 4 + button.getHeight();
         }
         this.addRenderableWidget(configButtons);
+
+        this.changeConfig(ConfigManager.getFirstForMod(modId));
     }
 
     private void changeConfig(ShatterConfig config) {
@@ -35,7 +41,16 @@ public class MultipleConfigScreen extends ConfigScreen {
         this.config = config;
 
         this.removeWidget(this.scrollingObject);
-        this.object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {});
+        this.object = cache.computeIfAbsent(config, conf -> new GenericObjectWidget(
+                        conf,
+                        null,
+                        new Annotation[]{},
+                        null,
+                        null,
+                        () -> conf,
+                        c -> {}
+                )
+        );
         this.scrollingObject = new ScrollableWidget(128, 0, this.width, this.height, object);
         this.addRenderableWidget(scrollingObject);
 
@@ -46,6 +61,9 @@ public class MultipleConfigScreen extends ConfigScreen {
     protected void repositionElements() {
         if (configButtons != null) {
             configButtons.setHeight(this.height);
+            int y = configButtons.children().getLast().getY() + configButtons.children().getLast().getHeight() + 4;
+            configButtons.maxScrollY = Math.max(0, y - configButtons.getHeight());
+            configButtons.clamp();
         }
 
         scrollingObject.setWidth(this.width - 128);
@@ -53,8 +71,14 @@ public class MultipleConfigScreen extends ConfigScreen {
         scrollingObject.setHeight(this.height);
         object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
-        scrollingObject.maxScrollY = Math.max(0, object.getHeight() - this.height);
+        scrollingObject.maxScrollY = Math.max(0, object.getHeight() - scrollingObject.getHeight());
         object.clamp(-scrollingObject.maxScrollY, 0);
     }
 
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.vLine(128, 0, this.height, 0xff1c1c17);
+        //guiGraphics.vLine(129, 0, this.height, 0xff1c1c17);
+    }
 }

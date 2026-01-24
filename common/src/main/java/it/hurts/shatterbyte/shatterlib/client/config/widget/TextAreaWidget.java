@@ -43,7 +43,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     Predicate<String> predicate = s -> true;
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
-        super(config, parent, defaultValue, getter, setter, 0, 0, 200, 14);
+        super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
         this.visualCursorPos = this.getValue().length();
         this.seek(this.getValue().length());
     }

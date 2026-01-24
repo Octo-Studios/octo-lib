@@ -37,11 +37,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-
         this.children().reversed().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
-        if (this.isHovered()) {
-            //guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.width, this.getY()+this.height, 0x3300ff00);
-        }
     }
 
     @Override
@@ -90,6 +86,14 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
             });
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    public void clamp() {
+        this.children().forEach(widget -> {
+            if (widget instanceof Scrollable scrollable) {
+                scrollable.clamp(-maxScrollY, 0);
+            }
+        });
     }
 
     @Override

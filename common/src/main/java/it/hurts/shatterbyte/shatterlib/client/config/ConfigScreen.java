@@ -23,14 +23,18 @@ public class ConfigScreen extends Screen {
 
     public ConfigScreen(ShatterConfig config, Screen prevScreen) {
         super(Component.empty());
-        this.config = config;
         this.prevScreen = prevScreen;
 
-        object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {});
-        scrollingObject = new ScrollableWidget(0, 0, this.width, this.height, object);
-        this.addRenderableWidget(scrollingObject);
+        if (config != null) {
+            this.config = config;
 
-        repositionElements();
+            object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {
+            });
+            scrollingObject = new ScrollableWidget(0, 0, this.width, this.height, object);
+            this.addRenderableWidget(scrollingObject);
+
+            repositionElements();
+        }
     }
 
     @Override
@@ -62,6 +66,7 @@ public class ConfigScreen extends Screen {
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(0, 0, width, height,0xFF2C2B31);
+        guiGraphics.fillGradient(0, (int) (this.height*0.75f), this.width, this.height, 0xFF2C2B31, 0xFF222226);
     }
 
     @Override

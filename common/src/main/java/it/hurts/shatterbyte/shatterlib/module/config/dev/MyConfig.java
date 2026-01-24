@@ -17,7 +17,7 @@ public class MyConfig extends ShatterConfig {
     @Override
     public String getComment() {
         return """
-                This is an example config,
+                This is an example config
                 Feel free to familiarize yourself with the features of ShatterLib's configuration system!
                 
                 :P

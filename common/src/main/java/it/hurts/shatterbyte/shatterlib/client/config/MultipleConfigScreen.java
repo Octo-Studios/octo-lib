@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultipleConfigScreen extends ConfigScreen {

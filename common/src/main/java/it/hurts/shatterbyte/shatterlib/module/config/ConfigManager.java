@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public class ConfigManager {
     private static final Map<Class<? extends ShatterConfig>, Map<Integer, SchemaFixer>> SCHEMA_FIXERS = new HashMap<>();
 
-    private static final Map<String, List<ShatterConfig>> CONFIGS_BY_MODID = new LinkedHashMap<>();
+    public static final Map<String, List<ShatterConfig>> CONFIGS_BY_MODID = new LinkedHashMap<>();
 
     private static final Map<String, ShatterConfig> CLIENT = new HashMap<>();
     private static final Map<String, ShatterConfig> COMMON = new HashMap<>();

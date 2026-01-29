@@ -286,4 +286,10 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 
     }
+
+    @Override
+    public void resetValue() {
+        super.resetValue();
+        this.rebuild();
+    }
 }

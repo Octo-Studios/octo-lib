@@ -10,6 +10,9 @@
   "license": "${mod_license}",
   "environment": "*",
   "entrypoints": {
+    "modmenu": [
+      "it.hurts.shatterbyte.shatterlib.fabric.ShatterLibModMenuImpl"
+    ],
     "main": [
       "it.hurts.shatterbyte.${mod_id}.fabric.ShatterLibFabric"
     ],

@@ -35,7 +35,6 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         UIElements.TOGGLE_DISABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 1);
-
         if (this.progress > 0f) {
             guiGraphics.enableScissor(this.getX(), this.getY(), Mth.ceil(this.getX() + progress * 10), this.getY() + this.height + 1);
             UIElements.TOGGLE_ENABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 1);

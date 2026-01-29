@@ -2,20 +2,18 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.DynamicallySized;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ScrollableWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.lang.annotation.Annotation;
 
 public class ConfigScreen extends Screen {
-    public static final Atlas ATLAS = new Atlas(ResourceLocation.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/config_atlas.png"), 263, 76);
+    public static final Atlas ATLAS = new Atlas(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/config_atlas.png"), 263, 76);
     ShatterConfig config;
     Screen prevScreen;
     GenericObjectWidget object;

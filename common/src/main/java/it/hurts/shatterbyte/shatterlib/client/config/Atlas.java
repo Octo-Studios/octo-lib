@@ -2,12 +2,12 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @AllArgsConstructor
 @Getter
 public class Atlas {
-    ResourceLocation location;
+    Identifier location;
     int textureWidth;
     int textureHeight;
 }

@@ -37,7 +37,7 @@ dependencies {
 
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
-    modImplementation "com.terraformersmc:modmenu:16.0.0"
+    modImplementation "com.terraformersmc:modmenu:$rootProject.modmenu_version"
 
     shadowBundle "de.marhali:json5-java:3.0.0"
 

@@ -3,13 +3,13 @@ package it.hurts.shatterbyte.shatterlib.module.config.util;
 import de.marhali.json5.*;
 import de.marhali.json5.config.Json5Options;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ResourceLocationAdapter;
+import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.IdentifierAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -22,7 +22,7 @@ public class Json5Utils {
 
     static {
         registerAdapter(ShatterColor.class, new ShatterColorAdapter());
-        registerAdapter(ResourceLocation.class, new ResourceLocationAdapter());
+        registerAdapter(Identifier.class, new IdentifierAdapter());
     }
 
     public static <T> void registerAdapter(Type type, TypeAdapter<T> adapter) {

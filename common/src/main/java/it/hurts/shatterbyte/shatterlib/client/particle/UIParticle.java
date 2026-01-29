@@ -22,7 +22,7 @@ public class UIParticle {
     public static final RenderPipeline ADDITIVE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
             .withBlend(BlendFunction.LIGHTNING)
             .withColorWrite(true)
-            .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MODID, "additive"))
+            .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "additive"))
             .build();
 
     @Data

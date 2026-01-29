@@ -16,6 +16,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.Permissions;
 
 import java.util.concurrent.ConcurrentNavigableMap;
 
@@ -25,13 +27,13 @@ public class ShatterLibCommand {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> getBuilder() {
-        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("shatterlib").requires(s -> s.hasPermission(2))
+        LiteralArgumentBuilder<CommandSourceStack> builder = Commands.literal("shatterlib").requires(s -> s.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
                                 .then(Commands.literal("all")
                                         .executes(context -> {
                                             int counter = 0;
-                                            boolean isAdmin = context.getSource().hasPermission(4);
+                                            //boolean isAdmin = context.getSource().permissions().hasPermission(Permissions.COMMANDS_OWNER);
 
                                             for (String path : ConfigManager.getCommonAndServerPaths()) {
                                                 if (!ConfigManager.reload(path, context.getSource().getServer())) {

@@ -23,19 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public abstract class TrailRenderMixin {
-    @Inject(method = "method_62214", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;renderGroup(Lnet/minecraft/client/renderer/chunk/ChunkSectionLayerGroup;)V", ordinal = 1, shift = At.Shift.AFTER))
-    private void injectTrailRender(GpuBufferSlice gpuBufferSlice,
-                                   LevelRenderState levelRenderState,
-                                   ProfilerFiller profilerFiller,
-                                   Matrix4f matrix4f,
-                                   ResourceHandle resourceHandle,
-                                   ResourceHandle resourceHandle2,
-                                   boolean bl,
-                                   Frustum frustum,
-                                   ResourceHandle resourceHandle3,
-                                   ResourceHandle resourceHandle4,
-                                   CallbackInfo ci,
-                                   @Local PoseStack poseStack
+    @Inject(method = "method_62214", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;renderGroup(Lnet/minecraft/client/renderer/chunk/ChunkSectionLayerGroup;Lcom/mojang/blaze3d/textures/GpuSampler;)V", ordinal = 1, shift = At.Shift.AFTER))
+    private void injectTrailRender(GpuBufferSlice gpuBufferSlice, LevelRenderState levelRenderState, ProfilerFiller profilerFiller, Matrix4f matrix4f, ResourceHandle resourceHandle, ResourceHandle resourceHandle2, boolean bl, ResourceHandle resourceHandle3, ResourceHandle resourceHandle4, CallbackInfo ci, @Local PoseStack poseStack
     ) {
         CommonCode.renderTrails(levelRenderState.cameraRenderState.pos, Minecraft.getInstance().renderBuffers().bufferSource(), poseStack, Minecraft.getInstance().getDeltaTracker());
     }

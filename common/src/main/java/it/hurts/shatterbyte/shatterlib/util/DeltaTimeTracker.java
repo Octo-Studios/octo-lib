@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.util;
 
 import lombok.Getter;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 
 public class DeltaTimeTracker {
     private static long lastTimeNanos = -1L;

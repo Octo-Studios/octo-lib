@@ -8,9 +8,10 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix4f;
 
 import java.awt.Color;
@@ -27,14 +28,15 @@ public class TesselatorUtils {
             .withVertexShader("core/position_color")
             .withFragmentShader("core/position_color")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-            .withLocation(ResourceLocation.fromNamespaceAndPath(ShatterLib.MOD_ID, "trail"))
+            .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MODID, "trail"))
             .build();
 
-    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("shatterparticle_trail", 256, TRAIL_PIPELINE,
-            RenderType.CompositeState.builder()
-                    .setOutputState(RenderStateShard.OutputStateShard.MAIN_TARGET)
-                    .createCompositeState(false));
-    
+    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("shatterparticle_trail",
+            RenderSetup.builder(TRAIL_PIPELINE)
+                    .bufferSize(256)
+                    .setOutputTarget(OutputTarget.MAIN_TARGET)
+                    .createRenderSetup());
+
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,
                                              float pos2Y, float pos2Z, float pos3X, float pos3Y, float pos3Z, float pos4X, float pos4Y,
                                              float pos4Z, Color color) {

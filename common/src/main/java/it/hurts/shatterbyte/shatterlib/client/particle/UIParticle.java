@@ -11,7 +11,7 @@ import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
@@ -22,17 +22,17 @@ public class UIParticle {
     public static final RenderPipeline ADDITIVE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
             .withBlend(BlendFunction.LIGHTNING)
             .withColorWrite(true)
-            .withLocation(ResourceLocation.fromNamespaceAndPath(ShatterLib.MOD_ID, "additive"))
+            .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MODID, "additive"))
             .build();
 
     @Data
     public static class Texture2D {
-        private ResourceLocation rl;
+        private Identifier rl;
         private float width, height;
         private float texOffX, texOffY;
         private float texWidth, texHeight;
 
-        public Texture2D(ResourceLocation texture, int texOffX, int texOffY, int texWidth, int texHeight, int width, int height) {
+        public Texture2D(Identifier texture, int texOffX, int texOffY, int texWidth, int texHeight, int width, int height) {
             this.rl = texture;
             this.texOffX = texOffX;
             this.texOffY = texOffY;
@@ -42,7 +42,7 @@ public class UIParticle {
             this.height = height;
         }
 
-        public Texture2D(ResourceLocation texture, int width, int height) {
+        public Texture2D(Identifier texture, int width, int height) {
             this(texture, 0, 0, width, height, width, height);
         }
     }

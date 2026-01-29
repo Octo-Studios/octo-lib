@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.Random;
@@ -68,7 +68,7 @@ public class TestGearScreen extends Screen {
             guiGraphics.pose().popMatrix();
         }
 
-        RenderUtils.renderTilingTexture(GUI_TEXTURED, ResourceLocation.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);
+        RenderUtils.renderTilingTexture(GUI_TEXTURED, Identifier.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);
     }
 
     @Override

@@ -1,18 +1,42 @@
 package it.hurts.shatterbyte.shatterlib.neoforge;
 
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.ShatterLibClient;
 import it.hurts.shatterbyte.shatterlib.client.config.MultipleConfigScreen;
+import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforgespi.language.IModInfo;
+
+import java.util.Optional;
 
 @Mod(value = ShatterLib.MOD_ID, dist = Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 public final class ShatterLibNeoForgeClient {
     public ShatterLibNeoForgeClient(IEventBus modBus, ModContainer container) {
         ShatterLibClient.init();
-        container.registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
+        //container.registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent e) {
+        ModList mods = ModList.get();
+        ConfigManager.CONFIGS_BY_MODID.keySet().forEach(modId -> {
+            Optional<?> modContainer = mods.getModContainerById(modId);
+            if (modContainer.isEmpty()) {
+                return;
+            }
+
+            ((ModContainer) modContainer.get()).registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
+        });
     }
 }

@@ -32,8 +32,10 @@ public final class ShatterLib {
         ShatterLibNetwork.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
         ShatterLibNetwork.registerS2CPayloadType(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC);
 
-        ConfigManager.register(MOD_ID, CONFIG);
-        ConfigManager.register(MOD_ID, SERVER_CONFIG);
+        if (Platform.isDevelopmentEnvironment()) {
+            ConfigManager.register(MOD_ID, CONFIG);
+            ConfigManager.register(MOD_ID, SERVER_CONFIG);
+        }
 
         LifecycleEvent.SETUP.register(() -> {
             if (Platform.getEnvironment() == Env.CLIENT) {

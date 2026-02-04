@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib;
 import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetFactory;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
@@ -46,8 +47,6 @@ public final class ShatterLibClient {
 
             config.loadFromJson(value.json);
             config.updateSchemaCache();
-
-            context.getPlayer().displayClientMessage(Component.literal("Recieved a sync packet! Path: "+value.path+". Contents: "+value.json), false);
         });
 
         ClientCommandRegistrationEvent.EVENT.register(ShatterLibClientCommand::register);
@@ -112,7 +111,9 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(List.class, (EntryWidgetFactory<List>) ListWidget::new);
         EntryWidgetRegistry.register(Map.class, (EntryWidgetFactory<Map>) MapWidget::new);
 
-        ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
+        if (Platform.isDevelopmentEnvironment()) {
+            ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
+        }
     }
     
     private static void registerEvents() {

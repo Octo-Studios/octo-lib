@@ -13,6 +13,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -28,15 +29,12 @@ public final class ShatterLibNeoForgeClient {
     }
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent e) {
-        ModList mods = ModList.get();
-        ConfigManager.CONFIGS_BY_MODID.keySet().forEach(modId -> {
-            Optional<?> modContainer = mods.getModContainerById(modId);
-            if (modContainer.isEmpty()) {
-                return;
-            }
+    public static void onClientSetup(FMLConstructModEvent e) {
+        String modId = e.getContainer().getModId();
+        if (!ConfigManager.CONFIGS_BY_MODID.containsKey(modId)) {
+            return;
+        }
 
-            ((ModContainer) modContainer.get()).registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
-        });
+        e.getContainer().registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
     }
 }

@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
+import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.GuiGraphics;

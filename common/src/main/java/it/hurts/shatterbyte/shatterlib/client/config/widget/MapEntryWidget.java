@@ -61,7 +61,7 @@ public class MapEntryWidget<V> extends AbstractWidget
                         parent.getConfig(),
                         parent.getValueGenericType(),
                         parent.getAnnotations(),
-                        parent.getParent(),
+                        this,
                         parent.getValue().get(key),
                         () -> parent.getValue().get(this.key),
                         v -> parent.setValueFor(this.key, (V) v)
@@ -119,7 +119,7 @@ public class MapEntryWidget<V> extends AbstractWidget
             entryWidget.setPosition(x, 2);
 
             if (entryWidget instanceof DynamicallySized ds) {
-                entryWidget.setWidth(rightLimit - x);
+                entryWidget.setWidth(this.width - x - remove.getWidth() - 8);
                 ds.repositionElements();
             }
 
@@ -296,6 +296,6 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public String getPath() {
-        return parent.getParent().getPath()+"."+key;
+        return parent.getParent().getPath()+"['"+key+"']";
     }
 }

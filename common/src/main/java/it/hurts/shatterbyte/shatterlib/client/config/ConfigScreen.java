@@ -13,7 +13,9 @@ import net.minecraft.resources.Identifier;
 import java.lang.annotation.Annotation;
 
 public class ConfigScreen extends Screen {
+
     public static final Atlas ATLAS = new Atlas(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/config_atlas.png"), 263, 76);
+
     ShatterConfig config;
     Screen prevScreen;
     GenericObjectWidget object;

@@ -8,6 +8,8 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -96,6 +98,10 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         guiGraphics.pose().translate(fillX, 0);
         UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, -2, this.getY());
         guiGraphics.pose().popMatrix();
+
+        Font font = Minecraft.getInstance().font;
+        String string = String.format("%.1f", this.getValue().doubleValue());
+        guiGraphics.drawString(font, string, this.getX() + Math.round((this.width - font.width(string)) / 2f), this.getY() + 1, 0xffffffff, true);
     }
 
     @Override

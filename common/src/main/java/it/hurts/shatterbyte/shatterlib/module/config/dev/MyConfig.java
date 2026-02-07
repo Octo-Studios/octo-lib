@@ -5,6 +5,8 @@ import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigSide;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.data.TestObject;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
+import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import lombok.Getter;
 import net.minecraft.world.item.Rarity;
@@ -25,42 +27,11 @@ public class MyConfig extends ShatterConfig {
                 """;
     }
 
-//    @Comment("Test comment!")
-//    private Map<String, ShatterColor> colorMap = new LinkedHashMap<>() {{
-//        put("test1", ShatterColor.BLACK);
-//        put("test2", ShatterColor.RED);
-//        put("test3", ShatterColor.BLUE);
-//        put("addedByFixer", ShatterColor.GREEN);
-//    }};
-//
-//    private List<ShatterColor> colorList = new ArrayList<>() {{
-//        add(ShatterColor.WHITE);
-//        add(ShatterColor.GREEN);
-//    }};
-//
-//    private List<Boolean> booleanList = new ArrayList<>() {{
-//        add(false);
-//        add(true);
-//    }};
-//
-//    private Map<String, ShatterColor> colorMap2 = new LinkedHashMap<>() {{
-//        put("test14", ShatterColor.BLACK);
-//        put("test5", ShatterColor.RED);
-//        put("test6", ShatterColor.BLUE);
-//    }};
+    @Comment("Test enum!")
+    private Rarity testRarity = Rarity.EPIC;
 
-//    @Range(min = 0, max = 1)
-//    private double test = -0.1;
-
-//    @Comment("test comment!")
-//    private ShatterColor someColor = ShatterColor.GREEN;
-
-//    @Comment("Test enum!")
-//    private Rarity testRarity = Rarity.EPIC;
-//
-//    @Exclude
-//    private String superPrivateString = "pls don't";
-    //private String someString = "Test String!!!";
+    @Exclude
+    private String superPrivateString = "pls don't";
 
     private TestObject someObject = new TestObject();
 
@@ -69,8 +40,6 @@ public class MyConfig extends ShatterConfig {
 
     private float testWithoutRange = 3.25f;
 
-    private Rarity testRarity = Rarity.EPIC;
-
     @Range(min = 0, max = 5, step = 0.25f)
     private LinkedHashMap<String, Float> map = new LinkedHashMap<>() {{
         put("abc", 1f);
@@ -78,17 +47,10 @@ public class MyConfig extends ShatterConfig {
         put("ghi", 3.5f);
     }};
 
-//    @Range(min = 0, max = 5, step = 0.5f)
-//    private ArrayList<Float> list = new ArrayList<>() {{
-//        add(1f);
-//        add(3f);
-//        add(2.5f);
-//    }};
-
-//    private ResourceLocation someResourceLocation = ResourceLocation.fromNamespaceAndPath(ShatterLib.MODID, "test_location");
-//
-//    private Inherite inheritanceTest = new Inherite();
-
+    private LinkedHashMap<String, TestObject> someMap = new LinkedHashMap<>() {{
+        put("a", new TestObject());
+        put("b", new TestObject());
+    }};
 
     @Override
     public String getName() {
@@ -105,3 +67,5 @@ public class MyConfig extends ShatterConfig {
         return 2;
     }
 }
+
+

@@ -60,7 +60,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> AbstractEntryWidget<?> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object) {
+    public static <T> AbstractEntryWidget<?> tryCreate(String path, FieldWidget parent, ShatterConfig config, MethodHandles.Lookup privateLookup, Field field, Object object, Object defaultObject) {
         Class<?> type = field.getType();
 
         EntryWidgetFactory<T> factory = EntryWidgetRegistry.getFactory(type);
@@ -81,6 +81,12 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         }
 
         Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
+
+        if (defaultObject != null) {
+            Field defaultField = defaultObject.getClass().getDeclaredField(fieldName);
+            defaultField.setAccessible(true);
+            defaultValue = (Optional<T>) Optional.of(defaultField.get(defaultObject));
+        }
 
         Supplier<T> getter = () -> {
             try {

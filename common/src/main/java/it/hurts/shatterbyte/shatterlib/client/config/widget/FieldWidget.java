@@ -115,7 +115,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         fieldWidget.info = new GenericObjectWidget.FieldInfo(prettyName, description);
         fieldWidget.setParent(parent);
 
-        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(path, fieldWidget, config, privateLookup, field, parentObject);
+        AbstractEntryWidget<?> widget = AbstractEntryWidget.tryCreate(path, fieldWidget, config, privateLookup, field, parentObject, parent.getDefaultValue());
 
         if (widget == null) {
             return null;

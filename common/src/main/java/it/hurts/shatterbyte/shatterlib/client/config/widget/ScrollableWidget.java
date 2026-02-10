@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -175,6 +176,6 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public void requestRelayout() {
-
+        ShatterLib.LOGGER.info("SCROLLABLE RELAYOUT");
     }
 }

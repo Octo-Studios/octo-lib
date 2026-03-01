@@ -39,7 +39,8 @@ public class ShatterRenderManager {
                 continue;
             }
 
-            if (time % p.getUpdateFrequency() == 0) {
+            int updateFrequency = Math.max(1, p.getUpdateFrequency());
+            if (time % updateFrequency == 0) {
                 buffer.tick(p);
             }
         }

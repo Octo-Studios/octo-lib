@@ -17,7 +17,7 @@ public abstract class EntityTrailProvider<T extends Entity> extends TrailProvide
 
     @Override
     public int getTrailUpdateFrequency() {
-        return 0;
+        return 1;
     }
 
     @Override

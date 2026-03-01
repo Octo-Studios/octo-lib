@@ -1,12 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.module.config.network;
 
-import dev.architectury.networking.NetworkManager;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.network.Packet;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -31,11 +26,5 @@ public class TestScreenPacket extends Packet {
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    @Override
-    //@Environment(EnvType.CLIENT)
-    protected void handleClient(NetworkManager.PacketContext packetContext) {
-        Minecraft.getInstance().setScreen(new TestGearScreen());
     }
 }

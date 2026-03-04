@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
+
 public class ConfigButton extends AbstractWidget implements Child<ScrollableWidget>, Scrollable {
     private static final int CONTENT_PADDING_X = 4;
     private static final int TITLE_TOP = 4;
@@ -23,13 +25,19 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
 
     ShatterConfig config;
     Runnable onClick;
+    private final BooleanSupplier selectedSupplier;
     private double scrollOffset;
     private @Nullable ScrollableWidget parent;
 
     public ConfigButton(ShatterConfig config, int x, int y, int width, int height, Runnable onClick) {
+        this(config, x, y, width, height, onClick, () -> false);
+    }
+
+    public ConfigButton(ShatterConfig config, int x, int y, int width, int height, Runnable onClick, BooleanSupplier selectedSupplier) {
         super(x, y, width, height, Component.empty());
         this.config = config;
         this.onClick = onClick;
+        this.selectedSupplier = selectedSupplier;
     }
 
     @Override
@@ -41,8 +49,9 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff0000ff);
         int iconOffset = 0;
+        boolean selected = selectedSupplier.getAsBoolean();
         if (this.isActive()) {
-            if (this.isHovered()) {
+            if (this.isHovered() || selected) {
                 UIElements.BUTTON_HOVERED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff555555);
                 iconOffset = 1;
             } else {
@@ -66,15 +75,17 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
         int contentWidth = Math.max(0, this.width - CONTENT_PADDING_X * 2);
 
         drawScrollingLine(
-                guiGraphics, font, title, contentX, this.getY() + TITLE_TOP + iconOffset, contentWidth, font.lineHeight, 1.0f, 0xffffffff
+                guiGraphics, font, title, contentX, this.getY() + TITLE_TOP + iconOffset, contentWidth, font.lineHeight, 1.0f, 0xffffffff, this.isHovered()
         );
         drawScrollingLine(
                 guiGraphics, font, description, contentX, this.getY() + DESCRIPTION_TOP + iconOffset, contentWidth,
-                Math.max(1, Math.round(font.lineHeight * DESCRIPTION_SCALE)), DESCRIPTION_SCALE, 0xff888888
+                Math.max(1, Math.round(font.lineHeight * DESCRIPTION_SCALE)), DESCRIPTION_SCALE, 0xff888888, this.isHovered()
         );
     }
 
-    private void drawScrollingLine(GuiGraphics guiGraphics, Font font, String text, int x, int y, int width, int height, float scale, int color) {
+    private void drawScrollingLine(
+            GuiGraphics guiGraphics, Font font, String text, int x, int y, int width, int height, float scale, int color, boolean allowScrolling
+    ) {
         if (width <= 0 || height <= 0 || text.isEmpty()) {
             return;
         }
@@ -82,7 +93,7 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
         double textWidth = font.width(text) * scale;
         int textOffset = 0;
 
-        if (textWidth > width) {
+        if (allowScrolling && textWidth > width) {
             textOffset = (int) Math.round(computeScrollOffset(textWidth - width));
         }
 

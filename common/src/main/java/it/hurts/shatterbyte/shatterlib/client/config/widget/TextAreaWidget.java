@@ -49,6 +49,8 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     @Setter
     Predicate<String> predicate = s -> true;
     private String placeholder = "";
+    @Nullable
+    private Runnable onBlur;
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
@@ -321,12 +323,17 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Override
     public void setFocused(boolean focused) {
+        boolean wasFocused = this.isFocused();
         super.setFocused(focused);
         if (focused) {
             this.ensureCursorVisible();
         } else {
             this.selectingWithMouse = false;
             this.selectionPos = this.cursorPos;
+        }
+
+        if (wasFocused && !focused && onBlur != null) {
+            onBlur.run();
         }
     }
 
@@ -366,6 +373,10 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     public void setPlaceholder(@Nullable String placeholder) {
         this.placeholder = placeholder == null ? "" : placeholder;
+    }
+
+    public void setOnBlur(@Nullable Runnable onBlur) {
+        this.onBlur = onBlur;
     }
 
     private String getSafeValue() {

@@ -92,7 +92,6 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     private void rebuild() {
         entries.clear();
-        renderables.clear();
 
         Map<String, V> map = getSafeValue();
         int i = 0;
@@ -102,9 +101,9 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
                     new MapEntryWidget<>(this, e.getKey(), i++);
             entry.applySearchQuery(searchQuery);
             entries.add(entry);
-            renderables.add(entry);
         }
 
+        rebuildFilteredRenderables();
         refreshChildListeners();
 
         relayoutAndPropagate();
@@ -209,6 +208,8 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         for (MapEntryWidget<V> entry : entries) {
             entry.applySearchQuery(normalizedQuery);
         }
+        rebuildFilteredRenderables();
+        refreshChildListeners();
 
         return true;
     }
@@ -218,13 +219,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             return true;
         }
 
-        for (MapEntryWidget<V> entry : entries) {
-            if (entry.hasSearchResults()) {
-                return true;
-            }
-        }
-
-        return false;
+        return !renderables.isEmpty();
     }
 
     private static String normalizeSearchQuery(@Nullable String query) {
@@ -246,7 +241,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
         int y = 8;
 
-        for (MapEntryWidget<V> entry : entries) {
+        for (MapEntryWidget<V> entry : renderables) {
             entry.setPosition(4, y);
             entry.setWidth(this.width - 4);
             entry.repositionElements();
@@ -287,7 +282,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         childListeners.add(collapseButton);
 
         if (!collapsed) {
-            childListeners.addAll(entries);
+            childListeners.addAll(renderables);
             childListeners.add(addButton);
         }
     }
@@ -343,13 +338,23 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             return true;
         }
 
-        for (MapEntryWidget<V> entry : entries) {
+        for (MapEntryWidget<V> entry : renderables) {
             if (entry.isMouseOver(mouseX, mouseY)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private void rebuildFilteredRenderables() {
+        renderables.clear();
+
+        for (MapEntryWidget<V> entry : entries) {
+            if (entry.hasSearchResults()) {
+                renderables.add(entry);
+            }
+        }
     }
 
     @Override

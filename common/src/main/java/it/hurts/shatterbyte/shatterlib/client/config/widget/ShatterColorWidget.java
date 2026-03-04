@@ -209,7 +209,6 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
 
     private TextAreaWidget createNumericTextEditor(Supplier<String> getter, Consumer<String> setter, String placeholder) {
         TextAreaWidget editor = createTextEditor(getter, setter);
-        editor.setPredicate(ShatterColorWidget::isNumericLikeInput);
         editor.setPlaceholder(placeholder);
         return editor;
     }

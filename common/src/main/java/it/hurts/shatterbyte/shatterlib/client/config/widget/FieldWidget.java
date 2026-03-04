@@ -6,6 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
+import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -407,7 +408,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
 
         if (containsSearchToken(info.name(), normalizedQuery)
-                || containsSearchToken(info.description(), normalizedQuery)) {
+                || containsSearchToken(info.description(), normalizedQuery)
+                || containsEntryValue(entryWidget, normalizedQuery)) {
             return true;
         }
 
@@ -424,6 +426,36 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
 
         return false;
+    }
+
+    private static boolean containsEntryValue(@Nullable AbstractEntryWidget<?> widget, String normalizedQuery) {
+        if (widget == null) {
+            return false;
+        }
+
+        Object value = widget.getValue();
+        String valueText = toSearchText(value);
+        return containsSearchToken(valueText, normalizedQuery);
+    }
+
+    private static String toSearchText(@Nullable Object value) {
+        if (value == null) {
+            return "null";
+        }
+
+        if (value instanceof CharSequence
+                || value instanceof Number
+                || value instanceof Boolean
+                || value instanceof Character
+                || value instanceof Enum<?>) {
+            return String.valueOf(value);
+        }
+
+        try {
+            return Json5Utils.encode(value).toString();
+        } catch (Throwable ignored) {
+            return String.valueOf(value);
+        }
     }
 
     private static boolean containsSearchToken(@Nullable String value, String normalizedQuery) {

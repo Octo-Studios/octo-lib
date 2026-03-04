@@ -4,6 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
+import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MapEntryWidget<V> extends AbstractWidget
@@ -33,6 +35,7 @@ public class MapEntryWidget<V> extends AbstractWidget
     private final int index;
     private final List<GuiEventListener> childListeners;
     private final int preferredEntryWidth;
+    private String searchQuery = "";
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -127,16 +130,26 @@ public class MapEntryWidget<V> extends AbstractWidget
     }
 
     void applySearchQuery(String query) {
+        this.searchQuery = normalizeSearchQuery(query);
+
         if (entryWidget instanceof GenericObjectWidget objectWidget) {
-            objectWidget.applySearchQuery(query);
+            objectWidget.applySearchQuery(this.searchQuery);
         } else if (entryWidget instanceof ListWidget<?> listWidget) {
-            listWidget.applySearchQuery(query);
+            listWidget.applySearchQuery(this.searchQuery);
         } else if (entryWidget instanceof MapWidget<?> mapWidget) {
-            mapWidget.applySearchQuery(query);
+            mapWidget.applySearchQuery(this.searchQuery);
         }
     }
 
     boolean hasSearchResults() {
+        if (searchQuery.isEmpty()) {
+            return true;
+        }
+
+        if (containsSearchToken(key, searchQuery) || containsEntryValue(entryWidget, searchQuery)) {
+            return true;
+        }
+
         if (entryWidget instanceof GenericObjectWidget objectWidget) {
             return objectWidget.hasSearchResults();
         }
@@ -150,6 +163,50 @@ public class MapEntryWidget<V> extends AbstractWidget
         }
 
         return false;
+    }
+
+    private static boolean containsEntryValue(AbstractEntryWidget<?> widget, String normalizedQuery) {
+        if (widget == null) {
+            return false;
+        }
+
+        return containsSearchToken(toSearchText(widget.getValue()), normalizedQuery);
+    }
+
+    private static boolean containsSearchToken(@Nullable String value, String normalizedQuery) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        return value.toLowerCase(Locale.ROOT).contains(normalizedQuery);
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
+    }
+
+    private static String toSearchText(@Nullable Object value) {
+        if (value == null) {
+            return "null";
+        }
+
+        if (value instanceof CharSequence
+                || value instanceof Number
+                || value instanceof Boolean
+                || value instanceof Character
+                || value instanceof Enum<?>) {
+            return String.valueOf(value);
+        }
+
+        try {
+            return Json5Utils.encode(value).toString();
+        } catch (Throwable ignored) {
+            return String.valueOf(value);
+        }
     }
 
     @Override

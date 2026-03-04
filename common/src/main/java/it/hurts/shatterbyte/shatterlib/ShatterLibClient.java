@@ -90,21 +90,33 @@ public final class ShatterLibClient {
             }
 
             if (!hasRange) {
+                final String[] numberText = {String.valueOf(getter.get())};
                 TextAreaWidget text = new TextAreaWidget(
                         config,
                         type,
                         annotations,
                         parent,
                         String.valueOf(defaultValue),
-                        () -> String.valueOf(getter.get()),
+                        () -> numberText[0],
                         s -> {
+                            numberText[0] = s;
                             try {
                                 setter.accept(TextAreaWidget.parseNumber(type, s));
                             } catch (NumberFormatException ignored) {}
                         }
                 );
 
-                text.setPredicate(TextAreaWidget.numericPredicateFor(type));
+                text.setOnBlur(() -> {
+                    String currentText = numberText[0];
+                    try {
+                        setter.accept(TextAreaWidget.parseNumber(type, currentText));
+                    } catch (NumberFormatException ignored) {
+                        String rollback = String.valueOf(getter.get());
+                        numberText[0] = rollback;
+                        text.setValue(rollback);
+                    }
+                });
+
                 return text;
             }
 

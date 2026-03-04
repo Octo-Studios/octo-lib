@@ -29,7 +29,15 @@ public class MultipleConfigScreen extends ConfigScreen {
         int y = 4;
         this.configButtons = new ScrollableWidget(0, 32, SIDEBAR_WIDTH, this.height - 32);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
-            ConfigButton button = new ConfigButton(config, SIDEBAR_TILE_PADDING, y, 120, 24, () -> this.changeConfig(config));
+            ConfigButton button = new ConfigButton(
+                    config,
+                    SIDEBAR_TILE_PADDING,
+                    y,
+                    120,
+                    24,
+                    () -> this.changeConfig(config),
+                    () -> this.config == config
+            );
             button.setParent(configButtons);
             configButtons.children().add(button);
             y += 4 + button.getHeight();

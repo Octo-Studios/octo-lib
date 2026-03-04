@@ -11,7 +11,9 @@
     "GameRendererMixin",
     "GuiMixin",
     "MinecraftMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "chromatic_aberration.GameRendererMixin",
+    "post_effect.GameRendererMixin"
   ],
   "mixins": [
   ],

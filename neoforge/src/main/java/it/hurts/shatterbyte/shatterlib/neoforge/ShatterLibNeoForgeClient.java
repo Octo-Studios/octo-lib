@@ -6,5 +6,6 @@ import net.neoforged.bus.api.IEventBus;
 public final class ShatterLibNeoForgeClient {
     public ShatterLibNeoForgeClient(IEventBus modBus) {
         ShatterLibClient.init();
+        Compatibility.init();
     }
 }

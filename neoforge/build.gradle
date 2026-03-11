@@ -38,6 +38,21 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name "CaffeineMC"
+        url "https://maven.caffeinemc.net/releases" // or /snapshots
+    }
 
 }
 
@@ -45,6 +60,9 @@ dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
 
     modImplementation "dev.architectury:architectury-neoforge:$rootProject.architectury_api_version"
+    modCompileOnly("maven.modrinth:iris:${project.iris_version}-neoforge")
+    //implementation "net.caffeinemc:sodium-neoforge:0.8.6+mc1.21.11"
+    //implementation "curse.maven:irisshaders-455508:7669947"
 
     include 'org.yaml:snakeyaml:2.2'
     forgeRuntimeLibrary 'org.yaml:snakeyaml:2.2'

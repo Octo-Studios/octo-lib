@@ -230,17 +230,17 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
             var c1 = ColorUtils.blend(startColor, endColor, t1);
 
             TesselatorUtils.drawQuadGradient(consumer, matrix4f,
-                    (float) next.left().x, (float) next.left().y, (float) next.left().z,
-                    (float) current.left().x, (float) current.left().y, (float) current.left().z,
-                    (float) current.right().x, (float) current.right().y, (float) current.right().z,
-                    (float) next.right().x, (float) next.right().y, (float) next.right().z,
+                    next.left,
+                    current.left,
+                    current.right,
+                    next.right,
                     c1, c0);
 
             TesselatorUtils.drawQuadGradient(consumer, matrix4f,
-                    (float) next.right().x, (float) next.right().y, (float) next.right().z,
-                    (float) current.right().x, (float) current.right().y, (float) current.right().z,
-                    (float) current.left().x, (float) current.left().y, (float) current.left().z,
-                    (float) next.left().x, (float) next.left().y, (float) next.left().z,
+                    next.right,
+                    current.right,
+                    current.left,
+                    next.left,
                     c1, c0);
         }
     }

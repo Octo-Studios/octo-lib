@@ -10,7 +10,7 @@ public final class ShatterLibFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ShatterLibClient.init();
-
+        Compatibility.init();
 
 //        WorldRenderEvents.AFTER_ENTITIES.register(context -> {
 //            CommonCode.renderTrails(context.camera(), Minecraft.getInstance().renderBuffers().bufferSource(), context.matrixStack(), context.tickCounter());

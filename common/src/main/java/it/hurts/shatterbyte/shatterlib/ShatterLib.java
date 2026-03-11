@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.shatterlib;
 
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncConfigPacket;
@@ -11,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class ShatterLib {
-    
+    public static final boolean IRIS_LOADED = Platform.isModLoaded("iris");
     public static final String MODID = "shatterlib";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 

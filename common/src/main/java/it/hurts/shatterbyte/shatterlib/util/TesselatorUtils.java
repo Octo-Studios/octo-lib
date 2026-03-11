@@ -5,37 +5,67 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.awt.Color;
+import java.util.function.Function;
 
+import static net.minecraft.client.renderer.RenderPipelines.ENTITY_SNIPPET;
 import static net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET;
+import static net.minecraft.util.ARGB.multiplyAlpha;
 
 public class TesselatorUtils {
-
-    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
+    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(ENTITY_SNIPPET)
             .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
             .withBlend(BlendFunction.LIGHTNING)
             .withColorWrite(true)
+            .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+            .withShaderDefine("PER_FACE_LIGHTING")
+            .withSampler("Sampler1")
             .withPolygonMode(PolygonMode.FILL)
-            .withVertexShader("core/position_color")
-            .withFragmentShader("core/position_color")
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+            .withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS)
             .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MODID, "trail"))
             .build();
 
     public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("shatterparticle_trail",
             RenderSetup.builder(TRAIL_PIPELINE)
                     .bufferSize(256)
+                    .affectsCrumbling()
+                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
                     .setOutputTarget(OutputTarget.MAIN_TARGET)
                     .createRenderSetup());
+
+    private static final Function<Identifier, RenderType> RENDER_TYPE_FUNCTION = Util.memoize(
+            (identifier) -> {
+                RenderSetup renderSetup = RenderSetup.builder(TRAIL_PIPELINE)
+                        .withTexture("Sampler0", identifier)
+                        .useLightmap()
+                        .useOverlay()
+                        .affectsCrumbling()
+                        .sortOnUpload()
+                        .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
+                        .createRenderSetup();
+                return RenderType.create("entity_translucent_cull", renderSetup);
+            }
+    );
+
+    public static RenderType getType() {
+        return RENDER_TYPE_FUNCTION.apply(Identifier.fromNamespaceAndPath(ShatterLib.MODID, "textures/trail.png"));
+    }
 
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,
                                              float pos2Y, float pos2Z, float pos3X, float pos3Y, float pos3Z, float pos4X, float pos4Y,
@@ -64,37 +94,34 @@ public class TesselatorUtils {
         }
     }
 
-    /* public static void drawQuad(BufferBuilder tes, IIcon icon, double pos1X, double pos1Y, double pos1Z, double pos2X,
-                                double pos2Y, double pos2Z, double pos3X, double pos3Y, double pos3Z, double pos4X, double pos4Y,
-                                double pos4Z) {
+    public static void drawQuadGradient(VertexConsumer buf, Matrix4f mat,
+                                        Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4,
+                                        Color c1, Color c2) {
 
-        float maxU = icon.getMaxU();
-        float maxV = icon.getMaxV();
-        float minU = icon.getMinU();
-        float minV = icon.getMinV();
+        int light = LightTexture.FULL_BRIGHT;
 
-        tes.addVertexWithUV(pos1X, pos1Y, pos1Z, maxU, maxV);
-        tes.addVertexWithUV(pos2X, pos2Y, pos2Z, maxU, minV);
-        tes.addVertexWithUV(pos3X, pos3Y, pos3Z, minU, minV);
-        tes.addVertexWithUV(pos4X, pos4Y, pos4Z, minU, maxV);
+        float nx = 0;
+        float ny = 1;
+        float nz = 0;
 
-    } */
-    
-    public static void drawQuadGradient(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,
-                                        float pos2Y, float pos2Z, float pos3X, float pos3Y, float pos3Z, float pos4X, float pos4Y,
-                                        float pos4Z, Color color1, Color color2) {
-        
-        if (matrix4f != null) {
-            tes.addVertex(matrix4f,  pos4X,  pos4Y,  pos4Z).setColor(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-            tes.addVertex(matrix4f,  pos1X,  pos1Y,  pos1Z).setColor(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-            tes.addVertex(matrix4f,  pos2X,  pos2Y,  pos2Z).setColor(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha());
-            tes.addVertex(matrix4f,  pos3X,  pos3Y,  pos3Z).setColor(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha());
-        } else {
-            tes.addVertex(pos4X, pos4Y, pos4Z).setColor(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-            tes.addVertex(pos1X, pos1Y, pos1Z).setColor(color1.getRed(), color1.getGreen(), color1.getBlue(), color1.getAlpha());
-            tes.addVertex(pos2X, pos2Y, pos2Z).setColor(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha());
-            tes.addVertex(pos3X, pos3Y, pos3Z).setColor(color2.getRed(), color2.getGreen(), color2.getBlue(), color2.getAlpha());
-        }
+        vertex(buf, mat, (float)p1.x,(float)p1.y,(float)p1.z,c1,0,0,light,nx,ny,nz);
+        vertex(buf, mat, (float)p2.x,(float)p2.y,(float)p2.z,c1,1,0,light,nx,ny,nz);
+        vertex(buf, mat, (float)p3.x,(float)p3.y,(float)p3.z,c2,1,1,light,nx,ny,nz);
+        vertex(buf, mat, (float)p4.x,(float)p4.y,(float)p4.z,c2,0,1,light,nx,ny,nz);
     }
-    
+
+    private static void vertex(VertexConsumer buf, Matrix4f mat,
+                               float x, float y, float z,
+                               Color c,
+                               float u, float v,
+                               int light,
+                               float nx, float ny, float nz) {
+
+        buf.addVertex(mat, x, y, z)
+                .setColor(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha())
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(nx, ny, nz);
+    }
 }

@@ -4,8 +4,11 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import it.hurts.octostudios.octolib.client.animation.TweenSystem;
 import it.hurts.octostudios.octolib.module.particle.OctoRenderManager;
+import it.hurts.octostudios.octolib.module.particle.trail.ParticleTrailRegistry;
+import it.hurts.octostudios.octolib.module.particle.trail.TestFlameParticleTrail;
 import it.hurts.octostudios.octolib.module.post_effect.init.OctoLibPostEffects;
 import it.hurts.octostudios.octolib.module.post_effect.instances.ChromaticAberrationPostEffect;
+import net.minecraft.core.particles.ParticleTypes;
 
 public final class OctoLibClient {
     public static long DELTA_NANOS;
@@ -13,6 +16,7 @@ public final class OctoLibClient {
     public static void init() {
         registerEvents();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        //ParticleTrailRegistry.registerProvider(ParticleTypes.LAVA, TestFlameParticleTrail::new);
 
         OctoLibClient.registerPostEffects();
 

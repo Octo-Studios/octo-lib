@@ -11,6 +11,7 @@
     "GameRendererMixin",
     "GuiMixin",
     "MinecraftMixin",
+    "ParticleEngineMixin",
     "ScreenMixin",
     "chromatic_aberration.GameRendererMixin",
     "post_effect.GameRendererMixin"

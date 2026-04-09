@@ -19,7 +19,6 @@ public interface Child<T extends LayoutElement> extends LayoutElement, GuiEventL
             return getLocalX();
         }
 
-        // Use parent.getX() so overridden parent coordinates (e.g. scroll offsets) are applied.
         return getLocalX() + parent.getX();
     }
 
@@ -29,7 +28,6 @@ public interface Child<T extends LayoutElement> extends LayoutElement, GuiEventL
             return getLocalY();
         }
 
-        // Use parent.getY() so overridden parent coordinates (e.g. scroll offsets) are applied.
         return getLocalY() + parent.getY();
     }
 

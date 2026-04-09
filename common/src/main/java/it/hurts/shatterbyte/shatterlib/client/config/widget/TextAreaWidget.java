@@ -47,7 +47,6 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         this.cursorPos = newPos;
         boolean hasChanged = oldPos != newPos;
 
-        // Avoid spawning cursor tweens for non-focused fields in large forms.
         if (!this.isFocused()) {
             this.visualCursorPos = newPos;
             return hasChanged;
@@ -148,7 +147,6 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
             }
         }
 
-        // backspace
         if (event.key() == 259) {
             if (cursorPos == 0) {
                 return true;

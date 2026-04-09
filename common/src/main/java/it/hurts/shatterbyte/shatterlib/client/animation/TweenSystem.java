@@ -14,7 +14,7 @@ public class TweenSystem {
     private static boolean running = false;
 
     public static void init() {
-        if (running) return; // prevent multiple threads
+        if (running) return;
         running = true;
 
         Thread tweenThread = new Thread(() -> {
@@ -37,7 +37,7 @@ public class TweenSystem {
             }
         }, "Tween thread");
 
-        tweenThread.setDaemon(true); // dies when the app dies
+        tweenThread.setDaemon(true);
         tweenThread.start();
     }
 

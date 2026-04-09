@@ -72,7 +72,6 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
             return null;
         }
 
-        // create getter and setter handles bound to the target object
         MethodHandle getterHandle = privateLookup.unreflectGetter(field).bindTo(object);
         MethodHandle setterHandle = privateLookup.unreflectSetter(field).bindTo(object);
 
@@ -85,10 +84,10 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
         Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
 
-        if (defaultObject != null) {
+        if (defaultValue.isEmpty() && defaultObject != null) {
             Field defaultField = defaultObject.getClass().getDeclaredField(fieldName);
             defaultField.setAccessible(true);
-            defaultValue = (Optional<T>) Optional.of(defaultField.get(defaultObject));
+            defaultValue = (Optional<T>) Optional.ofNullable(defaultField.get(defaultObject));
         }
 
         Supplier<T> getter = () -> {
@@ -167,12 +166,41 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     }
 
     public boolean isAtDefaultValue() {
+        E currentValue = this.getValue();
+        E defaultValue = this.getDefaultValue();
+
+        if (currentValue == defaultValue) {
+            return true;
+        }
+
+        if (needsStructuralComparison(currentValue, defaultValue)) {
+            try {
+                return Objects.equals(Json5Utils.encode(currentValue), Json5Utils.encode(defaultValue));
+            } catch (Throwable ignored) {}
+        }
+
         if (defaultStateDirty) {
-            defaultState = Objects.equals(this.getValue(), this.getDefaultValue());
+            defaultState = Objects.equals(currentValue, defaultValue);
             defaultStateDirty = false;
         }
 
         return defaultState;
+    }
+
+    private static boolean needsStructuralComparison(@Nullable Object currentValue, @Nullable Object defaultValue) {
+        if (currentValue == null || defaultValue == null) {
+            return false;
+        }
+
+        return !isSimpleComparable(currentValue) || !isSimpleComparable(defaultValue);
+    }
+
+    private static boolean isSimpleComparable(Object value) {
+        return value instanceof Number
+                || value instanceof CharSequence
+                || value instanceof Boolean
+                || value instanceof Character
+                || value instanceof Enum<?>;
     }
 
     @Override

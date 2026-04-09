@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 public class MapEntryWidget<V> extends AbstractWidget
         implements Child<MapWidget<V>>, ContainerEventHandler, DynamicallySized, PathContainerWidget {
@@ -47,6 +48,8 @@ public class MapEntryWidget<V> extends AbstractWidget
         this.key = key;
         this.index = index;
 
+        V defaultEntryValue = resolveDefaultEntryValue(parent, key);
+
         keyWidget = new TextAreaWidget(
                 parent.getConfig(),
                 String.class,
@@ -65,7 +68,7 @@ public class MapEntryWidget<V> extends AbstractWidget
                         parent.getValueGenericType(),
                         parent.getAnnotations(),
                         this,
-                        parent.getValue().get(key),
+                        defaultEntryValue,
                         () -> parent.getValue().get(this.key),
                         v -> parent.setValueFor(this.key, (V) v)
                 );
@@ -85,6 +88,16 @@ public class MapEntryWidget<V> extends AbstractWidget
         remove.setParent(this);
 
         childListeners = List.of(up, down, remove, keyWidget, entryWidget);
+    }
+
+    @SuppressWarnings("unchecked")
+    private V resolveDefaultEntryValue(MapWidget<V> parent, String key) {
+        Map<String, V> defaultMap = parent.getDefaultValue();
+        if (defaultMap != null && defaultMap.containsKey(key)) {
+            return defaultMap.get(key);
+        }
+
+        return (V) EntryWidgetRegistry.getDefaultValue(parent.getValueClass());
     }
 
     public void requestRelayout() {

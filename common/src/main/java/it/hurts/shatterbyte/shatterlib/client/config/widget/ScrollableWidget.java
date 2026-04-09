@@ -202,10 +202,16 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     private void recalculateMaxScrollY() {
         int contentBottom = 0;
-        int thisY = this.getY();
 
         for (AbstractWidget widget : this.children()) {
-            contentBottom = Math.max(contentBottom, widget.getY() + widget.getHeight() - thisY);
+            int localY;
+            if (widget instanceof Child<?> child) {
+                localY = child.getLocalY();
+            } else {
+                localY = widget.getY() - this.getY();
+            }
+
+            contentBottom = Math.max(contentBottom, localY + widget.getHeight());
         }
 
         this.maxScrollY = Math.max(0, contentBottom - this.height);

@@ -79,7 +79,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         //this.repositionElements();
 
         if (parent != null) {
-            parent.repositionElements();
+            parent.relayoutAndPropagate();
         }
     }
 

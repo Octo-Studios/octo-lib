@@ -94,8 +94,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             renderables.add(entry);
         }
 
-        repositionElements();
-        requestRelayout();
+        relayoutAndPropagate();
     }
 
     public void addNewEntry() {
@@ -175,6 +174,11 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         y += addButton.getHeight() + 4;
 
         this.setHeight(Math.max(14, y));
+    }
+
+    void relayoutAndPropagate() {
+        repositionElements();
+        requestRelayout();
     }
 
     @Override

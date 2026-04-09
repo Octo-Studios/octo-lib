@@ -85,7 +85,7 @@ public class MapEntryWidget<V> extends AbstractWidget
         //this.repositionElements();
 
         if (parent != null) {
-            parent.repositionElements();
+            parent.relayoutAndPropagate();
         }
     }
 

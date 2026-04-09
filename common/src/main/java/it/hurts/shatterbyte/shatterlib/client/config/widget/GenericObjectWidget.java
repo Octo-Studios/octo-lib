@@ -67,6 +67,11 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         this.setHeight(totalHeight);
     }
 
+    void relayoutAndPropagate() {
+        repositionElements();
+        requestRelayout();
+    }
+
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));

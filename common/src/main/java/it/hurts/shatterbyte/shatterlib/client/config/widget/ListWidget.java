@@ -92,8 +92,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             renderables.add(entry);
         }
 
-        repositionElements();
-        requestRelayout();
+        relayoutAndPropagate();
     }
 
     void removeIndex(int index) {
@@ -138,6 +137,11 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         y += addButton.getHeight() + 4;
 
         this.setHeight(Math.max(14, y));
+    }
+
+    void relayoutAndPropagate() {
+        repositionElements();
+        requestRelayout();
     }
 
     /* ---------- render ---------- */

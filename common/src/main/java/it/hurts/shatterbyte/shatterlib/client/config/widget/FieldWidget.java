@@ -78,7 +78,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         //this.repositionElements();
 
         if (parent != null) {
-            parent.repositionElements();
+            parent.relayoutAndPropagate();
         }
     }
 

@@ -149,14 +149,26 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     void renameKey(String oldKey, String newKey) {
         if (oldKey.equals(newKey)) return;
 
-        Map<String, V> map = new LinkedHashMap<>(getValue());
-        if (map.containsKey(newKey)) return;
+        Map<String, V> oldMap = new LinkedHashMap<>(getValue());
+        if (!oldMap.containsKey(oldKey) || oldMap.containsKey(newKey)) return;
 
-        V value = map.remove(oldKey);
-        map.put(newKey, value);
+        LinkedHashMap<String, V> renamed = new LinkedHashMap<>();
+        for (Map.Entry<String, V> entry : oldMap.entrySet()) {
+            if (entry.getKey().equals(oldKey)) {
+                renamed.put(newKey, entry.getValue());
+            } else {
+                renamed.put(entry.getKey(), entry.getValue());
+            }
+        }
 
-        setValue(map);
-        rebuild();
+        setValue(renamed);
+
+        for (MapEntryWidget<V> entry : entries) {
+            if (entry.hasKey(oldKey)) {
+                entry.renameKey(newKey);
+                break;
+            }
+        }
     }
 
     void setValueFor(String key, V value) {

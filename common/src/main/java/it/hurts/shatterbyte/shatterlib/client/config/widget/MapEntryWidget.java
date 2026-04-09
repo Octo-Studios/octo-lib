@@ -151,6 +151,14 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override public MapWidget<V> getParent() { return parent; }
 
+    boolean hasKey(String key) {
+        return this.key.equals(key);
+    }
+
+    void renameKey(String newKey) {
+        this.key = newKey;
+    }
+
     @Override
     public void setParent(@Nullable MapWidget<V> parent) {
         this.parent = parent;

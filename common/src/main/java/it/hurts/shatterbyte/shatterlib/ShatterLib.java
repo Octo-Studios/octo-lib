@@ -7,6 +7,7 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.TestServerConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
@@ -24,6 +25,7 @@ public final class ShatterLib {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static MyConfig CONFIG = new MyConfig();
     public static TestServerConfig SERVER_CONFIG = new TestServerConfig();
+    public static ExampleConfig EXAMPLE = new ExampleConfig();
 
     public static void init() {
         registerCommands();
@@ -35,6 +37,7 @@ public final class ShatterLib {
         if (Platform.isDevelopmentEnvironment()) {
             ConfigManager.register(MOD_ID, CONFIG);
             ConfigManager.register(MOD_ID, SERVER_CONFIG);
+            ConfigManager.register(MOD_ID, EXAMPLE);
         }
 
         LifecycleEvent.SETUP.register(() -> {

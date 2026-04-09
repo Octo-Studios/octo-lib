@@ -4,6 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -24,6 +25,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     private ListWidget<E> parent;
     private final int index;
     private final List<GuiEventListener> childListeners;
+    private final int preferredEntryWidth;
 
     AbstractEntryWidget<E> entryWidget;
 
@@ -64,6 +66,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
                             parent.setValue(list);
                         }
                 );
+        preferredEntryWidth = entryWidget.getWidth();
 
         // buttons
         up = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.moveIndex(index, index - 1), UIElements.ICON_UP);
@@ -97,12 +100,31 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         x += down.getWidth() + 4;
 
         remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
+        int rightLimit = remove.getLocalX() - 4;
+        int availableWidth = Math.max(20, rightLimit - x);
+
+        boolean isDynamicallySized = entryWidget instanceof DynamicallySized;
+        int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        boolean overflowsInlineArea = !isDynamicallySized && preferredEntryWidth > availableWidth;
+        boolean overflowsScreen = !isDynamicallySized
+                && this.getX() + x + preferredEntryWidth > screenWidth - 4;
+
+        if (isDynamicallySized || overflowsInlineArea || overflowsScreen) {
+            int y = up.getLocalY() + up.getHeight() + 4;
+
+            entryWidget.setPosition(x, y);
+            entryWidget.setWidth(availableWidth);
+
+            if (entryWidget instanceof DynamicallySized dynamicallySized) {
+                dynamicallySized.repositionElements();
+            }
+
+            this.setHeight(entryWidget.getLocalY() + entryWidget.getHeight() + 4);
+            return;
+        }
 
         entryWidget.setPosition(x, 2);
-        if (entryWidget instanceof DynamicallySized dynamicallySized) {
-            entryWidget.setWidth(this.width - x - 4 - (remove.getWidth() + 4));
-            dynamicallySized.repositionElements();
-        }
+        entryWidget.setWidth(preferredEntryWidth);
 
         this.setHeight(Math.max(16, entryWidget.getHeight() + 4));
     }

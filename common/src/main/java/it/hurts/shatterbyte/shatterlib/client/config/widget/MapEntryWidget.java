@@ -4,6 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -27,6 +28,7 @@ public class MapEntryWidget<V> extends AbstractWidget
     private String key;
     private final int index;
     private final List<GuiEventListener> childListeners;
+    private final int preferredEntryWidth;
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -67,6 +69,7 @@ public class MapEntryWidget<V> extends AbstractWidget
                         () -> parent.getValue().get(this.key),
                         v -> parent.setValueFor(this.key, (V) v)
                 );
+        preferredEntryWidth = entryWidget.getWidth();
 
         up = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.moveIndex(index, index - 1), UIElements.ICON_UP);
         down = new IconButtonWidget<>(0, 0, 13, 14, () -> parent.moveIndex(index, index + 1), UIElements.ICON_DOWN);
@@ -104,47 +107,67 @@ public class MapEntryWidget<V> extends AbstractWidget
 
         remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
 
-        int rightLimit = remove.getX() - 4;
+        int leftLimit = x;
+        int rightLimit = remove.getLocalX() - 4;
+        int availableWidth = Math.max(20, rightLimit - leftLimit);
 
         boolean moveDown = false;
 
-        int keyWidth = Math.min(80, rightLimit - x - 40);
+        boolean isDynamicallySized = entryWidget instanceof DynamicallySized;
+        int requiredInlineEntryWidth = isDynamicallySized ? 0 : Math.max(40, preferredEntryWidth);
+        int keyWidth = Math.min(80, rightLimit - x - requiredInlineEntryWidth);
         if (keyWidth < 40) {
             moveDown = true;
         }
 
         if (!moveDown) {
-            keyWidget.setPosition(x, 2);
+            keyWidget.setPosition(leftLimit, 2);
             keyWidget.setWidth(keyWidth);
 
-            x += keyWidth + 4;
+            int inlineEntryX = leftLimit + keyWidth + 4;
+            int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            boolean overflowsScreen = !isDynamicallySized
+                    && this.getX() + inlineEntryX + preferredEntryWidth > screenWidth - 4;
 
-            entryWidget.setPosition(x, 2);
+            if (isDynamicallySized || overflowsScreen) {
+                int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 
-            if (entryWidget instanceof DynamicallySized ds) {
-                entryWidget.setWidth(this.width - x - remove.getWidth() - 8);
-                ds.repositionElements();
+                entryWidget.setPosition(leftLimit, y);
+                entryWidget.setWidth(availableWidth);
+
+                if (entryWidget instanceof DynamicallySized ds) {
+                    ds.repositionElements();
+                }
+
+                this.setHeight(
+                        entryWidget.getLocalY() + entryWidget.getHeight() + 4
+                );
+                return;
             }
+
+            x += keyWidth + 4;
+            entryWidget.setPosition(x, 2);
+            entryWidget.setWidth(preferredEntryWidth);
 
             this.setHeight(Math.max(
                     16,
                     Math.max(keyWidget.getHeight(), entryWidget.getHeight()) + 4
             ));
         } else {
-            keyWidget.setPosition(x, 2);
-            keyWidget.setWidth(rightLimit - x);
+            keyWidget.setPosition(leftLimit, 2);
+            keyWidget.setWidth(rightLimit - leftLimit);
 
-            int y = keyWidget.getY() + keyWidget.getHeight() + 4;
+            int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 
-            entryWidget.setPosition(x, y);
+            entryWidget.setPosition(leftLimit, y);
+            entryWidget.setWidth(availableWidth);
 
             if (entryWidget instanceof DynamicallySized ds) {
-                entryWidget.setWidth(rightLimit - x);
                 ds.repositionElements();
             }
 
             this.setHeight(
-                    entryWidget.getY() + entryWidget.getHeight() + 4
+                    entryWidget.getLocalY() + entryWidget.getHeight() + 4
             );
         }
     }

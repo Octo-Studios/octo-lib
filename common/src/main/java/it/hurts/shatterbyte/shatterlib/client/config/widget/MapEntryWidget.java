@@ -108,7 +108,7 @@ public class MapEntryWidget<V> extends AbstractWidget
         remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
 
         int leftLimit = x;
-        int rightLimit = remove.getLocalX() - 4;
+        int rightLimit = remove.getLocalX() + remove.getWidth();
         int availableWidth = Math.max(20, rightLimit - leftLimit);
 
         boolean moveDown = false;

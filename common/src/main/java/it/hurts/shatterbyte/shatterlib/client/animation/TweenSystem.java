@@ -9,7 +9,7 @@ import java.util.concurrent.locks.LockSupport;
 public class TweenSystem {
     private static final List<Tween> TWEENS = new ArrayList<>();
     private static final Queue<Tween> PENDING = new ConcurrentLinkedQueue<>();
-    private static final long UPDATE_INTERVAL_NANOS = 8_000_000L; // ~125 Hz
+    private static final long UPDATE_INTERVAL_NANOS = 3_000_000L;
 
     private static boolean running = false;
 

@@ -36,18 +36,31 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
-        this.visualCursorPos = this.getValue().length();
-        this.seek(this.getValue().length());
+        this.cursorPos = this.getValue().length();
+        this.visualCursorPos = this.cursorPos;
     }
 
     public boolean seek(int where) {
         int oldPos = this.cursorPos;
-        this.cursorPos = Math.clamp(where, 0, this.getValue().length());
+        int newPos = Math.clamp(where, 0, this.getValue().length());
 
-        boolean hasChanged = oldPos != this.cursorPos;
+        this.cursorPos = newPos;
+        boolean hasChanged = oldPos != newPos;
+
+        // Avoid spawning cursor tweens for non-focused fields in large forms.
+        if (!this.isFocused()) {
+            this.visualCursorPos = newPos;
+            return hasChanged;
+        }
+
+        if (Math.abs(this.visualCursorPos - newPos) < 0.001d) {
+            this.visualCursorPos = newPos;
+            return hasChanged;
+        }
+
         cursorTween.kill();
         cursorTween = Tween.create();
-        cursorTween.tweenMethod(this::setVisualCursorPos, this.visualCursorPos, (double) this.cursorPos, 0.25)
+        cursorTween.tweenMethod(this::setVisualCursorPos, this.visualCursorPos, (double) newPos, 0.25)
                 .setEaseType(EaseType.EASE_OUT)
                 .setTransitionType(TransitionType.EXPO);
         cursorTween.start();

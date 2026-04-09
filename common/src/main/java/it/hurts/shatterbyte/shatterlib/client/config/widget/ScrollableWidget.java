@@ -36,7 +36,9 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        guiGraphics.enableScissor(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
         this.children().reversed().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
+        guiGraphics.disableScissor();
     }
 
     @Override
@@ -46,7 +48,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Nullable
@@ -75,16 +77,30 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        ContainerEventHandler.super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-        if (this.maxScrollY > 0) {
-            this.widgets.forEach(widget -> {
-                if (widget instanceof Scrollable scrollable) {
-                    scrollable.scroll(scrollY * 20);
-                    scrollable.clamp(-maxScrollY, 0);
-                }
-            });
+        boolean childHandled = ContainerEventHandler.super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+
+        if (!this.isMouseOver(mouseX, mouseY) || scrollY == 0) {
+            return childHandled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+
+        if (this.maxScrollY <= 0) {
+            recalculateMaxScrollY();
+        }
+
+        if (this.maxScrollY <= 0) {
+            return childHandled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        }
+
+        boolean scrolled = false;
+        for (AbstractWidget widget : this.widgets) {
+            if (widget instanceof Scrollable scrollable) {
+                scrollable.scroll(scrollY * 20);
+                scrollable.clamp(-maxScrollY, 0);
+                scrolled = true;
+            }
+        }
+
+        return scrolled || childHandled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     public void clamp() {
@@ -174,17 +190,24 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public void requestRelayout() {
-        int tallestChildHeight = 0;
-
         for (AbstractWidget widget : this.children()) {
             if (widget instanceof DynamicallySized ds) {
                 ds.repositionElements();
             }
-
-            tallestChildHeight = Math.max(tallestChildHeight, widget.getHeight());
         }
 
-        this.maxScrollY = Math.max(0, tallestChildHeight - this.height);
+        recalculateMaxScrollY();
         this.clamp();
+    }
+
+    private void recalculateMaxScrollY() {
+        int contentBottom = 0;
+        int thisY = this.getY();
+
+        for (AbstractWidget widget : this.children()) {
+            contentBottom = Math.max(contentBottom, widget.getY() + widget.getHeight() - thisY);
+        }
+
+        this.maxScrollY = Math.max(0, contentBottom - this.height);
     }
 }

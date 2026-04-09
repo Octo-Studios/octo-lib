@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, DynamicallySized, PathContainerWidget {
@@ -40,6 +39,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     boolean dragging = false;
     GuiEventListener focused;
+    private List<GuiEventListener> childListeners = List.of();
 
     FieldWidget() {
         super(0, 0, 16, 16, Component.empty());
@@ -124,6 +124,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         fieldWidget.entryWidget = widget;
         fieldWidget.resetButton = new ResetFieldButtonWidget(widget);
         fieldWidget.resetButton.setParent(fieldWidget);
+        fieldWidget.childListeners = List.of(fieldWidget.entryWidget, fieldWidget.resetButton);
 
         return fieldWidget;
     }
@@ -152,10 +153,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public List<? extends GuiEventListener> children() {
-        List<GuiEventListener> children = new ArrayList<>();
-        children.add(entryWidget);
-        children.add(resetButton);
-        return children;
+        return childListeners;
     }
 
     @Override
@@ -257,7 +255,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override

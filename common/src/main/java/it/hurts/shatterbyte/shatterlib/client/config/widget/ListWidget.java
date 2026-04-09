@@ -5,6 +5,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -28,6 +29,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     public final List<ListEntryWidget<E>> entries = new ArrayList<>();
     public final List<ListEntryWidget<E>> renderables = new ArrayList<>();
+    private final List<GuiEventListener> childListeners = new ArrayList<>();
     IconButtonWidget<ListWidget<E>> addButton = new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
 
     private boolean dragging;
@@ -92,6 +94,10 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             renderables.add(entry);
         }
 
+        childListeners.clear();
+        childListeners.addAll(entries);
+        childListeners.add(addButton);
+
         relayoutAndPropagate();
     }
 
@@ -153,9 +159,20 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
         addButton.render(guiGraphics, mouseX, mouseY, pt);
 
-        for (ListEntryWidget<E> widget : renderables.reversed()) {
-            guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() + widget.getHeight() + 1, 0xff1c1c17);
-            guiGraphics.hLine(this.getX(), this.getX() + this.width -1, widget.getY() +widget.getHeight() + 2, 0xff3c3c42);
+        int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        int left = this.getX();
+        int right = left + this.width - 1;
+
+        for (int i = renderables.size() - 1; i >= 0; i--) {
+            ListEntryWidget<E> widget = renderables.get(i);
+            int widgetY = widget.getY();
+            int widgetBottom = widgetY + widget.getHeight();
+            if (widgetBottom < 0 || widgetY > screenHeight) {
+                continue;
+            }
+
+            guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
+            guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
             widget.render(guiGraphics, mouseX, mouseY, pt);
         }
     }
@@ -164,12 +181,12 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return new ArrayList<GuiEventListener>(entries) {{add(addButton);}};
+        return childListeners;
     }
 
     @Nullable

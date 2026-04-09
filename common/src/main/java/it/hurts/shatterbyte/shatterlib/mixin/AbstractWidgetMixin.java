@@ -92,14 +92,14 @@ public abstract class AbstractWidgetMixin {
     @Inject(method = "getX", at = @At("HEAD"), cancellable = true)
     private void getGlobalX(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof Child<?> child) {
-            cir.setReturnValue(child.getPosition().x);
+            cir.setReturnValue(child.getGlobalX());
         }
     }
 
     @Inject(method = "getY", at = @At("HEAD"), cancellable = true)
     private void getGlobalY(CallbackInfoReturnable<Integer> cir) {
         if (this instanceof Child<?> child) {
-            cir.setReturnValue(child.getPosition().y);
+            cir.setReturnValue(child.getGlobalY());
         }
     }
 }

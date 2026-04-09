@@ -26,6 +26,7 @@ public class MapEntryWidget<V> extends AbstractWidget
     private MapWidget<V> parent;
     private String key;
     private final int index;
+    private final List<GuiEventListener> childListeners;
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -79,6 +80,8 @@ public class MapEntryWidget<V> extends AbstractWidget
         keyWidget.setParent(this);
         entryWidget.setParent(this);
         remove.setParent(this);
+
+        childListeners = List.of(up, down, remove, keyWidget, entryWidget);
     }
 
     public void requestRelayout() {
@@ -155,7 +158,7 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return List.of(up, down, remove, keyWidget, entryWidget);
+        return childListeners;
     }
 
     @Override
@@ -278,7 +281,7 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override

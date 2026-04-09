@@ -4,7 +4,6 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import net.minecraft.client.gui.GuiGraphics;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ResetFieldButtonWidget extends IconButtonWidget<FieldWidget> {
@@ -12,7 +11,7 @@ public class ResetFieldButtonWidget extends IconButtonWidget<FieldWidget> {
 
     public ResetFieldButtonWidget(AbstractEntryWidget<?> entry) {
         super(0, 0, 13, 14, entry::resetValue, UIElements.ICON_RESET);
-        this.isEqualToDefault = () -> entry.getValue().equals(entry.getDefaultValue());
+        this.isEqualToDefault = entry::isAtDefaultValue;
     }
 
     @Override

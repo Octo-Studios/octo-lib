@@ -5,6 +5,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -31,6 +32,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     public final List<MapEntryWidget<V>> entries = new ArrayList<>();
     public final List<MapEntryWidget<V>> renderables = new ArrayList<>();
+    private final List<GuiEventListener> childListeners = new ArrayList<>();
 
     IconButtonWidget<MapWidget<V>> addButton =
             new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
@@ -93,6 +95,10 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             entries.add(entry);
             renderables.add(entry);
         }
+
+        childListeners.clear();
+        childListeners.addAll(entries);
+        childListeners.add(addButton);
 
         relayoutAndPropagate();
     }
@@ -188,21 +194,32 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
         addButton.render(g, mouseX, mouseY, pt);
 
-        for (MapEntryWidget<V> e : renderables.reversed()) {
-            g.hLine(getX(), getX() + width - 1, e.getY() + e.getHeight() + 1, 0xff1c1c17);
-            g.hLine(getX(), getX() + width - 1, e.getY() + e.getHeight() + 2, 0xff3c3c42);
+        int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        int left = getX();
+        int right = left + width - 1;
+
+        for (int i = renderables.size() - 1; i >= 0; i--) {
+            MapEntryWidget<V> e = renderables.get(i);
+            int entryY = e.getY();
+            int entryBottom = entryY + e.getHeight();
+            if (entryBottom < 0 || entryY > screenHeight) {
+                continue;
+            }
+
+            g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
+            g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
             e.render(g, mouseX, mouseY, pt);
         }
     }
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return new ArrayList<GuiEventListener>(entries) {{add(addButton);}};
+        return childListeners;
     }
 
     @Nullable

@@ -13,6 +13,26 @@ public interface Child<T extends LayoutElement> extends LayoutElement, GuiEventL
     @Nullable T getParent();
     void setParent(@Nullable T parent);
 
+    default int getGlobalX() {
+        T parent = getParent();
+        if (parent == null) {
+            return getLocalX();
+        }
+
+        // Use parent.getX() so overridden parent coordinates (e.g. scroll offsets) are applied.
+        return getLocalX() + parent.getX();
+    }
+
+    default int getGlobalY() {
+        T parent = getParent();
+        if (parent == null) {
+            return getLocalY();
+        }
+
+        // Use parent.getY() so overridden parent coordinates (e.g. scroll offsets) are applied.
+        return getLocalY() + parent.getY();
+    }
+
     default int getLocalX() {
         if (this instanceof AbstractWidget widget) {
             return ((AbstractWidgetAccessor) widget).getLocalX();
@@ -35,12 +55,19 @@ public interface Child<T extends LayoutElement> extends LayoutElement, GuiEventL
 
     default Vector2i getParentPosition() {
         T parent = getParent();
-        return parent != null ? new Vector2i(parent.getX(), parent.getY()) : new Vector2i(0, 0);
+        if (parent == null) {
+            return new Vector2i(0, 0);
+        }
+
+        if (parent instanceof Child<?> childParent) {
+            return new Vector2i(childParent.getGlobalX(), childParent.getGlobalY());
+        }
+
+        return new Vector2i(parent.getX(), parent.getY());
     }
 
     default Vector2i getPosition() {
-        Vector2i parentPos = getParentPosition();
-        return new Vector2i(getLocalX() + parentPos.x, getLocalY() + parentPos.y);
+        return new Vector2i(getGlobalX(), getGlobalY());
     }
 
     @Override
@@ -49,15 +76,29 @@ public interface Child<T extends LayoutElement> extends LayoutElement, GuiEventL
     }
 
     default void detachWidget() {
-        Vector2i globalPos = getPosition();
+        int globalX = getGlobalX();
+        int globalY = getGlobalY();
         setParent(null);
-        setPosition(globalPos.x, globalPos.y);
+        setPosition(globalX, globalY);
     }
 
     default void attachWidget(@Nullable T parent) {
-        Vector2i globalPos = getPosition();
+        int globalX = getGlobalX();
+        int globalY = getGlobalY();
         setParent(parent);
-        Vector2i parentPos = getParentPosition();
-        setPosition(globalPos.x - parentPos.x, globalPos.y - parentPos.y);
+
+        int parentX = 0;
+        int parentY = 0;
+        if (parent != null) {
+            if (parent instanceof Child<?> childParent) {
+                parentX = childParent.getGlobalX();
+                parentY = childParent.getGlobalY();
+            } else {
+                parentX = parent.getX();
+                parentY = parent.getY();
+            }
+        }
+
+        setPosition(globalX - parentX, globalY - parentY);
     }
 }

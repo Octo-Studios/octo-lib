@@ -23,6 +23,7 @@ import java.util.List;
 public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidget<E>>, ContainerEventHandler, DynamicallySized, PathContainerWidget {
     private ListWidget<E> parent;
     private final int index;
+    private final List<GuiEventListener> childListeners;
 
     AbstractEntryWidget<E> entryWidget;
 
@@ -73,6 +74,8 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         down.setParent(this);
         remove.setParent(this);
         entryWidget.setParent(this);
+
+        childListeners = List.of(up, down, remove, entryWidget);
     }
 
     public void requestRelayout() {
@@ -99,10 +102,6 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         if (entryWidget instanceof DynamicallySized dynamicallySized) {
             entryWidget.setWidth(this.width - x - 4 - (remove.getWidth() + 4));
             dynamicallySized.repositionElements();
-        }
-
-        if (entryWidget instanceof DynamicallySized ds) {
-            ds.repositionElements();
         }
 
         this.setHeight(Math.max(16, entryWidget.getHeight() + 4));
@@ -143,7 +142,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return List.of(up, down, remove, entryWidget);
+        return childListeners;
     }
 
     @Override
@@ -245,7 +244,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY) || this.children().stream().anyMatch(child -> child.isMouseOver(mouseX, mouseY));
+        return super.isMouseOver(mouseX, mouseY);
     }
 
     @Override

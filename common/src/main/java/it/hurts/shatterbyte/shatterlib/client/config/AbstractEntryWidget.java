@@ -23,6 +23,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -35,6 +36,8 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     @Getter
     private final E defaultValue;
+    private boolean defaultStateDirty = true;
+    private boolean defaultState = true;
 
     private final Supplier<E> getter;
     private final Consumer<E> setter;
@@ -146,6 +149,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     public void setValue(E value) {
         this.setter.accept(value);
         this.updateCachedValue();
+        this.defaultStateDirty = true;
     }
 
     private void updateCachedValue() {
@@ -160,6 +164,15 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
 
     public void resetValue() {
         this.setValue(this.getDefaultValue());
+    }
+
+    public boolean isAtDefaultValue() {
+        if (defaultStateDirty) {
+            defaultState = Objects.equals(this.getValue(), this.getDefaultValue());
+            defaultStateDirty = false;
+        }
+
+        return defaultState;
     }
 
     @Override

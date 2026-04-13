@@ -22,9 +22,9 @@ public class MultipleConfigScreen extends ConfigScreen {
         super(null, prevScreen);
 
         int y = 4;
-        this.configButtons = new ScrollableWidget(0, 0, 128, this.height);
+        this.configButtons = new ScrollableWidget(0, 32, 128, this.height-32);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
-            ConfigButton button = new ConfigButton(config, 4, y, 120, 24, () -> this.changeConfig(config));
+            ConfigButton button = new ConfigButton(config, 4, y + 32, 120, 24, () -> this.changeConfig(config));
             button.setParent(configButtons);
             configButtons.children().add(button);
             y += 4 + button.getHeight();
@@ -52,7 +52,7 @@ public class MultipleConfigScreen extends ConfigScreen {
                         c -> {}
                 )
         );
-        this.scrollingObject = new ScrollableWidget(128, 0, this.width, this.height, object);
+        this.scrollingObject = new ScrollableWidget(128, 32, this.width, this.height-32, object);
         this.addRenderableWidget(scrollingObject);
 
         repositionElements();
@@ -61,7 +61,7 @@ public class MultipleConfigScreen extends ConfigScreen {
     @Override
     protected void repositionElements() {
         if (configButtons != null) {
-            configButtons.setHeight(this.height);
+            configButtons.setHeight(this.height-32);
             int y = configButtons.children().getLast().getY() + configButtons.children().getLast().getHeight() + 4;
             configButtons.maxScrollY = Math.max(0, y - configButtons.getHeight());
             configButtons.clamp();
@@ -69,7 +69,8 @@ public class MultipleConfigScreen extends ConfigScreen {
 
         scrollingObject.setWidth(this.width - 128);
         scrollingObject.setX(128);
-        scrollingObject.setHeight(this.height);
+        scrollingObject.setY(32);
+        scrollingObject.setHeight(this.height-32);
         object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
         scrollingObject.maxScrollY = Math.max(0, object.getHeight() - scrollingObject.getHeight());

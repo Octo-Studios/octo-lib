@@ -24,10 +24,17 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TextAreaWidget extends AbstractEntryWidget<String> {
+    private static final int PADDING_X = 4;
+    private static final int PADDING_Y = 4;
+    private static final int CURSOR_MARGIN = 2;
+
     Font font = Minecraft.getInstance().font;
     int cursorPos;
+
     @Setter
     double visualCursorPos;
+
+    private int scrollX = 0;
 
     Tween cursorTween = Tween.create();
 
@@ -38,6 +45,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
         this.cursorPos = this.getValue().length();
         this.visualCursorPos = this.cursorPos;
+        this.ensureCursorVisible();
     }
 
     public boolean seek(int where) {
@@ -49,11 +57,13 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
         if (!this.isFocused()) {
             this.visualCursorPos = newPos;
+            this.ensureCursorVisible();
             return hasChanged;
         }
 
         if (Math.abs(this.visualCursorPos - newPos) < 0.001d) {
             this.visualCursorPos = newPos;
+            this.ensureCursorVisible();
             return hasChanged;
         }
 
@@ -64,12 +74,20 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
                 .setTransitionType(TransitionType.EXPO);
         cursorTween.start();
 
+        this.ensureCursorVisible();
         return hasChanged;
+    }
+
+    private int getInnerWidth() {
+        return Math.max(0, this.getWidth() - (PADDING_X * 2));
+    }
+
+    private int getInnerHeight() {
+        return Math.max(0, this.getHeight() - (PADDING_Y * 2));
     }
 
     private double getCursorPixelX(String value) {
         int cpCount = value.codePointCount(0, value.length());
-
         double clamped = Math.clamp(visualCursorPos, 0.0, cpCount);
 
         int leftCps = (int) Math.floor(clamped);
@@ -89,25 +107,59 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         return x;
     }
 
+    private void ensureCursorVisible() {
+        String value = this.getValue();
+        int visibleWidth = this.getInnerWidth();
+
+        if (visibleWidth <= 0) {
+            this.scrollX = 0;
+            return;
+        }
+
+        int textWidth = font.width(value);
+        int maxScroll = Math.max(0, textWidth - visibleWidth);
+        int cursorPixel = (int) Math.round(this.getCursorPixelX(value));
+
+        int leftVisible = this.scrollX + CURSOR_MARGIN;
+        int rightVisible = this.scrollX + visibleWidth - CURSOR_MARGIN;
+
+        if (cursorPixel < leftVisible) {
+            this.scrollX = Math.max(0, cursorPixel - CURSOR_MARGIN);
+        } else if (cursorPixel > rightVisible) {
+            this.scrollX = Math.min(maxScroll, cursorPixel - (visibleWidth - CURSOR_MARGIN));
+        }
+
+        this.scrollX = Math.clamp(this.scrollX, 0, maxScroll);
+    }
+
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         String value = this.getValue();
 
         UIElements.TEXT_AREA.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-        guiGraphics.drawString(font, value, this.getX()+4, this.getY()+4, 0xffcccccc, true);
+
+        int clipX = this.getX() + PADDING_X;
+        int clipY = this.getY() + PADDING_Y - 1;
+        int clipW = this.getInnerWidth();
+        int clipH = this.getInnerHeight() + 2;
+
+        guiGraphics.enableScissor(clipX, clipY, clipX + clipW, clipY + clipH);
+
+        int textX = clipX - this.scrollX;
+        int textY = this.getY() + 4;
+        guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
 
         if (this.isFocused()) {
-            double cursorX = getCursorPixelX(value);
-            guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate((float) cursorX, 0);
+            int cursorX = textX + (int) Math.round(getCursorPixelX(value));
             guiGraphics.vLine(
-                    this.getX() + 3,
+                    cursorX,
                     this.getY() + 2,
                     this.getY() + this.height - 3,
                     0xddffffff
             );
-            guiGraphics.pose().popMatrix();
         }
+
+        guiGraphics.disableScissor();
     }
 
     @Override
@@ -153,7 +205,6 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
             }
 
             String value = this.getValue();
-
             int deleteFrom = value.offsetByCodePoints(cursorPos, -1);
 
             String before = value.substring(0, deleteFrom);
@@ -182,6 +233,15 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     public void setValue(String value) {
         super.setValue(value);
         this.seek(cursorPos);
+        this.ensureCursorVisible();
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if (focused) {
+            this.ensureCursorVisible();
+        }
     }
 
     public static Predicate<String> integerPredicate() {

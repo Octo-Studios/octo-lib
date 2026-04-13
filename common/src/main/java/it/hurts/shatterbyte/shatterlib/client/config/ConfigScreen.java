@@ -30,7 +30,7 @@ public class ConfigScreen extends Screen {
 
             object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {
             });
-            scrollingObject = new ScrollableWidget(0, 0, this.width, this.height, object);
+            scrollingObject = new ScrollableWidget(0, 32, this.width, this.height-32, object);
             this.addRenderableWidget(scrollingObject);
 
             repositionElements();
@@ -48,7 +48,7 @@ public class ConfigScreen extends Screen {
     protected void repositionElements() {
         scrollingObject.setWidth(this.width);
         //scrollingObject.setX(128);
-        scrollingObject.setHeight(this.height);
+        scrollingObject.setHeight(this.height-32);
         object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
         scrollingObject.maxScrollY = Math.max(0, object.getHeight() - this.height);

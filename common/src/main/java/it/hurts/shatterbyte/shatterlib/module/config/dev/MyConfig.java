@@ -27,21 +27,9 @@ public class MyConfig extends ShatterConfig {
                 """;
     }
 
-//    @Comment("Test enum!")
-//    private Rarity testRarity = Rarity.EPIC;
-//
-//    @Exclude
-//    private String superPrivateString = "pls don't";
-
-    //private TestObject someObject = new TestObject();
     private LinkedHashMap<String, TestObject> someMap = new LinkedHashMap<>() {{
         put("a", new TestObject());
     }};
-
-//    @Range(min = 0, max = 10, step = 0.1d)
-//    private float testValue = 3.5f;
-//
-//    private float testWithoutRange = 3.25f;
 
     @Range(min = 0, max = 5, step = 0.25f)
     private LinkedHashMap<String, Float> map = new LinkedHashMap<>() {{

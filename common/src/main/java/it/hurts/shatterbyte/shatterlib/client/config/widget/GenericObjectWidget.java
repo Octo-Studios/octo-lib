@@ -113,10 +113,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
-            guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+            if (i < renderables.size() - 1) {
+                guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
+                guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+            }
             widget.render(guiGraphics, mouseX, mouseY, partialTick);
         }
+
+        //guiGraphics.vLine(this.getX()+4, this.getY()+16, this.getY()+this.getHeight(), 0xff1c1c17);
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff1f1e23);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);
     }

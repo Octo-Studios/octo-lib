@@ -10,14 +10,14 @@ public class ExampleConfig extends ShatterConfig {
     @Override
     public String getComment() {
         return """
-                Example relic-like configuration file
+                Example relic-like configuration file avavavavava
                 Used for testing purposes.
                 """;
     }
 
     @Override
     public String getName() {
-        return "example";
+        return "iudshuidshuidsahuidsahuidsahuidauidashuidashuida";
     }
 
     @Override

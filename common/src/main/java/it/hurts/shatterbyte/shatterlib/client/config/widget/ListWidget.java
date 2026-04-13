@@ -133,7 +133,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
         for (ListEntryWidget<E> entry : entries) {
             entry.setPosition(4, y);
-            entry.setWidth(this.width - 8);
+            entry.setWidth(this.width - 4);
             entry.repositionElements();
 
             y += entry.getHeight() + 4;
@@ -155,8 +155,8 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float pt) {
         //guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0x22000000);
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
         addButton.render(guiGraphics, mouseX, mouseY, pt);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -171,8 +171,10 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
                 continue;
             }
 
-            guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
-            guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+            if (i < renderables.size() - 1) {
+                guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
+                guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+            }
             widget.render(guiGraphics, mouseX, mouseY, pt);
         }
     }

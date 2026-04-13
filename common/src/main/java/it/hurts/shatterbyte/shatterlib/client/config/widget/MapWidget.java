@@ -183,7 +183,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
         for (MapEntryWidget<V> entry : entries) {
             entry.setPosition(4, y);
-            entry.setWidth(this.width - 8);
+            entry.setWidth(this.width - 4);
             entry.repositionElements();
             y += entry.getHeight() + 4;
         }
@@ -201,8 +201,8 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     @Override
     protected void renderEntry(GuiGraphics g, int mouseX, int mouseY, float pt) {
-        g.hLine(getX(), getX() + width - 1, getY() + 1, 0xff1c1c17);
-        g.hLine(getX(), getX() + width - 1, getY() + 2, 0xff3c3c42);
+        //g.hLine(getX(), getX() + width - 1, getY() + 1, 0xff1c1c17);
+        //g.hLine(getX(), getX() + width - 1, getY() + 2, 0xff3c3c42);
 
         addButton.render(g, mouseX, mouseY, pt);
 
@@ -218,8 +218,10 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
                 continue;
             }
 
-            g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
-            g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
+            if (i < renderables.size() - 1) {
+                g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
+                g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
+            }
             e.render(g, mouseX, mouseY, pt);
         }
     }

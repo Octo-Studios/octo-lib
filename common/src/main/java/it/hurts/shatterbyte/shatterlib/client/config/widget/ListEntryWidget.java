@@ -99,7 +99,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         down.setPosition(x, 2);
         x += down.getWidth() + 4;
 
-        remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
+        remove.setPosition(this.getWidth() - remove.getWidth(), 2);
         int rightLimit = remove.getLocalX() + remove.getWidth();
         int availableWidth = Math.max(20, rightLimit - x);
 
@@ -107,7 +107,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         boolean overflowsInlineArea = !isDynamicallySized && preferredEntryWidth > availableWidth;
         boolean overflowsScreen = !isDynamicallySized
-                && this.getX() + x + preferredEntryWidth > screenWidth - 4;
+                && this.getX() + x + preferredEntryWidth > screenWidth;
 
         if (isDynamicallySized || overflowsInlineArea || overflowsScreen) {
             int y = up.getLocalY() + up.getHeight() + 4;

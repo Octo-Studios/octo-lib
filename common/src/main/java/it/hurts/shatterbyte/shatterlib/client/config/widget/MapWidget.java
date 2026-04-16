@@ -36,7 +36,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     IconButtonWidget<MapWidget<V>> addButton =
             new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
-    CollapseButtonWidget<MapWidget<V>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed);
+    CollapseButtonWidget<MapWidget<V>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed, this::isCollapsed);
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -246,6 +246,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             return;
         }
 
+        collapseButton.renderExpandedBranchLine(g);
         addButton.render(g, mouseX, mouseY, pt);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();

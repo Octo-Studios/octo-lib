@@ -31,7 +31,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     public final List<ListEntryWidget<E>> renderables = new ArrayList<>();
     private final List<GuiEventListener> childListeners = new ArrayList<>();
     IconButtonWidget<ListWidget<E>> addButton = new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
-    CollapseButtonWidget<ListWidget<E>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed);
+    CollapseButtonWidget<ListWidget<E>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed, this::isCollapsed);
 
     private boolean dragging;
     private GuiEventListener focused;
@@ -200,6 +200,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             return;
         }
 
+        collapseButton.renderExpandedBranchLine(guiGraphics);
         addButton.render(guiGraphics, mouseX, mouseY, pt);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();

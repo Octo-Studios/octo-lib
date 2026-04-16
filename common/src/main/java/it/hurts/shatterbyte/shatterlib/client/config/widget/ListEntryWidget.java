@@ -99,7 +99,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         down.setPosition(x, 2);
         x += down.getWidth() + 4;
 
-        remove.setPosition(this.getWidth() - remove.getWidth(), 2);
+        remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
         int rightLimit = remove.getLocalX() + remove.getWidth();
         int availableWidth = Math.max(20, rightLimit - x);
 

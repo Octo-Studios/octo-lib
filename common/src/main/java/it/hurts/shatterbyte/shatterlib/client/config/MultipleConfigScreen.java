@@ -67,8 +67,8 @@ public class MultipleConfigScreen extends ConfigScreen {
             configButtons.clamp();
         }
 
-        scrollingObject.setWidth(this.width - 128);
-        scrollingObject.setX(128);
+        scrollingObject.setWidth(this.width - 128 - 128);
+        scrollingObject.setX(128 + 64);
         scrollingObject.setY(32);
         scrollingObject.setHeight(this.height-32);
         object.setWidth(scrollingObject.getWidth());
@@ -79,8 +79,11 @@ public class MultipleConfigScreen extends ConfigScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        guiGraphics.fill(128, 32, 192, this.height, 0x661c1c1e);
+        guiGraphics.fill(this.width-64, 32, this.width, this.height, 0x661c1c1e);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.vLine(128, 0, this.height, 0xff1c1c17);
+        guiGraphics.hLine(0, this.width, 31, 0xff1c1c17);
         //guiGraphics.vLine(129, 0, this.height, 0xff1c1c17);
     }
 }

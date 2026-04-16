@@ -32,7 +32,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     List<FieldWidget> widgets = new ArrayList<>();
     List<FieldWidget> renderables = new ArrayList<>();
     private final List<GuiEventListener> childListeners = new ArrayList<>();
-    CollapseButtonWidget<GenericObjectWidget> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed);
+    CollapseButtonWidget<GenericObjectWidget> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed, this::isCollapsed);
 
     FieldWidget focused;
     boolean dragging = false;
@@ -142,6 +142,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         if (collapsed) {
             return;
         }
+
+        collapseButton.renderExpandedBranchLine(guiGraphics);
 
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);

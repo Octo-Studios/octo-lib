@@ -140,7 +140,7 @@ public class MapEntryWidget<V> extends AbstractWidget
             int inlineEntryX = leftLimit + keyWidth + 4;
             int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
             boolean overflowsScreen = !isDynamicallySized
-                    && this.getX() + inlineEntryX + preferredEntryWidth > screenWidth - 4;
+                    && this.getX() + inlineEntryX + preferredEntryWidth > screenWidth;
 
             if (isDynamicallySized || overflowsScreen) {
                 int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
@@ -168,7 +168,7 @@ public class MapEntryWidget<V> extends AbstractWidget
             ));
         } else {
             keyWidget.setPosition(leftLimit, 2);
-            keyWidget.setWidth(rightLimit - leftLimit);
+            keyWidget.setWidth(keyWidth);
 
             int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 

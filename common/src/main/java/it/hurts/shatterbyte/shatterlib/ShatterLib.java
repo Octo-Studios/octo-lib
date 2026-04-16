@@ -10,6 +10,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.TestServerConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.config.ShakeConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
@@ -26,6 +27,7 @@ public final class ShatterLib {
     public static MyConfig CONFIG = new MyConfig();
     public static TestServerConfig SERVER_CONFIG = new TestServerConfig();
     public static ExampleConfig EXAMPLE = new ExampleConfig();
+    public static ShakeConfig EXAMPLE_SHAKE_CONFIG = new ShakeConfig();
 
     public static void init() {
         registerCommands();
@@ -38,6 +40,7 @@ public final class ShatterLib {
             ConfigManager.register(MOD_ID, CONFIG);
             ConfigManager.register(MOD_ID, SERVER_CONFIG);
             ConfigManager.register(MOD_ID, EXAMPLE);
+            ConfigManager.register(MOD_ID, EXAMPLE_SHAKE_CONFIG);
         }
 
         LifecycleEvent.SETUP.register(() -> {

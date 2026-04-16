@@ -29,7 +29,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     Tween tween = Tween.create();
 
     public SliderWidget(ShatterConfig config, Range range, PathContainerWidget parent, N defaultValue, Supplier<N> getter, Consumer<N> setter) {
-        super(config, parent, defaultValue, getter, setter, 0, 0, 225, 8);
+        super(config, parent, defaultValue, getter, setter, 0, 0, 225, 14);
         this.valueClass = defaultValue != null ? defaultValue.getClass() : Double.class;
         this.setRange(range.min(), range.max(), range.step());
         this.visualValue = this.getValue() == null ? 0d : numberToDouble(this.getValue());
@@ -89,19 +89,19 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
 
         float fillX = (float) (this.getX()+this.getWidth()*pct-1);
 
-        UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2);
+        UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2+2);
         guiGraphics.enableScissor(this.getX(), this.getY(), (int) fillX, this.getY()+this.getHeight());
-        UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2);
+        UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2+2);
         guiGraphics.disableScissor();
 
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(fillX, 0);
-        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, -2, this.getY());
+        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, -2, this.getY()+2);
         guiGraphics.pose().popMatrix();
 
         Font font = Minecraft.getInstance().font;
         String string = String.format("%.1f", this.getValue().doubleValue());
-        guiGraphics.drawString(font, string, this.getX() + Math.round((this.width - font.width(string)) / 2f), this.getY() + 1, 0xffffffff, true);
+        guiGraphics.drawString(font, string, this.getX() + Math.round((this.width - font.width(string)) / 2f), this.getY() + 1+2, 0xffffffff, true);
     }
 
     @Override

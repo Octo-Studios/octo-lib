@@ -31,18 +31,22 @@ import java.util.function.Supplier;
 public class GenericObjectWidget extends AbstractEntryWidget<Object> implements ContainerEventHandler, DynamicallySized, Scrollable {
     List<FieldWidget> widgets = new ArrayList<>();
     List<FieldWidget> renderables = new ArrayList<>();
+    private final List<GuiEventListener> childListeners = new ArrayList<>();
+    CollapseButtonWidget<GenericObjectWidget> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed, this::isCollapsed);
 
     FieldWidget focused;
     boolean dragging = false;
 
     @Getter
-    public boolean collapsed = true;
+    private boolean collapsed;
 
     private double scrollOffset;
 
     public GenericObjectWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
+        this.collapseButton.setParent(this);
         this.populateWidget();
+        this.refreshChildListeners();
         this.repositionElements();
     }
 
@@ -53,7 +57,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public void repositionElements() {
-        int totalHeight = 4;
+        collapseButton.setPosition(0, 0);
+
+        if (collapsed) {
+            this.setHeight(14);
+            return;
+        }
+
+        int totalHeight = 8;
 //        if (this.getParent() != null) {
 //            this.setWidth(this.getParent().getWidth() - 10 - 14);
 //        }
@@ -71,6 +82,33 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     void relayoutAndPropagate() {
         repositionElements();
         requestRelayout();
+    }
+
+    private void toggleCollapsed() {
+        setCollapsed(!collapsed);
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        if (this.collapsed == collapsed) {
+            return;
+        }
+
+        this.collapsed = collapsed;
+        if (collapsed) {
+            this.setFocused(null);
+        }
+
+        refreshChildListeners();
+        relayoutAndPropagate();
+    }
+
+    private void refreshChildListeners() {
+        childListeners.clear();
+        childListeners.add(collapseButton);
+
+        if (!collapsed) {
+            childListeners.addAll(widgets);
+        }
     }
 
     @Override
@@ -99,8 +137,16 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         //guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.width, this.getY()+this.height, 0x20000000);
         //this.repositionWidgets();
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        collapseButton.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        if (collapsed) {
+            return;
+        }
+
+        collapseButton.renderExpandedBranchLine(guiGraphics);
+
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int left = this.getX();
         int right = left + this.width - 1;
@@ -113,10 +159,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
-            guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+            if (i < renderables.size() - 1) {
+                guiGraphics.hLine(left+4, right-4, widgetBottom + 1, 0xff1c1c17);
+                guiGraphics.hLine(left+4, right-4, widgetBottom + 2, 0xff3c3c42);
+            }
             widget.render(guiGraphics, mouseX, mouseY, partialTick);
         }
+
+        //guiGraphics.vLine(this.getX()+4, this.getY()+16, this.getY()+this.getHeight(), 0xff1c1c17);
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff1f1e23);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);
     }
@@ -184,7 +234,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return widgets;
+        return childListeners;
     }
 
     @Override

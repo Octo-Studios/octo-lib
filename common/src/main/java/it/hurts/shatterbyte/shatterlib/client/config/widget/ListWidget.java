@@ -31,9 +31,12 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     public final List<ListEntryWidget<E>> renderables = new ArrayList<>();
     private final List<GuiEventListener> childListeners = new ArrayList<>();
     IconButtonWidget<ListWidget<E>> addButton = new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
+    CollapseButtonWidget<ListWidget<E>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed, this::isCollapsed);
 
     private boolean dragging;
     private GuiEventListener focused;
+    @Getter
+    private boolean collapsed;
 
     @Getter
     private Annotation[] annotations;
@@ -74,6 +77,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         Class<Object> elementClass = (Class<Object>) rawElementClass;
 
         addButton.setParent(this);
+        collapseButton.setParent(this);
         this.elementClass = (Class<E>) elementClass;
         this.elementGenericType = arg;
 
@@ -94,9 +98,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             renderables.add(entry);
         }
 
-        childListeners.clear();
-        childListeners.addAll(entries);
-        childListeners.add(addButton);
+        refreshChildListeners();
 
         relayoutAndPropagate();
     }
@@ -129,11 +131,18 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     @Override
     public void repositionElements() {
-        int y = 4;
+        collapseButton.setPosition(0, 0);
+
+        if (collapsed) {
+            this.setHeight(14);
+            return;
+        }
+
+        int y = 8;
 
         for (ListEntryWidget<E> entry : entries) {
             entry.setPosition(4, y);
-            entry.setWidth(this.width - 8);
+            entry.setWidth(this.width - 4);
             entry.repositionElements();
 
             y += entry.getHeight() + 4;
@@ -150,13 +159,48 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         requestRelayout();
     }
 
+    private void toggleCollapsed() {
+        setCollapsed(!collapsed);
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        if (this.collapsed == collapsed) {
+            return;
+        }
+
+        this.collapsed = collapsed;
+        if (collapsed) {
+            this.setFocused(null);
+        }
+
+        refreshChildListeners();
+        relayoutAndPropagate();
+    }
+
+    private void refreshChildListeners() {
+        childListeners.clear();
+        childListeners.add(collapseButton);
+
+        if (!collapsed) {
+            childListeners.addAll(entries);
+            childListeners.add(addButton);
+        }
+    }
+
     /* ---------- render ---------- */
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float pt) {
         //guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0x22000000);
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
-        guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
+        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        collapseButton.render(guiGraphics, mouseX, mouseY, pt);
+
+        if (collapsed) {
+            return;
+        }
+
+        collapseButton.renderExpandedBranchLine(guiGraphics);
         addButton.render(guiGraphics, mouseX, mouseY, pt);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -171,8 +215,10 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
                 continue;
             }
 
-            guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
-            guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+//            if (i < renderables.size() - 1) {
+//                guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
+//                guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
+//            }
             widget.render(guiGraphics, mouseX, mouseY, pt);
         }
     }

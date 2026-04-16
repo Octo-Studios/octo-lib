@@ -26,7 +26,7 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
     float progress = 0f;
 
     public ToggleWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Boolean defaultValue, Supplier<Boolean> getter, Consumer<Boolean> setter) {
-        super(config, parent, defaultValue, getter, setter, 0, 0, 20, 10);
+        super(config, parent, defaultValue, getter, setter, 0, 0, 20, 14);
         if (this.getValue()) {
             progress = 1f;
         }
@@ -34,15 +34,15 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        UIElements.TOGGLE_DISABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 1);
+        UIElements.TOGGLE_DISABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 3);
         if (this.progress > 0f) {
             guiGraphics.enableScissor(this.getX(), this.getY(), Mth.ceil(this.getX() + progress * 10), this.getY() + this.height + 1);
-            UIElements.TOGGLE_ENABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 1);
+            UIElements.TOGGLE_ENABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 3);
             guiGraphics.disableScissor();
         }
 
         guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(progress * 10f, 0);
+        guiGraphics.pose().translate(progress * 10f, 2);
         UIElements.TOGGLE_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY());
         guiGraphics.pose().popMatrix();
     }

@@ -135,7 +135,7 @@ public class MapEntryWidget<V> extends AbstractWidget
 
         if (!moveDown) {
             keyWidget.setPosition(leftLimit, 2);
-            keyWidget.setWidth(300);
+            keyWidget.setWidth(keyWidth);
 
             int inlineEntryX = leftLimit + keyWidth + 4;
             int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
@@ -168,7 +168,7 @@ public class MapEntryWidget<V> extends AbstractWidget
             ));
         } else {
             keyWidget.setPosition(leftLimit, 2);
-            keyWidget.setWidth(300);
+            keyWidget.setWidth(keyWidth);
 
             int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 

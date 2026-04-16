@@ -36,9 +36,12 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     IconButtonWidget<MapWidget<V>> addButton =
             new IconButtonWidget<>(0, 0, 65, 14, this::addNewEntry, UIElements.ICON_PLUS);
+    CollapseButtonWidget<MapWidget<V>> collapseButton = new CollapseButtonWidget<>(this::toggleCollapsed);
 
     private boolean dragging;
     private GuiEventListener focused;
+    @Getter
+    private boolean collapsed;
 
     @Getter
     private final Class<V> valueClass;
@@ -79,6 +82,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         this.annotations = annotations;
 
         addButton.setParent(this);
+        collapseButton.setParent(this);
         rebuild();
     }
 
@@ -96,9 +100,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             renderables.add(entry);
         }
 
-        childListeners.clear();
-        childListeners.addAll(entries);
-        childListeners.add(addButton);
+        refreshChildListeners();
 
         relayoutAndPropagate();
     }
@@ -179,7 +181,14 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     @Override
     public void repositionElements() {
-        int y = 4;
+        collapseButton.setPosition(0, 0);
+
+        if (collapsed) {
+            this.setHeight(14);
+            return;
+        }
+
+        int y = 8;
 
         for (MapEntryWidget<V> entry : entries) {
             entry.setPosition(4, y);
@@ -199,10 +208,43 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         requestRelayout();
     }
 
+    private void toggleCollapsed() {
+        setCollapsed(!collapsed);
+    }
+
+    public void setCollapsed(boolean collapsed) {
+        if (this.collapsed == collapsed) {
+            return;
+        }
+
+        this.collapsed = collapsed;
+        if (collapsed) {
+            this.setFocused(null);
+        }
+
+        refreshChildListeners();
+        relayoutAndPropagate();
+    }
+
+    private void refreshChildListeners() {
+        childListeners.clear();
+        childListeners.add(collapseButton);
+
+        if (!collapsed) {
+            childListeners.addAll(entries);
+            childListeners.add(addButton);
+        }
+    }
+
     @Override
     protected void renderEntry(GuiGraphics g, int mouseX, int mouseY, float pt) {
         //g.hLine(getX(), getX() + width - 1, getY() + 1, 0xff1c1c17);
         //g.hLine(getX(), getX() + width - 1, getY() + 2, 0xff3c3c42);
+        collapseButton.render(g, mouseX, mouseY, pt);
+
+        if (collapsed) {
+            return;
+        }
 
         addButton.render(g, mouseX, mouseY, pt);
 
@@ -218,10 +260,10 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
                 continue;
             }
 
-            if (i < renderables.size() - 1) {
-                g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
-                g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
-            }
+//            if (i < renderables.size() - 1) {
+//                g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
+//                g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
+//            }
             e.render(g, mouseX, mouseY, pt);
         }
     }

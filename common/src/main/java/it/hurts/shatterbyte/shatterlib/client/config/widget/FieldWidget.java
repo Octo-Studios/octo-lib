@@ -61,7 +61,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         int multilineEntryExtraOffset = multilineExtraHeight > 0 ? multilineExtraHeight + MULTILINE_ENTRY_EXTRA_SPACING : 0;
 
         boolean moveDown = false;
-        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 1);
+        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
         if (entryWidget.getWidth() > (this.getWidth() - font.width(info.name()+": ") - 12 - resetButton.getWidth()) || entryWidget instanceof DynamicallySized) {
             moveDown = true;
         }

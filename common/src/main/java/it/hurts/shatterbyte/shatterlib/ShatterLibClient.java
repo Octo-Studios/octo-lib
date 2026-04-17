@@ -20,8 +20,6 @@ import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import org.apache.logging.log4j.core.jackson.MapEntry;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -54,9 +52,19 @@ public final class ShatterLibClient {
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
 
-        EntryWidgetRegistry.registerConstructor(Number.class, clazz -> {
-            return 0d;
-        });
+        EntryWidgetRegistry.registerConstructor(Number.class, clazz -> 0d);
+        EntryWidgetRegistry.registerConstructor(byte.class, clazz -> (byte) 0);
+        EntryWidgetRegistry.registerConstructor(Byte.class, clazz -> (byte) 0);
+        EntryWidgetRegistry.registerConstructor(short.class, clazz -> (short) 0);
+        EntryWidgetRegistry.registerConstructor(Short.class, clazz -> (short) 0);
+        EntryWidgetRegistry.registerConstructor(int.class, clazz -> 0);
+        EntryWidgetRegistry.registerConstructor(Integer.class, clazz -> 0);
+        EntryWidgetRegistry.registerConstructor(long.class, clazz -> 0L);
+        EntryWidgetRegistry.registerConstructor(Long.class, clazz -> 0L);
+        EntryWidgetRegistry.registerConstructor(float.class, clazz -> 0f);
+        EntryWidgetRegistry.registerConstructor(Float.class, clazz -> 0f);
+        EntryWidgetRegistry.registerConstructor(double.class, clazz -> 0d);
+        EntryWidgetRegistry.registerConstructor(Double.class, clazz -> 0d);
         EntryWidgetRegistry.registerConstructor(List.class, clazz -> new ArrayList<>());
         EntryWidgetRegistry.registerConstructor(Map.class, clazz -> new HashMap<>());
         EntryWidgetRegistry.registerConstructor(Boolean.class, clazz -> false);

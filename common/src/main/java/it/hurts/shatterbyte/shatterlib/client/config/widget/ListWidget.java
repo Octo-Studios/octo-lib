@@ -91,7 +91,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         entries.clear();
         renderables.clear();
 
-        ArrayList<E> list = (ArrayList<E>) getValue();
+        List<E> list = getSafeValue();
         for (int i = 0; i < list.size(); i++) {
             ListEntryWidget<E> entry = new ListEntryWidget<>(this, i);
             entries.add(entry);
@@ -104,16 +104,22 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     }
 
     void removeIndex(int index) {
-        ArrayList<E> list = new ArrayList<>(getValue());
+        ArrayList<E> list = new ArrayList<>(getSafeValue());
+        if (index < 0 || index >= list.size()) {
+            return;
+        }
+
         list.remove(index);
         setValue(list);
         rebuild();
     }
 
     void moveIndex(int from, int to) {
-        if (to < 0 || to >= getValue().size()) return;
+        List<E> current = getSafeValue();
+        if (from < 0 || from >= current.size()) return;
+        if (to < 0 || to >= current.size()) return;
 
-        ArrayList<E> list = new ArrayList<>(getValue());
+        ArrayList<E> list = new ArrayList<>(current);
         E v = list.remove(from);
         list.add(to, v);
         setValue(list);
@@ -121,10 +127,19 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     }
 
     public void addNewEntry() {
-        ArrayList<E> list = new ArrayList<>(getValue());
+        ArrayList<E> list = new ArrayList<>(getSafeValue());
         list.add(EntryWidgetRegistry.getDefaultValue(elementClass));
         setValue(list);
         rebuild();
+    }
+
+    private List<E> getSafeValue() {
+        List<E> list = getValue();
+        if (list == null) {
+            return List.of();
+        }
+
+        return list;
     }
 
     /* ---------- layout ---------- */
@@ -227,12 +242,42 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapseButton.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapsed) {
+            return false;
+        }
+
+        if (addButton.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        for (ListEntryWidget<E> entry : entries) {
+            if (entry.isMouseOver(mouseX, mouseY)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return childListeners;
+        List<GuiEventListener> listeners = new ArrayList<>();
+        listeners.add(collapseButton);
+
+        if (!collapsed) {
+            listeners.addAll(renderables);
+            listeners.add(addButton);
+        }
+
+        return listeners;
     }
 
     @Nullable

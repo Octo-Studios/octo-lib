@@ -42,11 +42,10 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         this.parent = parent;
         this.index = index;
 
-        // create entry widget via factory using indexed path
-        String path = parent.getParent().getPath() + "[" + index + "]";
         E defaultValue;
-        if (index < parent.getDefaultValue().size()) {
-            defaultValue = (E) parent.getDefaultValue().get(index);
+        List<E> defaultList = parent.getDefaultValue();
+        if (defaultList != null && index < defaultList.size()) {
+            defaultValue = defaultList.get(index);
         } else {
             defaultValue = EntryWidgetRegistry.getDefaultValue(parent.getElementClass());
         }
@@ -57,11 +56,31 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
                         parent.getConfig(),
                         parent.getElementGenericType(),
                         parent.getAnnotations(),
-                        parent.getParent(),
+                        this,
                         defaultValue,
-                        () -> parent.getValue().get(index),
+                        () -> {
+                            List<E> values = parent.getValue();
+                            if (values == null || index < 0 || index >= values.size()) {
+                                return defaultValue;
+                            }
+
+                            return values.get(index);
+                        },
                         v -> {
-                            ArrayList<E> list = new ArrayList<>(parent.getValue());
+                            ArrayList<E> list = new ArrayList<>();
+                            List<E> values = parent.getValue();
+                            if (values != null) {
+                                list.addAll(values);
+                            }
+
+                            if (index < 0) {
+                                return;
+                            }
+
+                            while (list.size() <= index) {
+                                list.add(EntryWidgetRegistry.getDefaultValue(parent.getElementClass()));
+                            }
+
                             list.set(index, (E) v);
                             parent.setValue(list);
                         }
@@ -100,8 +119,9 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         x += down.getWidth() + 4;
 
         remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
-        int rightLimit = remove.getLocalX() + remove.getWidth();
-        int availableWidth = Math.max(20, rightLimit - x);
+        int contentRight = remove.getLocalX() - 4;
+        int availableWidth = Math.max(20, contentRight - x);
+        int stackedAvailableWidth = Math.max(20, this.getWidth() - x);
 
         boolean isDynamicallySized = entryWidget instanceof DynamicallySized;
         int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
@@ -113,7 +133,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
             int y = up.getLocalY() + up.getHeight() + 4;
 
             entryWidget.setPosition(x, y);
-            entryWidget.setWidth(availableWidth);
+            entryWidget.setWidth(stackedAvailableWidth);
 
             if (entryWidget instanceof DynamicallySized dynamicallySized) {
                 dynamicallySized.repositionElements();
@@ -266,7 +286,14 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        return (entryWidget != null && entryWidget.isMouseOver(mouseX, mouseY))
+                || up.isMouseOver(mouseX, mouseY)
+                || down.isMouseOver(mouseX, mouseY)
+                || remove.isMouseOver(mouseX, mouseY);
     }
 
     @Override
@@ -278,6 +305,10 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     }
     @Override
     public String getPath() {
-        return this.getParent().getParent().getPath()+"["+index+"]";
+        if (this.getParent() == null || this.getParent().getParent() == null) {
+            return "[" + index + "]";
+        }
+
+        return this.getParent().getParent().getPath() + "[" + index + "]";
     }
 }

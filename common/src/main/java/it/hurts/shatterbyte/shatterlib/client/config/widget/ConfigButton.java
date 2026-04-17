@@ -24,6 +24,7 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
     ShatterConfig config;
     Runnable onClick;
     private double scrollOffset;
+    private @Nullable ScrollableWidget parent;
 
     public ConfigButton(ShatterConfig config, int x, int y, int width, int height, Runnable onClick) {
         super(x, y, width, height, Component.empty());
@@ -144,12 +145,12 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
 
     @Override
     public @Nullable ScrollableWidget getParent() {
-        return null;
+        return parent;
     }
 
     @Override
     public void setParent(@Nullable ScrollableWidget parent) {
-
+        this.parent = parent;
     }
 
     @Override

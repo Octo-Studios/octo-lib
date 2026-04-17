@@ -1,12 +1,9 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.ListWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.PathContainerWidget;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.SliderWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -19,10 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -85,7 +78,7 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         Optional<T> defaultValue = config.getDefaultValue(newPath, field.getGenericType());
 
         if (defaultValue.isEmpty() && defaultObject != null) {
-            Field defaultField = defaultObject.getClass().getDeclaredField(fieldName);
+            Field defaultField = findFieldInHierarchy(defaultObject.getClass(), fieldName);
             defaultField.setAccessible(true);
             defaultValue = (Optional<T>) Optional.ofNullable(defaultField.get(defaultObject));
         }
@@ -128,6 +121,20 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
         } else {
             return Number.class.isAssignableFrom(clazz);
         }
+    }
+
+    private static Field findFieldInHierarchy(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        Class<?> current = clazz;
+
+        while (current != null && current != Object.class) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException ignored) {
+                current = current.getSuperclass();
+            }
+        }
+
+        throw new NoSuchFieldException(fieldName);
     }
 
     @Override

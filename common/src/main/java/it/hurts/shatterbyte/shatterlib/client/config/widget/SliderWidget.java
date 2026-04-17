@@ -4,6 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
+import it.hurts.shatterbyte.shatterlib.client.config.UISprite;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
@@ -87,17 +88,25 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         double pct = (max == min) ? 0.0 : (current - min) / (max - min);
         pct = Math.max(0.0, Math.min(1.0, pct));
 
-        float fillX = (float) (this.getX()+this.getWidth()*pct-1);
+        int trackX = this.getX();
+        int trackY = this.getY() + 4;
+        int trackWidth = Math.max(1, this.getWidth());
+        int trackHeight = spriteHeight(UIElements.SLIDER_EMPTY, 6);
+        int fillHeight = spriteHeight(UIElements.SLIDER_FULL, 5);
+        int knobWidth = spriteWidth(UIElements.SLIDER_THINGY, 7);
+        int fillX = trackX + (int) Math.round((trackWidth - 1) * pct);
+        int knobX = fillX - (knobWidth / 2);
+        int knobY = this.getY() + 2;
 
-        UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2+2);
-        guiGraphics.enableScissor(this.getX(), this.getY(), (int) fillX, this.getY()+this.getHeight());
-        UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY()+2+2);
-        guiGraphics.disableScissor();
+        UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, trackX, trackY, trackWidth, trackHeight);
 
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(fillX, 0);
-        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, -2, this.getY()+2);
-        guiGraphics.pose().popMatrix();
+        if (fillX >= trackX) {
+            guiGraphics.enableScissor(trackX, this.getY(), fillX + 1, this.getY() + this.getHeight());
+            UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, trackX, trackY, trackWidth, fillHeight);
+            guiGraphics.disableScissor();
+        }
+
+        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, knobX, knobY);
 
         Font font = Minecraft.getInstance().font;
         String string = String.format("%.1f", this.getValue().doubleValue());
@@ -127,7 +136,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
     }
 
     private void updateFromMouse(double mouseX) {
-        double relative = (mouseX - this.getX()) / (double) this.getWidth();
+        double relative = (mouseX - this.getX()) / Math.max(1d, (double) this.getWidth());
         relative = Math.max(0.0, Math.min(1.0, relative));
         double value = min + relative * (max - min);
 
@@ -165,5 +174,21 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
             // fallback to Double
             return (N) Double.valueOf(d);
         }
+    }
+
+    private static int spriteWidth(UISprite sprite, int fallback) {
+        if (sprite instanceof UISprite.Single single) {
+            return single.getWidth();
+        }
+
+        return fallback;
+    }
+
+    private static int spriteHeight(UISprite sprite, int fallback) {
+        if (sprite instanceof UISprite.Single single) {
+            return single.getHeight();
+        }
+
+        return fallback;
     }
 }

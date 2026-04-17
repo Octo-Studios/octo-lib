@@ -45,6 +45,11 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     public GenericObjectWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
         this.collapseButton.setParent(this);
+
+        if (this.getValue() == null && this.getDefaultValue() != null) {
+            this.setValue(this.getDefaultValue());
+        }
+
         this.populateWidget();
         this.refreshChildListeners();
         this.repositionElements();
@@ -113,16 +118,38 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapseButton.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapsed) {
+            return false;
+        }
+
+        for (FieldWidget widget : widgets) {
+            if (widget.isMouseOver(mouseX, mouseY)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @SneakyThrows
     private void populateWidget() {
         Object object = this.getValue();
+        if (object == null) {
+            return;
+        }
+
         Class<?> clazz = object.getClass();
         String path = this.getFieldPath();
 
-        for (Field field : clazz.getDeclaredFields()) {
+        for (Field field : getAllInstanceFields(clazz)) {
             FieldWidget fieldWidget = FieldWidget.createFromField(this.getConfig(), path, object, field, this);
             if (fieldWidget == null) {
                 continue;
@@ -131,6 +158,23 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             this.widgets.add(fieldWidget);
             this.renderables.add(fieldWidget);
         }
+    }
+
+    private static List<Field> getAllInstanceFields(Class<?> clazz) {
+        List<Class<?>> hierarchy = new ArrayList<>();
+        Class<?> current = clazz;
+
+        while (current != null && current != Object.class) {
+            hierarchy.add(0, current);
+            current = current.getSuperclass();
+        }
+
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> type : hierarchy) {
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        }
+
+        return fields;
     }
 
     @Override
@@ -160,8 +204,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             }
 
             if (i < renderables.size() - 1) {
-                guiGraphics.hLine(left+4, right-4, widgetBottom + 1, 0xff1c1c17);
-                guiGraphics.hLine(left+4, right-4, widgetBottom + 2, 0xff3c3c42);
+                guiGraphics.hLine(left + 4, right, widgetBottom + 1, 0xff1c1c17);
+                guiGraphics.hLine(left + 4, right, widgetBottom + 2, 0xff3c3c42);
             }
             widget.render(guiGraphics, mouseX, mouseY, partialTick);
         }
@@ -234,7 +278,14 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return childListeners;
+        List<GuiEventListener> listeners = new ArrayList<>();
+        listeners.add(collapseButton);
+
+        if (!collapsed) {
+            listeners.addAll(renderables);
+        }
+
+        return listeners;
     }
 
     @Override

@@ -90,7 +90,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         entries.clear();
         renderables.clear();
 
-        Map<String, V> map = getValue();
+        Map<String, V> map = getSafeValue();
         int i = 0;
 
         for (Map.Entry<String, V> e : map.entrySet()) {
@@ -106,7 +106,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     }
 
     public void addNewEntry() {
-        Map<String, V> map = new LinkedHashMap<>(getValue());
+        Map<String, V> map = new LinkedHashMap<>(getSafeValue());
 
         String base = "key";
         String key = base;
@@ -121,7 +121,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     }
 
     void removeKey(String key) {
-        Map<String, V> map = new LinkedHashMap<>(getValue());
+        Map<String, V> map = new LinkedHashMap<>(getSafeValue());
         map.remove(key);
         setValue(map);
         rebuild();
@@ -130,7 +130,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     void moveIndex(int from, int to) {
         if (from == to) return;
 
-        LinkedHashMap<String, V> oldMap = new LinkedHashMap<>(getValue());
+        LinkedHashMap<String, V> oldMap = new LinkedHashMap<>(getSafeValue());
         if (from < 0 || from >= oldMap.size()) return;
         if (to < 0 || to >= oldMap.size()) return;
 
@@ -151,7 +151,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     void renameKey(String oldKey, String newKey) {
         if (oldKey.equals(newKey)) return;
 
-        Map<String, V> oldMap = new LinkedHashMap<>(getValue());
+        Map<String, V> oldMap = new LinkedHashMap<>(getSafeValue());
         if (!oldMap.containsKey(oldKey) || oldMap.containsKey(newKey)) return;
 
         LinkedHashMap<String, V> renamed = new LinkedHashMap<>();
@@ -174,9 +174,18 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     }
 
     void setValueFor(String key, V value) {
-        Map<String, V> map = new LinkedHashMap<>(getValue());
+        Map<String, V> map = new LinkedHashMap<>(getSafeValue());
         map.put(key, value);
         setValue(map);
+    }
+
+    private Map<String, V> getSafeValue() {
+        Map<String, V> map = getValue();
+        if (map == null) {
+            return Map.of();
+        }
+
+        return map;
     }
 
     @Override
@@ -271,12 +280,42 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapseButton.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        if (collapsed) {
+            return false;
+        }
+
+        if (addButton.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        for (MapEntryWidget<V> entry : entries) {
+            if (entry.isMouseOver(mouseX, mouseY)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public List<? extends GuiEventListener> children() {
-        return childListeners;
+        List<GuiEventListener> listeners = new ArrayList<>();
+        listeners.add(collapseButton);
+
+        if (!collapsed) {
+            listeners.addAll(renderables);
+            listeners.add(addButton);
+        }
+
+        return listeners;
     }
 
     @Nullable

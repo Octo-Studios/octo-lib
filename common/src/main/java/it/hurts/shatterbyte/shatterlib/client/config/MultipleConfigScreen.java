@@ -4,17 +4,20 @@ import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ConfigButton;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ScrollableWidget;
+import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MultipleConfigScreen extends ConfigScreen {
+    private static final int CANVAS_HORIZONTAL_PADDING = 4;
+
     ScrollableWidget configButtons;
     Map<ShatterConfig, GenericObjectWidget> cache = new HashMap<>();
 
@@ -24,7 +27,7 @@ public class MultipleConfigScreen extends ConfigScreen {
         int y = 4;
         this.configButtons = new ScrollableWidget(0, 32, 128, this.height-32);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
-            ConfigButton button = new ConfigButton(config, 4, y + 32, 120, 24, () -> this.changeConfig(config));
+            ConfigButton button = new ConfigButton(config, 4, y, 120, 24, () -> this.changeConfig(config));
             button.setParent(configButtons);
             configButtons.children().add(button);
             y += 4 + button.getHeight();
@@ -35,13 +38,20 @@ public class MultipleConfigScreen extends ConfigScreen {
     }
 
     private void changeConfig(ShatterConfig config) {
+        if (config == null) {
+            return;
+        }
+
         if (this.config != null) {
             this.config.save(Platform.getConfigFolder());
         }
 
         this.config = config;
 
-        this.removeWidget(this.scrollingObject);
+        if (this.scrollingObject != null) {
+            this.removeWidget(this.scrollingObject);
+        }
+
         this.object = cache.computeIfAbsent(config, conf -> new GenericObjectWidget(
                         conf,
                         null,
@@ -62,13 +72,28 @@ public class MultipleConfigScreen extends ConfigScreen {
     protected void repositionElements() {
         if (configButtons != null) {
             configButtons.setHeight(this.height-32);
-            int y = configButtons.children().getLast().getY() + configButtons.children().getLast().getHeight() + 4;
-            configButtons.maxScrollY = Math.max(0, y - configButtons.getHeight());
+            int contentBottom = 0;
+            for (AbstractWidget widget : configButtons.children()) {
+                int localY;
+                if (widget instanceof Child<?> child) {
+                    localY = child.getLocalY();
+                } else {
+                    localY = widget.getY() - configButtons.getY();
+                }
+
+                contentBottom = Math.max(contentBottom, localY + widget.getHeight());
+            }
+
+            configButtons.maxScrollY = Math.max(0, contentBottom - configButtons.getHeight());
             configButtons.clamp();
         }
 
-        scrollingObject.setWidth(this.width - 128 - 128);
-        scrollingObject.setX(128 + 64);
+        if (scrollingObject == null || object == null) {
+            return;
+        }
+
+        scrollingObject.setWidth(Math.max(32, this.width - 128 - CANVAS_HORIZONTAL_PADDING * 2));
+        scrollingObject.setX(128 + CANVAS_HORIZONTAL_PADDING);
         scrollingObject.setY(32);
         scrollingObject.setHeight(this.height-32);
         object.setWidth(scrollingObject.getWidth());
@@ -79,8 +104,6 @@ public class MultipleConfigScreen extends ConfigScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.fill(128, 32, 192, this.height, 0x661c1c1e);
-        guiGraphics.fill(this.width-64, 32, this.width, this.height, 0x661c1c1e);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.vLine(128, 0, this.height, 0xff1c1c17);
         guiGraphics.hLine(0, this.width, 31, 0xff1c1c17);

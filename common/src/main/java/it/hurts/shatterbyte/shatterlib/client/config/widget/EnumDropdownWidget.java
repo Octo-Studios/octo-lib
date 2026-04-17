@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E> {
     private final List<E> values;
     private boolean open = false;
+    private boolean closeAfterRelease = false;
     private int hoveredIndex = -1;
 
     public EnumDropdownWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
@@ -54,8 +55,10 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int ay = y + (h / 2) - 2;
         (open ? UIElements.ICON_UP : UIElements.ICON_DOWN).render(guiGraphics, RenderPipelines.GUI_TEXTURED, ax, ay-3);
 
+        UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, h + 2);
+
         if (!open) {
-            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, h + 2);
+            hoveredIndex = -1;
         }
 
         if (open) {
@@ -65,46 +68,54 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
             int listW = r.width;
             int optionH = this.getHeight();
             int maxToShow = values.size();
+            hoveredIndex = getHoveredIndex(mouseX, mouseY);
 
-            //guiGraphics.fill(listX, listY, listX + listW, listY + optionH * maxToShow, 0xFF1E1E1E);
-
-            for (int i = 0; i < values.size(); i++) {
+            for (int i = 0; i < maxToShow; i++) {
                 int oy = listY + i * optionH;
                 guiGraphics.fill(listX, oy, listX + listW, oy + optionH, i % 2 == 0 ? 0xff131418 : 0xff1f1e23);
-                if (mouseX >= listX && mouseX < listX + listW && mouseY >= oy && mouseY < oy + optionH && i == hoveredIndex) {
+                if (hoveredIndex == i) {
                     guiGraphics.fill(listX, oy, listX + listW, oy + optionH, 0x40FFFFFF);
                 }
                 String opt = convertFromCamelCase(values.get(i).name());
                 guiGraphics.drawString(Minecraft.getInstance().font, opt, listX + 6, oy + (optionH - 8) / 2, 0xFFFFFFFF, true);
             }
-            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, optionH * maxToShow + 2 + h);
+
+            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, listX - 1, listY - 1, listW + 2, optionH * maxToShow + 2);
         }
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (isInside(event.x(), event.y())) {
-            open = !open;
-            if (open) {
-                this.getParent().moveToTheTop();
-            }
-            return true;
-        }
-
         if (open) {
             Rectangle r = getPopupBounds();
-            if (event.x() >= r.x && event.x() < r.x + r.width && event.y() >= r.y && event.y() < r.y + r.height) {
+            if (event.x() >= r.x && event.x() < r.x + r.width && event.y() >= r.y && event.y() <= r.y + r.height) {
                 int optionH = this.getHeight();
                 int idx = (int) ((event.y() - r.y) / optionH);
                 idx = Math.max(0, Math.min(values.size() - 1, idx));
                 E chosen = values.get(idx);
                 setValue(chosen);
-                open = false;
+                closeAfterRelease = true;
                 return true;
-            } else {
-                open = false;
-                return false;
             }
+
+            if (isInside(event.x(), event.y())) {
+                open = false;
+                closeAfterRelease = false;
+                return true;
+            }
+
+            open = false;
+            closeAfterRelease = false;
+            return false;
+        }
+
+        if (isInside(event.x(), event.y())) {
+            open = true;
+            closeAfterRelease = false;
+            if (this.getParent() != null) {
+                this.getParent().moveToTheTop();
+            }
+            return true;
         }
 
         return false;
@@ -121,24 +132,22 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int w = this.getWidth();
         int h = this.getHeight() * values.size();
 
-        // clamp to screen so it doesn't go off the visible area (optional, but helpful)
         Minecraft mc = Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
 
-//        // if popup would run off bottom, try to open upward instead
-//        if (y + h > screenH) {
-//            int altY = this.getY() - h;
-//            if (altY >= 0) {
-//                y = altY;
-//            } else {
-//                // clamp height if both up and down overflow
-//                h = Math.max(0, screenH - 4); // small padding
-//                if (y + h > screenH) h = screenH - y;
-//            }
-//        }
+        if (y + h > screenH) {
+            int altY = this.getY() - h;
+            if (altY >= 0) {
+                y = altY;
+            } else {
+                y = Math.max(0, screenH - h);
+            }
+        }
 
-        // horizontal clamp (rare)
+        if (y + h > screenH) {
+            y = Math.max(0, screenH - h);
+        }
         if (x + w > screenW) {
             x = Math.max(0, screenW - w);
         }
@@ -146,17 +155,33 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         return new Rectangle(x, y, w, h);
     }
 
+    private int getHoveredIndex(int mouseX, int mouseY) {
+        Rectangle r = getPopupBounds();
+        if (mouseX < r.x || mouseX >= r.x + r.width || mouseY < r.y || mouseY > r.y + r.height) {
+            return -1;
+        }
+
+        int optionH = this.getHeight();
+        int idx = (mouseY - r.y) / optionH;
+        if (idx < 0) {
+            return -1;
+        }
+
+        return Math.min(values.size() - 1, idx);
+    }
+
     @Override
     public void setFocused(boolean focused) {
         super.setFocused(focused);
         if (!focused) {
             this.open = false;
+            this.closeAfterRelease = false;
         }
     }
 
     private boolean isInsidePopup(double mouseX, double mouseY) {
         Rectangle r = getPopupBounds();
-        return mouseX >= r.x && mouseX < r.x + r.width && mouseY >= r.y && mouseY < r.y + r.height;
+        return mouseX >= r.x && mouseX < r.x + r.width && mouseY >= r.y && mouseY <= r.y + r.height;
     }
 
     @Override
@@ -170,9 +195,16 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        if (closeAfterRelease) {
+            closeAfterRelease = false;
+            open = false;
+            return true;
+        }
+
         if (open) {
             return true;
         }
+
         return false;
     }
 }

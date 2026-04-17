@@ -61,11 +61,16 @@ public class ConfigManager {
     }
 
     public static List<ShatterConfig> getConfigsForMod(String modId) {
-        return CONFIGS_BY_MODID.get(modId);
+        return CONFIGS_BY_MODID.getOrDefault(modId, Collections.emptyList());
     }
 
-    public static ShatterConfig getFirstForMod(String modId) {
-        return getConfigsForMod(modId).getFirst();
+    public static @Nullable ShatterConfig getFirstForMod(String modId) {
+        List<ShatterConfig> configs = getConfigsForMod(modId);
+        if (configs.isEmpty()) {
+            return null;
+        }
+
+        return configs.getFirst();
     }
 
     public static void loadAllCommonConfigs() {

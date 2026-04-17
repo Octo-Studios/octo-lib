@@ -24,6 +24,8 @@ import java.util.Map;
 
 public class MapEntryWidget<V> extends AbstractWidget
         implements Child<MapWidget<V>>, ContainerEventHandler, DynamicallySized, PathContainerWidget {
+    private static final int MIN_KEY_WIDTH = 40;
+    private static final int KEY_TEXT_HORIZONTAL_PADDING = 12;
 
     private MapWidget<V> parent;
     private String key;
@@ -54,12 +56,20 @@ public class MapEntryWidget<V> extends AbstractWidget
                 parent.getConfig(),
                 String.class,
                 new Annotation[]{},
-                parent.getParent(),
+                this,
                 key,
                 () -> this.key,
-                newKey -> parent.renameKey(this.key, newKey)
+                newKey -> {
+                    parent.renameKey(this.key, newKey);
+                    parent.relayoutAndPropagate();
+                }
         );
-        keyWidget.setPredicate(s -> !s.isBlank() && !s.contains(" "));
+        keyWidget.setPredicate(s -> !s.isBlank()
+                && !s.contains(" ")
+                && !s.contains("'")
+                && !s.contains("\"")
+                && !s.contains("[")
+                && !s.contains("]"));
 
         entryWidget = (AbstractEntryWidget<V>) EntryWidgetRegistry
                 .getFactory(parent.getValueClass())
@@ -69,7 +79,14 @@ public class MapEntryWidget<V> extends AbstractWidget
                         parent.getAnnotations(),
                         this,
                         defaultEntryValue,
-                        () -> parent.getValue().get(this.key),
+                        () -> {
+                            Map<String, V> map = parent.getValue();
+                            if (map == null) {
+                                return defaultEntryValue;
+                            }
+
+                            return map.getOrDefault(this.key, defaultEntryValue);
+                        },
                         v -> parent.setValueFor(this.key, (V) v)
                 );
         preferredEntryWidth = entryWidget.getWidth();
@@ -121,19 +138,22 @@ public class MapEntryWidget<V> extends AbstractWidget
         remove.setPosition(this.getWidth() - remove.getWidth() - 4, 2);
 
         int leftLimit = x;
-        int rightLimit = remove.getLocalX() + remove.getWidth();
-        int availableWidth = Math.max(20, rightLimit - leftLimit);
+        int contentRight = remove.getLocalX() - 4;
+        int availableWidth = Math.max(20, contentRight - leftLimit);
+        int stackedEntryWidth = Math.max(20, this.getWidth() - leftLimit);
 
         boolean moveDown = false;
 
         boolean isDynamicallySized = entryWidget instanceof DynamicallySized;
-        int requiredInlineEntryWidth = isDynamicallySized ? 0 : Math.max(40, preferredEntryWidth);
-        int keyWidth = Math.min(80, rightLimit - x - requiredInlineEntryWidth);
-        if (keyWidth < 40) {
+        int requiredInlineEntryWidth = isDynamicallySized ? 0 : Math.max(MIN_KEY_WIDTH, preferredEntryWidth);
+        int desiredKeyWidth = getDesiredKeyWidth();
+        int maxInlineKeyWidth = contentRight - x - requiredInlineEntryWidth;
+        if (maxInlineKeyWidth < MIN_KEY_WIDTH) {
             moveDown = true;
         }
 
         if (!moveDown) {
+            int keyWidth = clamp(desiredKeyWidth, MIN_KEY_WIDTH, maxInlineKeyWidth);
             keyWidget.setPosition(leftLimit, 2);
             keyWidget.setWidth(keyWidth);
 
@@ -146,7 +166,7 @@ public class MapEntryWidget<V> extends AbstractWidget
                 int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 
                 entryWidget.setPosition(leftLimit, y);
-                entryWidget.setWidth(availableWidth);
+                entryWidget.setWidth(stackedEntryWidth);
 
                 if (entryWidget instanceof DynamicallySized ds) {
                     ds.repositionElements();
@@ -167,13 +187,15 @@ public class MapEntryWidget<V> extends AbstractWidget
                     Math.max(keyWidget.getHeight(), entryWidget.getHeight()) + 4
             ));
         } else {
+            int stackedMinWidth = Math.min(MIN_KEY_WIDTH, availableWidth);
+            int stackedKeyWidth = clamp(desiredKeyWidth, stackedMinWidth, availableWidth);
             keyWidget.setPosition(leftLimit, 2);
-            keyWidget.setWidth(keyWidth);
+            keyWidget.setWidth(stackedKeyWidth);
 
             int y = keyWidget.getLocalY() + keyWidget.getHeight() + 4;
 
             entryWidget.setPosition(leftLimit, y);
-            entryWidget.setWidth(availableWidth);
+            entryWidget.setWidth(stackedEntryWidth);
 
             if (entryWidget instanceof DynamicallySized ds) {
                 ds.repositionElements();
@@ -183,6 +205,20 @@ public class MapEntryWidget<V> extends AbstractWidget
                     entryWidget.getLocalY() + entryWidget.getHeight() + 4
             );
         }
+    }
+
+    private int getDesiredKeyWidth() {
+        String value = this.key == null ? "" : this.key;
+        int contentWidth = Minecraft.getInstance().font.width(value);
+        return Math.max(MIN_KEY_WIDTH, contentWidth + KEY_TEXT_HORIZONTAL_PADDING);
+    }
+
+    private static int clamp(int value, int min, int max) {
+        if (max < min) {
+            return max;
+        }
+
+        return Math.max(min, Math.min(value, max));
     }
 
     @Override public MapWidget<V> getParent() { return parent; }
@@ -325,7 +361,15 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        return (keyWidget != null && keyWidget.isMouseOver(mouseX, mouseY))
+                || (entryWidget != null && entryWidget.isMouseOver(mouseX, mouseY))
+                || up.isMouseOver(mouseX, mouseY)
+                || down.isMouseOver(mouseX, mouseY)
+                || remove.isMouseOver(mouseX, mouseY);
     }
 
     @Override
@@ -343,6 +387,10 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public String getPath() {
-        return parent.getParent().getPath()+"['"+key+"']";
+        if (parent == null || parent.getParent() == null) {
+            return "['" + key + "']";
+        }
+
+        return parent.getParent().getPath() + "['" + key + "']";
     }
 }

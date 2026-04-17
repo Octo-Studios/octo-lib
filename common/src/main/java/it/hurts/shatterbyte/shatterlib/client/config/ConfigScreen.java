@@ -41,17 +41,19 @@ public class ConfigScreen extends Screen {
     protected void init() {
         super.init();
         this.repositionElements();
-
     }
 
     @Override
     protected void repositionElements() {
+        if (scrollingObject == null || object == null) {
+            return;
+        }
+
         scrollingObject.setWidth(this.width);
-        //scrollingObject.setX(128);
         scrollingObject.setHeight(this.height-32);
         object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
-        scrollingObject.maxScrollY = Math.max(0, object.getHeight() - this.height);
+        scrollingObject.maxScrollY = Math.max(0, object.getHeight() - scrollingObject.getHeight());
         object.clamp(-scrollingObject.maxScrollY, 0);
     }
 
@@ -71,7 +73,10 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        config.save(Platform.getConfigFolder());
+        if (config != null) {
+            config.save(Platform.getConfigFolder());
+        }
+
         this.minecraft.setScreen(prevScreen);
     }
 }

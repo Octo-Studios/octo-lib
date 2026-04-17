@@ -93,7 +93,7 @@ public class Json5Utils {
                             }
                         }
 
-                        if (fieldValue.getClass().isEnum()) {
+                        if (fieldValue != null && fieldValue.getClass().isEnum()) {
                             Json5Utils.appendEnumComments(fieldValue, fieldElement);
                         }
 
@@ -234,7 +234,7 @@ public class Json5Utils {
     }
 
     public static <T> void deserializeObject(Json5Object json5Object, T object) {
-        for (Field field : object.getClass().getDeclaredFields()) {
+        for (Field field : getAllFields(object.getClass())) {
             int mods = field.getModifiers();
             if (Modifier.isStatic(mods) || Modifier.isTransient(mods)) {
                 continue;

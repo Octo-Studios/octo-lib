@@ -2,8 +2,6 @@ package it.hurts.shatterbyte.shatterlib.fabric;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.architectury.platform.Platform;
-import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.client.config.MultipleConfigScreen;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 

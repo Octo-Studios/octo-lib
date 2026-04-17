@@ -49,6 +49,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     boolean dragging = false;
     GuiEventListener focused;
     private List<GuiEventListener> childListeners = List.of();
+    private List<FormattedCharSequence> wrappedDescriptionLines = List.of();
 
     FieldWidget() {
         super(0, 0, 16, 16, Component.empty());
@@ -57,9 +58,6 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     @Override
     public void repositionElements() {
         this.setWidth(this.getParent().getWidth() - 4);
-        int multilineExtraHeight = getMultilineDescriptionExtraHeight();
-        int multilineEntryExtraOffset = multilineExtraHeight > 0 ? multilineExtraHeight + MULTILINE_ENTRY_EXTRA_SPACING : 0;
-
         boolean moveDown = false;
         resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
         if (entryWidget.getWidth() > (this.getWidth() - font.width(info.name()+": ") - 12 - resetButton.getWidth()) || entryWidget instanceof DynamicallySized) {
@@ -77,9 +75,18 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
 
         if (moveDown) {
-            entryWidget.setPosition(4, ENTRY_DOWN_Y_BASE + multilineEntryExtraOffset);
+            entryWidget.setPosition(4, ENTRY_DOWN_Y_BASE);
         } else {
             entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), 4);
+        }
+
+        int descriptionWrapWidth = resolveDescriptionWrapWidth(moveDown);
+        wrappedDescriptionLines = wrapDescriptionLines(descriptionWrapWidth);
+
+        int multilineExtraHeight = getMultilineDescriptionExtraHeight();
+        int multilineEntryExtraOffset = multilineExtraHeight > 0 ? multilineExtraHeight + MULTILINE_ENTRY_EXTRA_SPACING : 0;
+        if (moveDown) {
+            entryWidget.setPosition(4, ENTRY_DOWN_Y_BASE + multilineEntryExtraOffset);
         }
 
         int entryBottom = entryWidget.getHeight() + CONTENT_PADDING + entryWidget.getLocalY();
@@ -99,7 +106,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     public static @Nullable FieldWidget createFromField(ShatterConfig config, String path, Object parentObject, Field field, GenericObjectWidget parent) {
         FieldWidget fieldWidget = new FieldWidget();
 
-        Class<?> clazz = parentObject.getClass();
+        Class<?> clazz = field.getDeclaringClass();
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandles.Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);
@@ -161,7 +168,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     private void renderDescription(GuiGraphics guiGraphics) {
-        List<FormattedCharSequence> lines = getWrappedDescriptionLines();
+        List<FormattedCharSequence> lines = wrappedDescriptionLines;
         if (lines.isEmpty()) {
             return;
         }
@@ -178,7 +185,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     private int getDescriptionBottomY() {
-        int lineCount = getWrappedDescriptionLines().size();
+        int lineCount = wrappedDescriptionLines.size();
         if (lineCount == 0) {
             return NAME_Y + font.lineHeight;
         }
@@ -188,7 +195,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     private int getMultilineDescriptionExtraHeight() {
-        int lineCount = getWrappedDescriptionLines().size();
+        int lineCount = wrappedDescriptionLines.size();
         if (lineCount <= 1) {
             return 0;
         }
@@ -197,14 +204,22 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         return (lineCount - 1) * scaledLineHeight;
     }
 
-    private List<FormattedCharSequence> getWrappedDescriptionLines() {
+    private int resolveDescriptionWrapWidth(boolean moveDown) {
+        int rightLimit = resetButton.getLocalX() - 4;
+        if (!moveDown) {
+            rightLimit = Math.min(rightLimit, entryWidget.getLocalX() - 4);
+        }
+
+        return Math.max(1, rightLimit - CONTENT_PADDING);
+    }
+
+    private List<FormattedCharSequence> wrapDescriptionLines(int availableWidth) {
         List<FormattedCharSequence> wrappedLines = new ArrayList<>();
         String description = info.description();
         if (description == null || description.isEmpty()) {
             return wrappedLines;
         }
 
-        int availableWidth = Math.max(1, this.width - CONTENT_PADDING * 2 - resetButton.getWidth() - 4);
         int unscaledWrapWidth = Math.max(1, Math.round(availableWidth / DESCRIPTION_SCALE));
 
         String[] explicitLines = description.split("\\n", -1);
@@ -334,7 +349,12 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        if (super.isMouseOver(mouseX, mouseY)) {
+            return true;
+        }
+
+        return (entryWidget != null && entryWidget.isMouseOver(mouseX, mouseY))
+                || (resetButton != null && resetButton.isMouseOver(mouseX, mouseY));
     }
 
     @Override

@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Rarity;
 
 public class MyClientConfig extends ShatterConfig {
     private String string1 = "hello";
@@ -14,6 +15,7 @@ public class MyClientConfig extends ShatterConfig {
     @Comment("Some color")
     private ShatterColor color = new ShatterColor(1f, 0.25f, 0.1f, 1f);
     private Identifier identifier = Identifier.fromNamespaceAndPath("shatterlib","test");
+    private Rarity rarity = Rarity.COMMON;
 
     @Override
     public String getName() {

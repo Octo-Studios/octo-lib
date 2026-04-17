@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.shatterlib.module.config.util;
 import de.marhali.json5.*;
 import de.marhali.json5.config.Json5Options;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.module.config.dev.MyClientConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.IdentifierAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.ShatterColorAdapter;
 import it.hurts.shatterbyte.shatterlib.module.config.type.adapter.TypeAdapter;
@@ -93,7 +94,7 @@ public class Json5Utils {
                             }
                         }
 
-                        if (fieldValue.getClass().isEnum()) {
+                        if (fieldValue != null && fieldValue.getClass().isEnum()) {
                             Json5Utils.appendEnumComments(fieldValue, fieldElement);
                         }
 
@@ -233,6 +234,20 @@ public class Json5Utils {
         throw new IllegalArgumentException("Don't know how to decode " + json.getClass().getSimpleName() + " into type " + type.getTypeName());
     }
 
+//    public static void main(String[] args) {
+//        MyClientConfig config = new MyClientConfig();
+//        MyClientConfig.TestClass testClass = config.objects.get("test1");
+//        System.out.println(testClass.value+"\n");
+//        Json5Object json = encode(config).getAsJson5Object();
+//        Json5Object object = json.getAsJson5Object("objects").getAsJson5Object("test1");
+//        System.out.println(object);
+//        object.add("value", Json5Primitive.fromNumber(2000));
+//        config.loadFromJson(json);
+//
+//        System.out.println("current json:" + json.getAsJson5Object("objects").getAsJson5Object("test1").getAsJson5Primitive("value")+"\n");
+//        System.out.println("previously stored variable: " + testClass.value+"\n");
+//    }
+
     public static <T> void deserializeObject(Json5Object json5Object, T object) {
         for (Field field : object.getClass().getDeclaredFields()) {
             int mods = field.getModifiers();
@@ -254,11 +269,106 @@ public class Json5Utils {
                 field.setAccessible(true);
                 Json5Element fieldElement = json5Object.get(fieldName);
                 Type type = field.getGenericType();
-                field.set(object, Json5Utils.decode(fieldElement, type));
+                Object currentValue = field.get(object);
+                Object decodedValue = Json5Utils.decodeOrUpdate(fieldElement, type, currentValue);
+                field.set(object, decodedValue);
             } catch (Exception e) {
                 LOGGER.warn("Failed to load field '{}', using default.", fieldName, e);
             }
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Object decodeOrUpdate(Json5Element json, Type type, Object currentValue) {
+        if (json == null || json.isJson5Null()) {
+            return null;
+        }
+
+        if (currentValue == null || ADAPTERS.containsKey(type) || json.isJson5Primitive()) {
+            return Json5Utils.decode(json, type);
+        }
+
+        Class<?> rawClass = getRawClass(type);
+
+        if (Collection.class.isAssignableFrom(rawClass) && json.isJson5Array() && currentValue instanceof Collection<?> collection) {
+            Type itemType = getCollectionItemType(type);
+            Json5Array array = json.getAsJson5Array();
+
+            if (collection instanceof List<?> list) {
+                List mutableList = (List) list;
+                for (int i = 0; i < array.size(); i++) {
+                    Object existingItem = i < mutableList.size() ? mutableList.get(i) : null;
+                    Object decodedItem = Json5Utils.decodeOrUpdate(array.get(i), itemType, existingItem);
+
+                    if (i < mutableList.size()) {
+                        mutableList.set(i, decodedItem);
+                    } else {
+                        mutableList.add(decodedItem);
+                    }
+                }
+
+                while (mutableList.size() > array.size()) {
+                    mutableList.remove(mutableList.size() - 1);
+                }
+            } else {
+                Collection mutableCollection = (Collection) collection;
+                mutableCollection.clear();
+
+                for (Json5Element itemJson : array) {
+                    mutableCollection.add(Json5Utils.decode(itemJson, itemType));
+                }
+            }
+
+            return currentValue;
+        }
+
+        if (Map.class.isAssignableFrom(rawClass) && json.isJson5Object() && currentValue instanceof Map<?, ?> map) {
+            Type valueType = getMapValueType(type);
+            Map mutableMap = (Map) map;
+            Set<Object> staleKeys = new HashSet<>(mutableMap.keySet());
+
+            for (Map.Entry<String, Json5Element> entry : json.getAsJson5Object().entrySet()) {
+                String key = entry.getKey();
+                Object existingValue = mutableMap.get(key);
+                Object decodedValue = Json5Utils.decodeOrUpdate(entry.getValue(), valueType, existingValue);
+
+                mutableMap.put(key, decodedValue);
+                staleKeys.remove(key);
+            }
+
+            staleKeys.forEach(mutableMap::remove);
+            return currentValue;
+        }
+
+        if (json.isJson5Object() && rawClass.isInstance(currentValue)) {
+            Json5Utils.deserializeObject(json.getAsJson5Object(), currentValue);
+            return currentValue;
+        }
+
+        return Json5Utils.decode(json, type);
+    }
+
+    private static Type getCollectionItemType(Type type) {
+        if (type instanceof ParameterizedType parameterizedType) {
+            return parameterizedType.getActualTypeArguments()[0];
+        }
+
+        throw new IllegalArgumentException("Cannot decode raw Collection. Use generics (e.g., List<String>).");
+    }
+
+    private static Type getMapValueType(Type type) {
+        if (type instanceof ParameterizedType parameterizedType) {
+            Type[] typeArgs = parameterizedType.getActualTypeArguments();
+            if (typeArgs.length == 2) {
+                if (!getRawClass(typeArgs[0]).equals(String.class)) {
+                    throw new IllegalArgumentException("Default decoder only supports Map with String keys.");
+                }
+
+                return typeArgs[1];
+            }
+        }
+
+        throw new IllegalArgumentException("Cannot decode raw Map. Use generics (e.g., Map<String, MyObject>).");
     }
 
     private static <T> void appendEnumComments(T value, Json5Element element) {

@@ -8,8 +8,10 @@ import it.hurts.shatterbyte.shatterlib.client.config.widget.TextAreaWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.lang.annotation.Annotation;
 
@@ -99,6 +101,36 @@ public class ConfigScreen extends Screen {
         this.minecraft.setScreen(prevScreen);
     }
 
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (searchWidget != null) {
+            if (event.hasControlDownWithQuirk() && event.key() == GLFW.GLFW_KEY_F) {
+                searchWidget.setFocused(true);
+                this.setFocused(searchWidget);
+                return true;
+            }
+
+            if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+                if (!searchQuery.isEmpty()) {
+                    searchWidget.setValue("");
+                    searchWidget.setFocused(true);
+                    this.setFocused(searchWidget);
+                    return true;
+                }
+
+                if (searchWidget.isFocused()) {
+                    searchWidget.setFocused(false);
+                    if (this.getFocused() == searchWidget) {
+                        this.setFocused(null);
+                    }
+                    return true;
+                }
+            }
+        }
+
+        return super.keyPressed(event);
+    }
+
     protected int getContentLeft() {
         return 0;
     }
@@ -153,5 +185,11 @@ public class ConfigScreen extends Screen {
         }
 
         object.setSearchQuery(searchQuery);
+
+        boolean showContent = object.hasSearchResults();
+        if (scrollingObject != null) {
+            scrollingObject.visible = showContent;
+            scrollingObject.active = showContent;
+        }
     }
 }

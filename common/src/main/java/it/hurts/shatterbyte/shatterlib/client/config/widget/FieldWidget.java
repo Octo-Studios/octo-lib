@@ -38,6 +38,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     private static final int CONTENT_PADDING = 4;
     private static final int ENTRY_DOWN_Y_BASE = 20;
     private static final int MULTILINE_ENTRY_EXTRA_SPACING = 2;
+    private static final int NAME_COLOR = 0xffffffff;
+    private static final int DESCRIPTION_COLOR = 0xff888888;
 
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
@@ -162,7 +164,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(font, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, 0xffffffff, true);
+        guiGraphics.drawString(font, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, NAME_COLOR, true);
         renderDescription(guiGraphics);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -179,7 +181,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         guiGraphics.pose().scale(DESCRIPTION_SCALE);
 
         for (int i = 0; i < lines.size(); i++) {
-            guiGraphics.drawString(font, lines.get(i), 0, i * font.lineHeight, 0xff888888, true);
+            guiGraphics.drawString(font, lines.get(i), 0, i * font.lineHeight, DESCRIPTION_COLOR, true);
         }
 
         guiGraphics.pose().popMatrix();

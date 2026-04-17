@@ -370,7 +370,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         return true;
     }
 
-    boolean hasSearchResults() {
+    public boolean hasSearchResults() {
         if (searchQuery.isEmpty()) {
             return true;
         }

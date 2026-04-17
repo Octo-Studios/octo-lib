@@ -8,14 +8,19 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -27,14 +32,17 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     private static final int PADDING_X = 4;
     private static final int PADDING_Y = 4;
     private static final int CURSOR_MARGIN = 2;
+    private static final int SELECTION_COLOR = 0x66436cb3;
 
     Font font = Minecraft.getInstance().font;
     int cursorPos;
+    int selectionPos;
 
     @Setter
     double visualCursorPos;
 
     private int scrollX = 0;
+    private boolean selectingWithMouse = false;
 
     Tween cursorTween = Tween.create();
 
@@ -44,14 +52,16 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
-        this.cursorPos = this.getValue().length();
+        int endPos = this.getSafeValue().length();
+        this.cursorPos = endPos;
+        this.selectionPos = endPos;
         this.visualCursorPos = this.cursorPos;
         this.ensureCursorVisible();
     }
 
     public boolean seek(int where) {
         int oldPos = this.cursorPos;
-        int newPos = Math.clamp(where, 0, this.getValue().length());
+        int newPos = Math.clamp(where, 0, this.getSafeValue().length());
 
         this.cursorPos = newPos;
         boolean hasChanged = oldPos != newPos;
@@ -79,6 +89,18 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         return hasChanged;
     }
 
+    private void moveCursorTo(int where, boolean keepSelection) {
+        this.seek(where);
+
+        if (!keepSelection) {
+            this.selectionPos = this.cursorPos;
+        } else {
+            this.selectionPos = Math.clamp(this.selectionPos, 0, this.getSafeValue().length());
+        }
+
+        this.ensureCursorVisible();
+    }
+
     private int getInnerWidth() {
         return Math.max(0, this.getWidth() - (PADDING_X * 2));
     }
@@ -88,28 +110,28 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
     }
 
     private double getCursorPixelX(String value) {
-        int cpCount = value.codePointCount(0, value.length());
-        double clamped = Math.clamp(visualCursorPos, 0.0, cpCount);
+        double clamped = Math.clamp(visualCursorPos, 0.0, (double) value.length());
 
-        int leftCps = (int) Math.floor(clamped);
-        double frac = clamped - leftCps;
+        int leftChars = (int) Math.floor(clamped);
+        double frac = clamped - leftChars;
 
-        int leftIndex = value.offsetByCodePoints(0, leftCps);
-        String left = value.substring(0, leftIndex);
+        double x = font.width(value.substring(0, leftChars));
 
-        double x = font.width(left);
-
-        if (frac > 0 && leftIndex < value.length()) {
-            int nextIndex = value.offsetByCodePoints(leftIndex, 1);
-            String nextChar = value.substring(leftIndex, nextIndex);
+        if (frac > 0.0d && leftChars < value.length()) {
+            String nextChar = value.substring(leftChars, leftChars + 1);
             x += font.width(nextChar) * frac;
         }
 
         return x;
     }
 
+    private int getCursorPixelXAt(String value, int cursorIndex) {
+        int clamped = Math.clamp(cursorIndex, 0, value.length());
+        return font.width(value.substring(0, clamped));
+    }
+
     private void ensureCursorVisible() {
-        String value = this.getValue();
+        String value = this.getSafeValue();
         int visibleWidth = this.getInnerWidth();
 
         if (visibleWidth <= 0) {
@@ -119,7 +141,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
         int textWidth = font.width(value);
         int maxScroll = Math.max(0, textWidth - visibleWidth);
-        int cursorPixel = (int) Math.round(this.getCursorPixelX(value));
+        int cursorPixel = this.getCursorPixelXAt(value, this.cursorPos);
 
         int leftVisible = this.scrollX + CURSOR_MARGIN;
         int rightVisible = this.scrollX + visibleWidth - CURSOR_MARGIN;
@@ -135,7 +157,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Override
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        String value = this.getValue();
+        String value = this.getSafeValue();
 
         UIElements.TEXT_AREA.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
@@ -151,6 +173,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         if (value.isEmpty() && !this.isFocused() && !placeholder.isEmpty()) {
             guiGraphics.drawString(font, placeholder, clipX, textY, 0xff7f7f87, true);
         } else {
+            renderSelection(guiGraphics, value, textX);
             guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
         }
 
@@ -167,66 +190,113 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         guiGraphics.disableScissor();
     }
 
+    private void renderSelection(GuiGraphics guiGraphics, String value, int textX) {
+        if (!this.isFocused() || !this.hasSelection()) {
+            return;
+        }
+
+        int selectionStart = this.getSelectionStart();
+        int selectionEnd = this.getSelectionEnd();
+
+        int minX = textX + this.getCursorPixelXAt(value, selectionStart);
+        int maxX = textX + this.getCursorPixelXAt(value, selectionEnd);
+
+        if (minX == maxX) {
+            return;
+        }
+
+        guiGraphics.fill(
+                minX,
+                this.getY() + 3,
+                maxX,
+                this.getY() + this.getHeight() - 3,
+                SELECTION_COLOR
+        );
+    }
+
     @Override
     public boolean charTyped(CharacterEvent event) {
-        String value = this.getValue();
+        if (!this.isFocused()) {
+            return false;
+        }
 
-        int insertIndex = value.offsetByCodePoints(0, cursorPos);
-        String insert = event.codepointAsString();
-
-        String newString =
-                value.substring(0, insertIndex)
-                        + insert
-                        + value.substring(insertIndex);
-
-        if (!predicate.test(newString)) {
+        String insert = StringUtil.filterText(event.codepointAsString());
+        if (insert.isEmpty()) {
             return true;
         }
 
-        this.setValue(newString);
-        this.seek(cursorPos + 1);
+        insertText(insert);
         return true;
     }
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        this.seek(cursorPos);
-
-        if (event.isLeft()) {
-            if (this.seek(this.cursorPos - 1)) {
-                return true;
-            }
+        if (!this.isFocused()) {
+            return false;
         }
 
-        if (event.isRight()) {
-            if (this.seek(this.cursorPos + 1)) {
-                return true;
-            }
-        }
+        int key = event.key();
+        boolean keepSelection = isShiftDown();
+        boolean moveByWord = event.hasControlDownWithQuirk();
 
-        if (event.key() == 259) {
-            if (cursorPos == 0) {
-                return true;
-            }
-
-            String value = this.getValue();
-            int deleteFrom = value.offsetByCodePoints(cursorPos, -1);
-
-            String before = value.substring(0, deleteFrom);
-            String after = value.substring(cursorPos);
-
-            String newString = before + after;
-
-            if (!predicate.test(newString)) {
-                return false;
-            }
-
-            this.setValue(newString);
-            this.seek(deleteFrom);
+        if (isSelectAllShortcut(event)) {
+            this.selectionPos = 0;
+            this.moveCursorTo(this.getSafeValue().length(), true);
+            return true;
+        } else if (isCopyShortcut(event)) {
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
+            return true;
+        } else if (isPasteShortcut(event)) {
+            String clipboard = TextFieldHelper.getClipboardContents(Minecraft.getInstance());
+            insertText(clipboard);
+            return true;
+        } else if (isCutShortcut(event)) {
+            Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
+            replaceSelection("");
             return true;
         }
 
-        return false;
+        switch (key) {
+            case GLFW.GLFW_KEY_BACKSPACE -> {
+                deleteFromCursor(-1, moveByWord);
+                return true;
+            }
+            case GLFW.GLFW_KEY_DELETE -> {
+                deleteFromCursor(1, moveByWord);
+                return true;
+            }
+            case GLFW.GLFW_KEY_LEFT -> {
+                if (!keepSelection && !moveByWord && hasSelection()) {
+                    moveCursorTo(getSelectionStart(), false);
+                } else if (moveByWord) {
+                    moveCursorTo(getWordPosition(-1), keepSelection);
+                } else {
+                    moveCursorTo(offsetCursorByCodepoint(getSafeValue(), this.cursorPos, -1), keepSelection);
+                }
+                return true;
+            }
+            case GLFW.GLFW_KEY_RIGHT -> {
+                if (!keepSelection && !moveByWord && hasSelection()) {
+                    moveCursorTo(getSelectionEnd(), false);
+                } else if (moveByWord) {
+                    moveCursorTo(getWordPosition(1), keepSelection);
+                } else {
+                    moveCursorTo(offsetCursorByCodepoint(getSafeValue(), this.cursorPos, 1), keepSelection);
+                }
+                return true;
+            }
+            case GLFW.GLFW_KEY_HOME -> {
+                moveCursorTo(0, keepSelection);
+                return true;
+            }
+            case GLFW.GLFW_KEY_END -> {
+                moveCursorTo(this.getSafeValue().length(), keepSelection);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -236,8 +306,16 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Override
     public void setValue(String value) {
+        if (value == null) {
+            value = "";
+        }
+
         super.setValue(value);
-        this.seek(cursorPos);
+        this.seek(this.cursorPos);
+        this.selectionPos = Math.clamp(this.selectionPos, 0, this.getSafeValue().length());
+        if (!this.isFocused()) {
+            this.selectionPos = this.cursorPos;
+        }
         this.ensureCursorVisible();
     }
 
@@ -246,7 +324,40 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         super.setFocused(focused);
         if (focused) {
             this.ensureCursorVisible();
+        } else {
+            this.selectingWithMouse = false;
+            this.selectionPos = this.cursorPos;
         }
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        boolean handled = super.mouseClicked(event, isDoubleClick);
+        if (handled && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            this.moveCursorTo(cursorFromMouse(event.x()), isShiftDown());
+            this.selectingWithMouse = true;
+        }
+
+        return handled;
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (this.selectingWithMouse && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            this.moveCursorTo(cursorFromMouse(event.x()), true);
+            return true;
+        }
+
+        return super.mouseDragged(event, mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            this.selectingWithMouse = false;
+        }
+
+        return super.mouseReleased(event);
     }
 
     public static Predicate<String> integerPredicate() {
@@ -255,6 +366,146 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     public void setPlaceholder(@Nullable String placeholder) {
         this.placeholder = placeholder == null ? "" : placeholder;
+    }
+
+    private String getSafeValue() {
+        String value = this.getValue();
+        return value == null ? "" : value;
+    }
+
+    private int cursorFromMouse(double mouseX) {
+        String value = this.getSafeValue();
+        int localX = (int) Math.floor(mouseX) - (this.getX() + PADDING_X) + this.scrollX;
+
+        if (localX <= 0) {
+            return 0;
+        }
+
+        return this.font.plainSubstrByWidth(value, localX).length();
+    }
+
+    private boolean hasSelection() {
+        return this.cursorPos != this.selectionPos;
+    }
+
+    private int getSelectionStart() {
+        return Math.min(this.cursorPos, this.selectionPos);
+    }
+
+    private int getSelectionEnd() {
+        return Math.max(this.cursorPos, this.selectionPos);
+    }
+
+    private String getSelectedText() {
+        String value = this.getSafeValue();
+        return value.substring(this.getSelectionStart(), this.getSelectionEnd());
+    }
+
+    private int getWordPosition(int direction) {
+        return StringSplitter.getWordPosition(this.getSafeValue(), direction, this.cursorPos, true);
+    }
+
+    private boolean replaceSelection(String replacement) {
+        int start = this.getSelectionStart();
+        int end = this.getSelectionEnd();
+        int newCursorPos = start + replacement.length();
+        return replaceRange(start, end, replacement, newCursorPos);
+    }
+
+    private boolean replaceRange(int start, int end, String replacement, int newCursorPos) {
+        String value = this.getSafeValue();
+
+        int clampedStart = Math.clamp(start, 0, value.length());
+        int clampedEnd = Math.clamp(end, 0, value.length());
+        if (clampedStart > clampedEnd) {
+            int swap = clampedStart;
+            clampedStart = clampedEnd;
+            clampedEnd = swap;
+        }
+
+        String newString = value.substring(0, clampedStart) + replacement + value.substring(clampedEnd);
+        if (!predicate.test(newString)) {
+            return false;
+        }
+
+        super.setValue(newString);
+        this.moveCursorTo(Math.clamp(newCursorPos, 0, newString.length()), false);
+        return true;
+    }
+
+    private boolean insertText(@Nullable String text) {
+        String sanitized = text == null ? "" : StringUtil.filterText(text).replace("\n", "");
+        if (sanitized.isEmpty() && !hasSelection()) {
+            return false;
+        }
+
+        return replaceSelection(sanitized);
+    }
+
+    private void deleteFromCursor(int direction, boolean byWord) {
+        if (hasSelection()) {
+            replaceSelection("");
+            return;
+        }
+
+        String value = this.getSafeValue();
+        if (value.isEmpty()) {
+            return;
+        }
+
+        int targetPos = byWord ? getWordPosition(direction) : offsetCursorByCodepoint(value, this.cursorPos, direction);
+        if (targetPos == this.cursorPos) {
+            return;
+        }
+
+        int start = Math.min(this.cursorPos, targetPos);
+        int end = Math.max(this.cursorPos, targetPos);
+        replaceRange(start, end, "", start);
+    }
+
+    private int offsetCursorByCodepoint(String value, int cursor, int direction) {
+        int clampedCursor = Math.clamp(cursor, 0, value.length());
+        if (direction < 0) {
+            if (clampedCursor == 0) {
+                return 0;
+            }
+
+            return value.offsetByCodePoints(clampedCursor, -1);
+        }
+
+        if (direction > 0) {
+            if (clampedCursor >= value.length()) {
+                return value.length();
+            }
+
+            return value.offsetByCodePoints(clampedCursor, 1);
+        }
+
+        return clampedCursor;
+    }
+
+    private static boolean isShiftDown() {
+        return Minecraft.getInstance().hasShiftDown();
+    }
+
+    private static boolean isControlOnlyShortcut(KeyEvent event, int key) {
+        return event.key() == key && event.hasControlDownWithQuirk() && !isShiftDown();
+    }
+
+    private static boolean isSelectAllShortcut(KeyEvent event) {
+        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_A);
+    }
+
+    private static boolean isCopyShortcut(KeyEvent event) {
+        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_C);
+    }
+
+    private static boolean isPasteShortcut(KeyEvent event) {
+        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_V);
+    }
+
+    private static boolean isCutShortcut(KeyEvent event) {
+        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_X);
     }
 
     public static Predicate<String> floatPredicate() {

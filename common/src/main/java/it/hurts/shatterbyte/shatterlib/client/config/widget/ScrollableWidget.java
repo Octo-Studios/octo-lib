@@ -10,6 +10,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +60,11 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (childHandled) {
+            return true;
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 
@@ -216,4 +221,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
         this.maxScrollY = Math.max(0, contentBottom - this.height);
     }
+
+    @Override
+    public void playDownSound(SoundManager handler) {}
 }

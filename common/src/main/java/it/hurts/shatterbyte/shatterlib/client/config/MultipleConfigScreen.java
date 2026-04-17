@@ -17,6 +17,7 @@ import java.util.Map;
 
 public class MultipleConfigScreen extends ConfigScreen {
     private static final int CANVAS_HORIZONTAL_PADDING = 4;
+    private static final int SIDEBAR_WIDTH = 128;
 
     ScrollableWidget configButtons;
     Map<ShatterConfig, GenericObjectWidget> cache = new HashMap<>();
@@ -25,7 +26,7 @@ public class MultipleConfigScreen extends ConfigScreen {
         super(null, prevScreen);
 
         int y = 4;
-        this.configButtons = new ScrollableWidget(0, 32, 128, this.height-32);
+        this.configButtons = new ScrollableWidget(0, 32, SIDEBAR_WIDTH, this.height - 32);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
             ConfigButton button = new ConfigButton(config, 4, y, 120, 24, () -> this.changeConfig(config));
             button.setParent(configButtons);
@@ -62,8 +63,10 @@ public class MultipleConfigScreen extends ConfigScreen {
                         c -> {}
                 )
         );
-        this.scrollingObject = new ScrollableWidget(128, 32, this.width, this.height-32, object);
+        this.scrollingObject = new ScrollableWidget(getContentLeft(), 32, this.width, this.height - 32, object);
         this.addRenderableWidget(scrollingObject);
+        ensureSearchWidget();
+        applySearchQuery();
 
         repositionElements();
     }
@@ -89,23 +92,35 @@ public class MultipleConfigScreen extends ConfigScreen {
         }
 
         if (scrollingObject == null || object == null) {
+            repositionSearchWidget();
             return;
         }
 
-        scrollingObject.setWidth(Math.max(32, this.width - 128 - CANVAS_HORIZONTAL_PADDING * 2));
-        scrollingObject.setX(128 + CANVAS_HORIZONTAL_PADDING);
+        scrollingObject.setWidth(Math.max(32, this.width - SIDEBAR_WIDTH - CANVAS_HORIZONTAL_PADDING * 2));
+        scrollingObject.setX(getContentLeft());
         scrollingObject.setY(32);
-        scrollingObject.setHeight(this.height-32);
+        scrollingObject.setHeight(this.height - 32);
         object.setWidth(scrollingObject.getWidth());
         object.repositionElements();
         scrollingObject.maxScrollY = Math.max(0, object.getHeight() - scrollingObject.getHeight());
         object.clamp(-scrollingObject.maxScrollY, 0);
+        repositionSearchWidget();
+    }
+
+    @Override
+    protected int getContentLeft() {
+        return SIDEBAR_WIDTH + CANVAS_HORIZONTAL_PADDING;
+    }
+
+    @Override
+    protected int getContentRight() {
+        return this.width - CANVAS_HORIZONTAL_PADDING;
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.vLine(128, 0, this.height, 0xff1c1c17);
+        guiGraphics.vLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
         guiGraphics.hLine(0, this.width, 31, 0xff1c1c17);
         //guiGraphics.vLine(129, 0, this.height, 0xff1c1c17);
     }

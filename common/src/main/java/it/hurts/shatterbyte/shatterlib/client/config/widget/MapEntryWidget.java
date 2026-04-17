@@ -15,6 +15,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,6 +124,32 @@ public class MapEntryWidget<V> extends AbstractWidget
         if (parent != null) {
             parent.relayoutAndPropagate();
         }
+    }
+
+    void applySearchQuery(String query) {
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.applySearchQuery(query);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.applySearchQuery(query);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.applySearchQuery(query);
+        }
+    }
+
+    boolean hasSearchResults() {
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            return objectWidget.hasSearchResults();
+        }
+
+        if (entryWidget instanceof ListWidget<?> listWidget) {
+            return listWidget.hasSearchResults();
+        }
+
+        if (entryWidget instanceof MapWidget<?> mapWidget) {
+            return mapWidget.hasSearchResults();
+        }
+
+        return false;
     }
 
     @Override
@@ -314,7 +341,11 @@ public class MapEntryWidget<V> extends AbstractWidget
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (childHandled) {
+            return true;
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 
@@ -379,6 +410,9 @@ public class MapEntryWidget<V> extends AbstractWidget
             this.setFocused(null);
         }
     }
+
+    @Override
+    public void playDownSound(SoundManager handler) {}
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {

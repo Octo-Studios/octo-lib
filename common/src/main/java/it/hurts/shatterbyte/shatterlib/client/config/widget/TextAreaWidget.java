@@ -40,6 +40,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     @Setter
     Predicate<String> predicate = s -> true;
+    private String placeholder = "";
 
     public TextAreaWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, String defaultValue, Supplier<String> getter, Consumer<String> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 15);
@@ -147,7 +148,11 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
         int textX = clipX - this.scrollX;
         int textY = this.getY() + 4;
-        guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
+        if (value.isEmpty() && !this.isFocused() && !placeholder.isEmpty()) {
+            guiGraphics.drawString(font, placeholder, clipX, textY, 0xff7f7f87, true);
+        } else {
+            guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
+        }
 
         if (this.isFocused()) {
             int cursorX = textX + (int) Math.round(getCursorPixelX(value));
@@ -246,6 +251,10 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     public static Predicate<String> integerPredicate() {
         return s -> s.isEmpty() || s.matches("-?\\d+");
+    }
+
+    public void setPlaceholder(@Nullable String placeholder) {
+        this.placeholder = placeholder == null ? "" : placeholder;
     }
 
     public static Predicate<String> floatPredicate() {

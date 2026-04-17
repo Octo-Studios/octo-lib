@@ -95,12 +95,14 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
                 E chosen = values.get(idx);
                 setValue(chosen);
                 closeAfterRelease = true;
+                playClickSoundIfNeeded(event);
                 return true;
             }
 
             if (isInside(event.x(), event.y())) {
                 open = false;
                 closeAfterRelease = false;
+                playClickSoundIfNeeded(event);
                 return true;
             }
 
@@ -115,10 +117,19 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
             if (this.getParent() != null) {
                 this.getParent().moveToTheTop();
             }
+            playClickSoundIfNeeded(event);
             return true;
         }
 
         return false;
+    }
+
+    private void playClickSoundIfNeeded(MouseButtonEvent event) {
+        if (event.button() != 0) {
+            return;
+        }
+
+        this.playDownSound(Minecraft.getInstance().getSoundManager());
     }
 
     private boolean isInside(double mouseX, double mouseY) {

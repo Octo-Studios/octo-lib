@@ -15,6 +15,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
@@ -23,7 +24,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -49,6 +52,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     private final Type valueGenericType;
     @Getter
     private final Annotation[] annotations;
+    private String searchQuery = "";
 
     public MapWidget(
             ShatterConfig config,
@@ -96,6 +100,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         for (Map.Entry<String, V> e : map.entrySet()) {
             MapEntryWidget<V> entry =
                     new MapEntryWidget<>(this, e.getKey(), i++);
+            entry.applySearchQuery(searchQuery);
             entries.add(entry);
             renderables.add(entry);
         }
@@ -186,6 +191,48 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         }
 
         return map;
+    }
+
+    public void setSearchQuery(@Nullable String query) {
+        if (applySearchQuery(query)) {
+            relayoutAndPropagate();
+        }
+    }
+
+    boolean applySearchQuery(@Nullable String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        if (Objects.equals(this.searchQuery, normalizedQuery)) {
+            return false;
+        }
+
+        this.searchQuery = normalizedQuery;
+        for (MapEntryWidget<V> entry : entries) {
+            entry.applySearchQuery(normalizedQuery);
+        }
+
+        return true;
+    }
+
+    boolean hasSearchResults() {
+        if (searchQuery.isEmpty()) {
+            return true;
+        }
+
+        for (MapEntryWidget<V> entry : entries) {
+            if (entry.hasSearchResults()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
     }
 
     @Override
@@ -326,7 +373,11 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (childHandled) {
+            return true;
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 
@@ -409,4 +460,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         super.resetValue();
         this.rebuild();
     }
+
+    @Override
+    public void playDownSound(SoundManager handler) {}
 }

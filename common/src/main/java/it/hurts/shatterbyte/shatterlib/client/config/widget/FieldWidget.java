@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FieldWidget extends AbstractWidget implements ContainerEventHandler, Child<GenericObjectWidget>, DynamicallySized, PathContainerWidget {
     private static final int NAME_Y = 4;
@@ -302,7 +303,11 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (childHandled) {
+            return true;
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 
@@ -382,4 +387,56 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     public void playDownSound(SoundManager handler) {}
+
+    void applySearchQuery(String query) {
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.applySearchQuery(query);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.applySearchQuery(query);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.applySearchQuery(query);
+        }
+    }
+
+    boolean matchesSearchQuery(String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        if (normalizedQuery.isEmpty()) {
+            return true;
+        }
+
+        if (containsSearchToken(info.name(), normalizedQuery)
+                || containsSearchToken(info.description(), normalizedQuery)) {
+            return true;
+        }
+
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            return objectWidget.hasSearchResults();
+        }
+
+        if (entryWidget instanceof ListWidget<?> listWidget) {
+            return listWidget.hasSearchResults();
+        }
+
+        if (entryWidget instanceof MapWidget<?> mapWidget) {
+            return mapWidget.hasSearchResults();
+        }
+
+        return false;
+    }
+
+    private static boolean containsSearchToken(@Nullable String value, String normalizedQuery) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+
+        return value.toLowerCase(Locale.ROOT).contains(normalizedQuery);
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
+    }
 }

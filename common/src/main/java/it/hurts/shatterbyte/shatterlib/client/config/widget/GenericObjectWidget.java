@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -41,6 +42,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     private boolean collapsed;
 
     private double scrollOffset;
+    private String searchQuery = "";
 
     public GenericObjectWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, Object defaultValue, Supplier<Object> getter, Consumer<Object> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 100, 100);
@@ -51,6 +53,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         }
 
         this.populateWidget();
+        this.rebuildFilteredRenderables();
         this.refreshChildListeners();
         this.repositionElements();
     }
@@ -74,7 +77,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 //            this.setWidth(this.getParent().getWidth() - 10 - 14);
 //        }
 
-        for (FieldWidget field : widgets) {
+        for (FieldWidget field : renderables) {
             field.repositionElements();
             field.setPosition(4, totalHeight);
 
@@ -112,7 +115,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         childListeners.add(collapseButton);
 
         if (!collapsed) {
-            childListeners.addAll(widgets);
+            childListeners.addAll(renderables);
         }
     }
 
@@ -130,7 +133,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             return false;
         }
 
-        for (FieldWidget widget : widgets) {
+        for (FieldWidget widget : renderables) {
             if (widget.isMouseOver(mouseX, mouseY)) {
                 return true;
             }
@@ -156,7 +159,6 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
             }
 
             this.widgets.add(fieldWidget);
-            this.renderables.add(fieldWidget);
         }
     }
 
@@ -223,7 +225,11 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
+        if (childHandled) {
+            return true;
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 
@@ -343,6 +349,52 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     @Override
     public void setScrollOffset(double offset) {
         this.scrollOffset = offset;
+    }
+
+    public void setSearchQuery(@Nullable String query) {
+        if (applySearchQuery(query)) {
+            relayoutAndPropagate();
+        }
+    }
+
+    boolean applySearchQuery(@Nullable String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        if (Objects.equals(this.searchQuery, normalizedQuery)) {
+            return false;
+        }
+
+        this.searchQuery = normalizedQuery;
+        rebuildFilteredRenderables();
+        refreshChildListeners();
+        repositionElements();
+        return true;
+    }
+
+    boolean hasSearchResults() {
+        if (searchQuery.isEmpty()) {
+            return true;
+        }
+
+        return !renderables.isEmpty();
+    }
+
+    private void rebuildFilteredRenderables() {
+        renderables.clear();
+
+        for (FieldWidget field : widgets) {
+            field.applySearchQuery(searchQuery);
+            if (field.matchesSearchQuery(searchQuery)) {
+                renderables.add(field);
+            }
+        }
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
     }
 
     record FieldInfo(String name, String description) {}

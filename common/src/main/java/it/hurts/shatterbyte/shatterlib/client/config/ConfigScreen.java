@@ -38,6 +38,8 @@ public class ConfigScreen extends Screen {
             object = new GenericObjectWidget(config, null, new Annotation[]{}, null, null, () -> config, conf -> {
             });
             scrollingObject = new ScrollableWidget(0, HEADER_HEIGHT, this.width, this.height - HEADER_HEIGHT, object);
+            scrollingObject.setPinScrollbarToScreenRight(true);
+            scrollingObject.setScrollbarRightInset(0);
             this.addRenderableWidget(scrollingObject);
             ensureSearchWidget();
             applySearchQuery();

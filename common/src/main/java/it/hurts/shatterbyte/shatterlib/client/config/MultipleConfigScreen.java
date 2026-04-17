@@ -18,6 +18,7 @@ import java.util.Map;
 public class MultipleConfigScreen extends ConfigScreen {
     private static final int CANVAS_HORIZONTAL_PADDING = 4;
     private static final int SIDEBAR_WIDTH = 128;
+    private static final int SIDEBAR_TILE_PADDING = 4;
 
     ScrollableWidget configButtons;
     Map<ShatterConfig, GenericObjectWidget> cache = new HashMap<>();
@@ -28,7 +29,7 @@ public class MultipleConfigScreen extends ConfigScreen {
         int y = 4;
         this.configButtons = new ScrollableWidget(0, 32, SIDEBAR_WIDTH, this.height - 32);
         for (ShatterConfig config : ConfigManager.getConfigsForMod(modId)) {
-            ConfigButton button = new ConfigButton(config, 4, y, 120, 24, () -> this.changeConfig(config));
+            ConfigButton button = new ConfigButton(config, SIDEBAR_TILE_PADDING, y, 120, 24, () -> this.changeConfig(config));
             button.setParent(configButtons);
             configButtons.children().add(button);
             y += 4 + button.getHeight();
@@ -64,6 +65,8 @@ public class MultipleConfigScreen extends ConfigScreen {
                 )
         );
         this.scrollingObject = new ScrollableWidget(getContentLeft(), 32, this.width, this.height - 32, object);
+        this.scrollingObject.setPinScrollbarToScreenRight(true);
+        this.scrollingObject.setScrollbarRightInset(0);
         this.addRenderableWidget(scrollingObject);
         ensureSearchWidget();
         applySearchQuery();
@@ -89,6 +92,19 @@ public class MultipleConfigScreen extends ConfigScreen {
 
             configButtons.maxScrollY = Math.max(0, contentBottom - configButtons.getHeight());
             configButtons.clamp();
+
+            boolean hasScrollbar = configButtons.maxScrollY > 0;
+            int scrollbarWidth = hasScrollbar ? configButtons.getScrollbarWidth() : 0;
+            int tileWidth = Math.max(
+                    1,
+                    configButtons.getWidth() - SIDEBAR_TILE_PADDING * 2 - scrollbarWidth
+            );
+
+            for (AbstractWidget widget : configButtons.children()) {
+                if (widget instanceof ConfigButton) {
+                    widget.setWidth(tileWidth);
+                }
+            }
         }
 
         if (scrollingObject == null || object == null) {

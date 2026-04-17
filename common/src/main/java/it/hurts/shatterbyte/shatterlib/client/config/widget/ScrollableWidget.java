@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -19,9 +20,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ScrollableWidget extends AbstractWidget implements ContainerEventHandler, PathContainerWidget {
+    private static final int SCROLLBAR_WIDTH = 5;
+    private static final int SCROLLBAR_MIN_THUMB_HEIGHT = 14;
+    private static final int SCROLLBAR_TRACK_COLOR = 0x33111116;
+    private static final int SCROLLBAR_THUMB_COLOR = 0x887b7b84;
+    private static final int SCROLLBAR_THUMB_HOVER_COLOR = 0xaa9a9aa3;
+    private static final int SCROLLBAR_THUMB_DRAG_COLOR = 0xccb9b9c2;
+
     List<AbstractWidget> widgets = new ArrayList<>();
     private @Nullable AbstractWidget focused;
     private boolean dragging;
+    private boolean scrollbarDragging;
+    private double scrollbarDragOffsetY;
+    private boolean pinScrollbarToScreenRight;
+    private int scrollbarRightInset;
 
     public double maxScrollY = 0;
 
@@ -40,6 +52,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
         guiGraphics.enableScissor(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
         this.children().reversed().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
         guiGraphics.disableScissor();
+        this.renderScrollbar(guiGraphics, mouseX, mouseY);
     }
 
     @Override
@@ -49,7 +62,8 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return super.isMouseOver(mouseX, mouseY);
+        return super.isMouseOver(mouseX, mouseY)
+                || (this.hasScrollbar() && this.isInsideScrollbar(mouseX, mouseY));
     }
 
     @Nullable
@@ -60,6 +74,21 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (event.button() == 0 && this.hasScrollbar() && this.isInsideScrollbar(event.x(), event.y())) {
+            int thumbTop = this.getScrollbarThumbTop();
+            int thumbHeight = this.getScrollbarThumbHeight();
+
+            if (event.y() >= thumbTop && event.y() < thumbTop + thumbHeight) {
+                this.scrollbarDragOffsetY = event.y() - thumbTop;
+            } else {
+                this.scrollbarDragOffsetY = thumbHeight / 2.0;
+                this.setScrollFromThumbTop(event.y() - this.scrollbarDragOffsetY);
+            }
+
+            this.scrollbarDragging = true;
+            return true;
+        }
+
         boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         if (childHandled) {
             return true;
@@ -70,12 +99,22 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
+        if (this.scrollbarDragging && event.button() == 0) {
+            this.scrollbarDragging = false;
+            return true;
+        }
+
         ContainerEventHandler.super.mouseReleased(event);
         return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (this.scrollbarDragging) {
+            this.setScrollFromThumbTop(event.y() - this.scrollbarDragOffsetY);
+            return true;
+        }
+
         ContainerEventHandler.super.mouseDragged(event, mouseX, mouseY);
         return super.mouseDragged(event, mouseX, mouseY);
     }
@@ -220,6 +259,149 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
         }
 
         this.maxScrollY = Math.max(0, contentBottom - this.height);
+    }
+
+    private void renderScrollbar(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        if (!this.hasScrollbar()) {
+            return;
+        }
+
+        int x = this.getScrollbarX();
+        int y = this.getScrollbarY();
+        int h = this.getScrollbarHeight();
+        if (h <= 0) {
+            return;
+        }
+
+        guiGraphics.fill(x, y, x + SCROLLBAR_WIDTH, y + h, SCROLLBAR_TRACK_COLOR);
+
+        int thumbTop = this.getScrollbarThumbTop();
+        int thumbHeight = this.getScrollbarThumbHeight();
+        int thumbColor = SCROLLBAR_THUMB_COLOR;
+        if (this.scrollbarDragging) {
+            thumbColor = SCROLLBAR_THUMB_DRAG_COLOR;
+        } else if (this.isInsideScrollbar(mouseX, mouseY)
+                && mouseY >= thumbTop
+                && mouseY < thumbTop + thumbHeight) {
+            thumbColor = SCROLLBAR_THUMB_HOVER_COLOR;
+        }
+
+        guiGraphics.fill(x, thumbTop, x + SCROLLBAR_WIDTH, thumbTop + thumbHeight, thumbColor);
+    }
+
+    private boolean hasScrollbar() {
+        return this.maxScrollY > 0 && this.getScrollableChild() != null && this.getScrollbarHeight() > 0;
+    }
+
+    private int getScrollbarX() {
+        if (this.pinScrollbarToScreenRight) {
+            int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            return screenWidth - SCROLLBAR_WIDTH - Math.max(0, this.scrollbarRightInset);
+        }
+
+        return this.getX() + this.getWidth() - SCROLLBAR_WIDTH;
+    }
+
+    private int getScrollbarY() {
+        return this.getY();
+    }
+
+    private int getScrollbarHeight() {
+        return this.getHeight();
+    }
+
+    private int getScrollbarThumbHeight() {
+        int trackHeight = this.getScrollbarHeight();
+        if (trackHeight <= 0) {
+            return 0;
+        }
+
+        double contentHeight = this.getHeight() + this.maxScrollY;
+        if (contentHeight <= 0) {
+            return trackHeight;
+        }
+
+        int size = (int) Math.round(trackHeight * (this.getHeight() / contentHeight));
+        return Math.clamp(size, SCROLLBAR_MIN_THUMB_HEIGHT, trackHeight);
+    }
+
+    private int getScrollbarThumbTop() {
+        Scrollable scrollable = this.getScrollableChild();
+        if (scrollable == null || this.maxScrollY <= 0) {
+            return this.getScrollbarY();
+        }
+
+        int trackY = this.getScrollbarY();
+        int trackHeight = this.getScrollbarHeight();
+        int thumbHeight = this.getScrollbarThumbHeight();
+        int travel = Math.max(0, trackHeight - thumbHeight);
+        if (travel == 0) {
+            return trackY;
+        }
+
+        double progress = Math.clamp((-scrollable.getScrollOffset()) / this.maxScrollY, 0.0, 1.0);
+        return trackY + (int) Math.round(progress * travel);
+    }
+
+    private boolean isInsideScrollbar(double mouseX, double mouseY) {
+        int x = this.getScrollbarX();
+        int y = this.getScrollbarY();
+        int h = this.getScrollbarHeight();
+        return mouseX >= x && mouseX < x + SCROLLBAR_WIDTH && mouseY >= y && mouseY < y + h;
+    }
+
+    private void setScrollFromThumbTop(double thumbTop) {
+        if (this.getScrollableChild() == null || this.maxScrollY <= 0) {
+            return;
+        }
+
+        int trackY = this.getScrollbarY();
+        int trackHeight = this.getScrollbarHeight();
+        int thumbHeight = this.getScrollbarThumbHeight();
+        int travel = Math.max(0, trackHeight - thumbHeight);
+
+        if (travel == 0) {
+            for (AbstractWidget widget : this.widgets) {
+                if (widget instanceof Scrollable scrollable) {
+                    scrollable.setScrollOffset(0);
+                    scrollable.clamp(-this.maxScrollY, 0);
+                }
+            }
+            return;
+        }
+
+        double clampedTop = Math.clamp(thumbTop, trackY, trackY + travel);
+        double progress = (clampedTop - trackY) / travel;
+        double targetOffset = -progress * this.maxScrollY;
+
+        for (AbstractWidget widget : this.widgets) {
+            if (widget instanceof Scrollable scrollable) {
+                scrollable.setScrollOffset(targetOffset);
+                scrollable.clamp(-this.maxScrollY, 0);
+            }
+        }
+    }
+
+    private @Nullable Scrollable getScrollableChild() {
+        for (AbstractWidget widget : this.widgets) {
+            if (widget instanceof Scrollable scrollable) {
+                return scrollable;
+            }
+        }
+
+        return null;
+    }
+
+    public void setPinScrollbarToScreenRight(boolean pinScrollbarToScreenRight) {
+        this.pinScrollbarToScreenRight = pinScrollbarToScreenRight;
+    }
+
+    public void setScrollbarRightInset(int scrollbarRightInset) {
+        this.scrollbarRightInset = Math.max(0, scrollbarRightInset);
+    }
+
+    public int getScrollbarWidth() {
+        return SCROLLBAR_WIDTH;
     }
 
     @Override

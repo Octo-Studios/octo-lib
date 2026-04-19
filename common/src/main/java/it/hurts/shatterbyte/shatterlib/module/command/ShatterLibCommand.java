@@ -48,7 +48,7 @@ public class ShatterLibCommand {
                                             return Command.SINGLE_SUCCESS;
                                         }))
                                 .then(Commands.argument("path", StringArgumentType.string())
-                                        .suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getCommonAndServerPaths(), b))
+                                        .suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getCommonAndServerPaths().stream().map(string -> '"'+string+'"'), b))
                                         .executes(context -> {
                                             String path = context.getArgument("path", String.class);
                                             if (!ConfigManager.reload(path, context.getSource().getServer())) {

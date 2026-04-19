@@ -1,4 +1,5 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
+import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -20,12 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ScrollableWidget extends AbstractWidget implements ContainerEventHandler, PathContainerWidget {
-    private static final int SCROLLBAR_WIDTH = 5;
+    private static final int SCROLLBAR_WIDTH = 6;
     private static final int SCROLLBAR_MIN_THUMB_HEIGHT = 14;
     private static final int SCROLLBAR_TRACK_COLOR = 0x33111116;
-    private static final int SCROLLBAR_THUMB_COLOR = 0x887b7b84;
-    private static final int SCROLLBAR_THUMB_HOVER_COLOR = 0xaa9a9aa3;
-    private static final int SCROLLBAR_THUMB_DRAG_COLOR = 0xccb9b9c2;
+    private static final int SCROLLBAR_THUMB_COLOR = 0xffffffff;
+    private static final int SCROLLBAR_THUMB_HOVER_COLOR = 0xffdddddd;
+    private static final int SCROLLBAR_THUMB_DRAG_COLOR = 0xffbbbbbb;
 
     List<AbstractWidget> widgets = new ArrayList<>();
     private @Nullable AbstractWidget focused;
@@ -92,6 +94,10 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
         boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         if (childHandled) {
             return true;
+        }
+
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused(null);
         }
 
         return super.mouseClicked(event, isDoubleClick);
@@ -286,7 +292,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
             thumbColor = SCROLLBAR_THUMB_HOVER_COLOR;
         }
 
-        guiGraphics.fill(x, thumbTop, x + SCROLLBAR_WIDTH, thumbTop + thumbHeight, thumbColor);
+        UIElements.SCROLLBAR_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x+1, thumbTop, SCROLLBAR_WIDTH-2, thumbHeight, thumbColor);
     }
 
     private boolean hasScrollbar() {

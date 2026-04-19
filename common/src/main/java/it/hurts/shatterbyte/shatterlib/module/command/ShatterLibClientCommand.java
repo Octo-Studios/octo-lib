@@ -27,7 +27,7 @@ public class ShatterLibClientCommand {
 
             context.getSource().arch$getPlayer().displayClientMessage(Component.literal(counter + " configs reloaded successfully!"), true);
             return Command.SINGLE_SUCCESS;
-        })).then(ClientCommandRegistrationEvent.argument("path", StringArgumentType.string()).suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getClientPaths(), b)).executes(context -> {
+        })).then(ClientCommandRegistrationEvent.argument("path", StringArgumentType.string()).suggests((context, b) -> SharedSuggestionProvider.suggest(ConfigManager.getClientPaths().stream().map(string -> '"'+string+'"'), b)).executes(context -> {
             String path = context.getArgument("path", String.class);
             if (!ConfigManager.reload(path, null)) {
                 context.getSource().arch$getPlayer().displayClientMessage(Component.literal("Failed to reload: ").withStyle(ChatFormatting.RED).append(Component.literal("[" + path + "]")), true);

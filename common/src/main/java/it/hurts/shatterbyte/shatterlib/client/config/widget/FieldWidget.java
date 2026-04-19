@@ -311,6 +311,10 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
             return true;
         }
 
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused(null);
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 

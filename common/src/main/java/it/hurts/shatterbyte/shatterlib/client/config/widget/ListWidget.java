@@ -345,6 +345,10 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             return true;
         }
 
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused(null);
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 

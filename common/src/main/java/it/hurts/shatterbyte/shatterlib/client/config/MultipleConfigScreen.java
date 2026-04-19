@@ -52,6 +52,8 @@ public class MultipleConfigScreen extends ConfigScreen {
             return;
         }
 
+        this.setFocused(null);
+
         if (this.config != null) {
             this.config.save(Platform.getConfigFolder());
         }

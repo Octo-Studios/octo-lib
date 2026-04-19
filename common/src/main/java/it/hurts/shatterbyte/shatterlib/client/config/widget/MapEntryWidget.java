@@ -403,6 +403,10 @@ public class MapEntryWidget<V> extends AbstractWidget
             return true;
         }
 
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused(null);
+        }
+
         return super.mouseClicked(event, isDoubleClick);
     }
 

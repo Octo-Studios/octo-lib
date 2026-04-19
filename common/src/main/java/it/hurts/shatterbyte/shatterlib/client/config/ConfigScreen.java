@@ -94,6 +94,8 @@ public class ConfigScreen extends Screen {
 
     @Override
     public void onClose() {
+        this.setFocused(null);
+
         if (config != null) {
             config.save(Platform.getConfigFolder());
         }

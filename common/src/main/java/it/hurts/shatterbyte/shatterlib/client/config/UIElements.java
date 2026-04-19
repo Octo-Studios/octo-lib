@@ -70,6 +70,18 @@ public class UIElements {
             new UISprite.NineSlice.Region(12, 33, 4, 5)
     );
 
+    public static final UISprite SCROLLBAR_THINGY = new UISprite.NineSlice(ConfigScreen.ATLAS,
+            new UISprite.NineSlice.Region(18, 3, 1, 3),
+            new UISprite.NineSlice.Region(19,3,2,3),
+            new UISprite.NineSlice.Region(21,3,1,3),
+            new UISprite.NineSlice.Region(18,7,1,18),
+            new UISprite.NineSlice.Region(19,7,2,18),
+            new UISprite.NineSlice.Region(21,7,1,18),
+            new UISprite.NineSlice.Region(18,26,1,4),
+            new UISprite.NineSlice.Region(19,26,2,4),
+            new UISprite.NineSlice.Region(21,26,1,4)
+    );
+
     public static final UISprite.Single ICON_RESET = new UISprite.Single(ConfigScreen.ATLAS, 128, 3, 9, 9);
     public static final UISprite.Single ICON_UP = new UISprite.Single(ConfigScreen.ATLAS, 106, 3, 9, 9);
     public static final UISprite.Single ICON_DOWN = new UISprite.Single(ConfigScreen.ATLAS, 95, 3, 9, 9);

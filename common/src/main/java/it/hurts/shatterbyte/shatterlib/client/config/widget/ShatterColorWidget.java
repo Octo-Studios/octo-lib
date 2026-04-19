@@ -187,7 +187,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }, "L");
         hslLWidget.setParent(this);
 
-        togglePopupButton = new IconButtonWidget<>(0, 0, BTN_W, BTN_W, this::toggleExpanded, UIElements.ICON_DOWN);
+        togglePopupButton = new IconButtonWidget<>(0, 0, BTN_W, BTN_W, this::toggleExpanded, null);
         togglePopupButton.setParent(this);
 
         ShatterColor initial = this.getValue();
@@ -218,7 +218,6 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         rowHexWidget.setPosition(0, 0);
         rowHexWidget.setWidth(rowHexWidth);
         togglePopupButton.setPosition(rowHexWidth + ROW_GAP, 0);
-        togglePopupButton.icon = expanded ? UIElements.ICON_UP : UIElements.ICON_DOWN;
 
         PopupLayout layout = buildPopupLayout();
         popupHexWidget.setPosition(layout.fieldLocalX(), layout.hexFieldLocalY());
@@ -418,6 +417,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
     protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         rowHexWidget.render(guiGraphics, mouseX, mouseY, partialTick);
         togglePopupButton.render(guiGraphics, mouseX, mouseY, partialTick);
+        renderToggleColorSwatch(guiGraphics);
 
         if (!expanded) {
             return;
@@ -469,6 +469,24 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         renderSliderMarker(guiGraphics, alphaRect, alpha);
     }
 
+    private void renderToggleColorSwatch(GuiGraphics guiGraphics) {
+        int swatchSize = 9;
+        int offsetY = togglePopupButton.isHovered() ? 1 : 0;
+        int x = togglePopupButton.getX() + (togglePopupButton.getWidth() - swatchSize) / 2;
+        int y = togglePopupButton.getY() + (togglePopupButton.getHeight() - swatchSize) / 2 - 1 + offsetY;
+        Rect rect = new Rect(x, y, swatchSize, swatchSize);
+
+        if (getCurrentColor().a() < 0.999f) {
+            renderCheckerboard(guiGraphics, rect);
+        }
+
+        guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.bottom(), getCurrentColor().getARGB());
+        guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.y() + 1, 0xff101015);
+        guiGraphics.fill(rect.x(), rect.bottom() - 1, rect.right(), rect.bottom(), 0xff101015);
+        guiGraphics.fill(rect.x(), rect.y(), rect.x() + 1, rect.bottom(), 0xff101015);
+        guiGraphics.fill(rect.right() - 1, rect.y(), rect.right(), rect.bottom(), 0xff101015);
+    }
+
     private void renderFieldLabel(GuiGraphics guiGraphics, String label, int labelLocalX, int fieldLocalY) {
         int x = this.getX() + labelLocalX;
         int y = this.getY() + fieldLocalY + 4;
@@ -478,12 +496,17 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         if (expanded && event.button() == 0 && !isInsideRowOrPopup(event.x(), event.y())) {
+            this.setFocused((GuiEventListener) null);
             setExpanded(false);
         }
 
         boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         if (childHandled) {
             return true;
+        }
+
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused((GuiEventListener) null);
         }
 
         if (event.button() != 0 || !expanded) {

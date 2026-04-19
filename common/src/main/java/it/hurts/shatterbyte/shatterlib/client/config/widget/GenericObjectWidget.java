@@ -77,7 +77,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 //            this.setWidth(this.getParent().getWidth() - 10 - 14);
 //        }
 
-        for (FieldWidget field : renderables) {
+        for (FieldWidget field : getLayoutRenderables()) {
             field.repositionElements();
             field.setPosition(4, totalHeight);
 
@@ -197,6 +197,19 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         int left = this.getX();
         int right = left + this.width - 1;
 
+        List<FieldWidget> layoutRenderables = getLayoutRenderables();
+        for (int i = 0; i < layoutRenderables.size() - 1; i++) {
+            FieldWidget widget = layoutRenderables.get(i);
+            int widgetY = widget.getY();
+            int widgetBottom = widgetY + widget.getHeight();
+            if (widgetBottom < 0 || widgetY > screenHeight) {
+                continue;
+            }
+
+            guiGraphics.hLine(left + 4, right, widgetBottom + 1, 0xff1c1c17);
+            guiGraphics.hLine(left + 4, right, widgetBottom + 2, 0xff3c3c42);
+        }
+
         for (int i = renderables.size() - 1; i >= 0; i--) {
             FieldWidget widget = renderables.get(i);
             int widgetY = widget.getY();
@@ -205,10 +218,6 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            if (i < renderables.size() - 1) {
-                guiGraphics.hLine(left + 4, right, widgetBottom + 1, 0xff1c1c17);
-                guiGraphics.hLine(left + 4, right, widgetBottom + 2, 0xff3c3c42);
-            }
             widget.render(guiGraphics, mouseX, mouseY, partialTick);
         }
 
@@ -228,6 +237,10 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         boolean childHandled = ContainerEventHandler.super.mouseClicked(event, isDoubleClick);
         if (childHandled) {
             return true;
+        }
+
+        if (this.isMouseOver(event.x(), event.y())) {
+            this.setFocused(null);
         }
 
         return super.mouseClicked(event, isDoubleClick);
@@ -387,6 +400,21 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 renderables.add(field);
             }
         }
+    }
+
+    private List<FieldWidget> getLayoutRenderables() {
+        if (renderables.size() == widgets.size()) {
+            return widgets;
+        }
+
+        List<FieldWidget> ordered = new ArrayList<>(renderables.size());
+        for (FieldWidget field : widgets) {
+            if (renderables.contains(field)) {
+                ordered.add(field);
+            }
+        }
+
+        return ordered;
     }
 
     private static String normalizeSearchQuery(@Nullable String query) {

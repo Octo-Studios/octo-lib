@@ -4,7 +4,6 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
-import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,14 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidget<E>>, ContainerEventHandler, DynamicallySized, PathContainerWidget {
     private ListWidget<E> parent;
     private final int index;
     private final List<GuiEventListener> childListeners;
     private final int preferredEntryWidth;
-    private String searchQuery = "";
 
     AbstractEntryWidget<E> entryWidget;
 
@@ -113,26 +110,28 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     }
 
     void applySearchQuery(String query) {
-        this.searchQuery = normalizeSearchQuery(query);
-
         if (entryWidget instanceof GenericObjectWidget objectWidget) {
-            objectWidget.applySearchQuery(this.searchQuery);
+            objectWidget.applySearchQuery(query);
         } else if (entryWidget instanceof ListWidget<?> listWidget) {
-            listWidget.applySearchQuery(this.searchQuery);
+            listWidget.applySearchQuery(query);
         } else if (entryWidget instanceof MapWidget<?> mapWidget) {
-            mapWidget.applySearchQuery(this.searchQuery);
+            mapWidget.applySearchQuery(query);
+        }
+    }
+
+    void applySearchHighlight(String query) {
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.applySearchHighlight(query);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.applySearchHighlight(query);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.applySearchHighlight(query);
+        } else if (entryWidget instanceof SearchHighlightAware highlightAware) {
+            highlightAware.setSearchHighlightQuery(query);
         }
     }
 
     boolean hasSearchResults() {
-        if (searchQuery.isEmpty()) {
-            return true;
-        }
-
-        if (containsEntryValue(entryWidget, searchQuery)) {
-            return true;
-        }
-
         if (entryWidget instanceof GenericObjectWidget objectWidget) {
             return objectWidget.hasSearchResults();
         }
@@ -148,47 +147,13 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
         return false;
     }
 
-    private static boolean containsEntryValue(AbstractEntryWidget<?> widget, String normalizedQuery) {
-        if (widget == null) {
-            return false;
-        }
-
-        return containsSearchToken(toSearchText(widget.getValue()), normalizedQuery);
-    }
-
-    private static boolean containsSearchToken(@Nullable String value, String normalizedQuery) {
-        if (value == null || value.isBlank()) {
-            return false;
-        }
-
-        return value.toLowerCase(Locale.ROOT).contains(normalizedQuery);
-    }
-
-    private static String normalizeSearchQuery(@Nullable String query) {
-        if (query == null) {
-            return "";
-        }
-
-        return query.toLowerCase(Locale.ROOT).trim();
-    }
-
-    private static String toSearchText(@Nullable Object value) {
-        if (value == null) {
-            return "null";
-        }
-
-        if (value instanceof CharSequence
-                || value instanceof Number
-                || value instanceof Boolean
-                || value instanceof Character
-                || value instanceof Enum<?>) {
-            return String.valueOf(value);
-        }
-
-        try {
-            return Json5Utils.encode(value).toString();
-        } catch (Throwable ignored) {
-            return String.valueOf(value);
+    void collectSearchMatches(String normalizedQuery, List<FieldWidget> matches) {
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.collectSearchMatches(normalizedQuery, matches);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.collectSearchMatches(normalizedQuery, matches);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.collectSearchMatches(normalizedQuery, matches);
         }
     }
 

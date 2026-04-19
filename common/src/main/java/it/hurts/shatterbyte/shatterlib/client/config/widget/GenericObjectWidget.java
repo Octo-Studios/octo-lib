@@ -370,6 +370,13 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         }
     }
 
+    public void applySearchHighlight(@Nullable String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        for (FieldWidget field : widgets) {
+            field.applySearchHighlight(normalizedQuery);
+        }
+    }
+
     boolean applySearchQuery(@Nullable String query) {
         String normalizedQuery = normalizeSearchQuery(query);
         if (Objects.equals(this.searchQuery, normalizedQuery)) {
@@ -423,6 +430,23 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
         }
 
         return query.toLowerCase(Locale.ROOT).trim();
+    }
+
+    public List<FieldWidget> collectSearchMatches(@Nullable String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        List<FieldWidget> matches = new ArrayList<>();
+        if (normalizedQuery.isEmpty()) {
+            return matches;
+        }
+
+        collectSearchMatches(normalizedQuery, matches);
+        return matches;
+    }
+
+    void collectSearchMatches(String normalizedQuery, List<FieldWidget> matches) {
+        for (FieldWidget field : widgets) {
+            field.collectSearchMatches(normalizedQuery, matches);
+        }
     }
 
     record FieldInfo(String name, String description) {}

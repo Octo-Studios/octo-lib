@@ -24,15 +24,17 @@ import org.lwjgl.glfw.GLFW;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class TextAreaWidget extends AbstractEntryWidget<String> {
+public class TextAreaWidget extends AbstractEntryWidget<String> implements SearchHighlightAware {
     private static final int PADDING_X = 4;
     private static final int PADDING_Y = 4;
     private static final int CURSOR_MARGIN = 2;
     private static final int SELECTION_COLOR = 0x66436cb3;
+    private static final int HIGHLIGHT_COLOR = 0xffffd74a;
 
     Font font = Minecraft.getInstance().font;
     int cursorPos;
@@ -43,6 +45,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     private int scrollX = 0;
     private boolean selectingWithMouse = false;
+    private String searchHighlightQuery = "";
 
     Tween cursorTween = Tween.create();
 
@@ -177,6 +180,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         } else {
             renderSelection(guiGraphics, value, textX);
             guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
+            renderSearchHighlight(guiGraphics, value, textX, textY);
         }
 
         if (this.isFocused()) {
@@ -379,6 +383,11 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         this.onBlur = onBlur;
     }
 
+    @Override
+    public void setSearchHighlightQuery(@Nullable String query) {
+        this.searchHighlightQuery = normalizeSearchQuery(query);
+    }
+
     private String getSafeValue() {
         String value = this.getValue();
         return value == null ? "" : value;
@@ -397,6 +406,27 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
 
     private boolean hasSelection() {
         return this.cursorPos != this.selectionPos;
+    }
+
+    private void renderSearchHighlight(GuiGraphics guiGraphics, String value, int textX, int textY) {
+        if (searchHighlightQuery.isEmpty() || value.isEmpty()) {
+            return;
+        }
+
+        String lowered = value.toLowerCase(Locale.ROOT);
+        int fromIndex = 0;
+        while (true) {
+            int index = lowered.indexOf(searchHighlightQuery, fromIndex);
+            if (index < 0) {
+                return;
+            }
+
+            int end = index + searchHighlightQuery.length();
+            int offsetX = this.font.width(value.substring(0, index));
+            String highlighted = value.substring(index, end);
+            guiGraphics.drawString(this.font, highlighted, textX + offsetX, textY, HIGHLIGHT_COLOR, true);
+            fromIndex = end;
+        }
     }
 
     private int getSelectionStart() {
@@ -556,5 +586,13 @@ public class TextAreaWidget extends AbstractEntryWidget<String> {
         }
 
         return TextAreaWidget.floatPredicate();
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
     }
 }

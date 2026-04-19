@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implements ContainerEventHandler, PathContainerWidget {
+public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implements ContainerEventHandler, PathContainerWidget, SearchHighlightAware {
     private static final int ROW_H = 15;
     private static final int BTN_W = 15;
     private static final int ROW_GAP = 3;
@@ -648,6 +648,25 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
 
         this.focused = focused;
+    }
+
+    @Override
+    public void setSearchHighlightQuery(@Nullable String query) {
+        rowHexWidget.setSearchHighlightQuery(query);
+        popupHexWidget.setSearchHighlightQuery(query);
+        rgbRWidget.setSearchHighlightQuery(query);
+        rgbGWidget.setSearchHighlightQuery(query);
+        rgbBWidget.setSearchHighlightQuery(query);
+        cmykCWidget.setSearchHighlightQuery(query);
+        cmykMWidget.setSearchHighlightQuery(query);
+        cmykYWidget.setSearchHighlightQuery(query);
+        cmykKWidget.setSearchHighlightQuery(query);
+        hsvHWidget.setSearchHighlightQuery(query);
+        hsvSWidget.setSearchHighlightQuery(query);
+        hsvVWidget.setSearchHighlightQuery(query);
+        hslHWidget.setSearchHighlightQuery(query);
+        hslSWidget.setSearchHighlightQuery(query);
+        hslLWidget.setSearchHighlightQuery(query);
     }
 
     @Override

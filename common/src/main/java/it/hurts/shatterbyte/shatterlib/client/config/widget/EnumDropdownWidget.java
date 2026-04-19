@@ -7,20 +7,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E> {
+public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E> implements SearchHighlightAware {
+    private static final int HIGHLIGHT_COLOR = 0xffffd74a;
     private final List<E> values;
     private boolean open = false;
     private boolean closeAfterRelease = false;
     private int hoveredIndex = -1;
+    private String searchHighlightQuery = "";
 
     public EnumDropdownWidget(ShatterConfig config, Type type, Annotation[] annotations, PathContainerWidget parent, E defaultValue, Supplier<E> getter, Consumer<E> setter) {
         super(config, parent, defaultValue, getter, setter, 0, 0, 200, 18);
@@ -48,7 +52,9 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         // draw selected value text
         E current = getValue();
         String label = current == null ? "<null>" : convertFromCamelCase(current.name());
-        guiGraphics.drawString(Minecraft.getInstance().font, label, x + 6, y + (h - 8) / 2, 0xFFFFFFFF, true);
+        int selectedX = x + 6;
+        int selectedY = y + (h - 8) / 2;
+        drawHighlightedString(guiGraphics, label, selectedX, selectedY, 0xffffffff);
 
         int arrowW = 9;
         int ax = x + w - arrowW - 6;
@@ -77,7 +83,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
                     guiGraphics.fill(listX, oy, listX + listW, oy + optionH, 0x40FFFFFF);
                 }
                 String opt = convertFromCamelCase(values.get(i).name());
-                guiGraphics.drawString(Minecraft.getInstance().font, opt, listX + 6, oy + (optionH - 8) / 2, 0xFFFFFFFF, true);
+                drawHighlightedString(guiGraphics, opt, listX + 6, oy + (optionH - 8) / 2, 0xffffffff);
             }
 
             UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, listX - 1, listY - 1, listW + 2, optionH * maxToShow + 2);
@@ -217,5 +223,47 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         }
 
         return false;
+    }
+
+    @Override
+    public void setSearchHighlightQuery(@Nullable String query) {
+        this.searchHighlightQuery = normalizeSearchQuery(query);
+    }
+
+    private void drawHighlightedString(GuiGraphics guiGraphics, String text, int x, int y, int baseColor) {
+        guiGraphics.drawString(Minecraft.getInstance().font, text, x, y, baseColor, true);
+
+        if (searchHighlightQuery.isEmpty() || text.isEmpty()) {
+            return;
+        }
+
+        String lowered = text.toLowerCase(Locale.ROOT);
+        int fromIndex = 0;
+        while (true) {
+            int index = lowered.indexOf(searchHighlightQuery, fromIndex);
+            if (index < 0) {
+                return;
+            }
+
+            int end = index + searchHighlightQuery.length();
+            int offsetX = Minecraft.getInstance().font.width(text.substring(0, index));
+            guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    text.substring(index, end),
+                    x + offsetX,
+                    y,
+                    HIGHLIGHT_COLOR,
+                    true
+            );
+            fromIndex = end;
+        }
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
     }
 }

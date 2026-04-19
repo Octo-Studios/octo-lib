@@ -6,7 +6,6 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Comment;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Name;
-import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -22,7 +21,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
@@ -41,6 +39,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     private static final int MULTILINE_ENTRY_EXTRA_SPACING = 2;
     private static final int NAME_COLOR = 0xffffffff;
     private static final int DESCRIPTION_COLOR = 0xff888888;
+    private static final int HIGHLIGHT_COLOR = 0xffffd74a;
 
     GenericObjectWidget parent;
     GenericObjectWidget.FieldInfo info;
@@ -53,7 +52,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     boolean dragging = false;
     GuiEventListener focused;
     private List<GuiEventListener> childListeners = List.of();
-    private List<FormattedCharSequence> wrappedDescriptionLines = List.of();
+    private List<String> wrappedDescriptionLines = List.of();
+    private String searchHighlightQuery = "";
 
     FieldWidget() {
         super(0, 0, 16, 16, Component.empty());
@@ -62,8 +62,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     @Override
     public void repositionElements() {
         this.setWidth(this.getParent().getWidth() - 4);
+        int resetX = this.width - 4 - this.resetButton.getWidth();
         boolean moveDown = false;
-        resetButton.setPosition(this.width - 4 - this.resetButton.getWidth(), 2);
         if (entryWidget.getWidth() > (this.getWidth() - font.width(info.name()+": ") - 12 - resetButton.getWidth()) || entryWidget instanceof DynamicallySized) {
             moveDown = true;
         }
@@ -72,7 +72,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
             if (moveDown) {
                 entryWidget.setWidth(this.width - 4);
             } else {
-                entryWidget.setWidth(this.resetButton.getLocalX() - 8);
+                entryWidget.setWidth(resetX - 8);
             }
 
             stuffInside.repositionElements();
@@ -81,8 +81,15 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         if (moveDown) {
             entryWidget.setPosition(4, ENTRY_DOWN_Y_BASE);
         } else {
-            entryWidget.setPosition(resetButton.getLocalX() - 4 - this.entryWidget.getWidth(), 4);
+            entryWidget.setPosition(resetX - 4 - this.entryWidget.getWidth(), 4);
         }
+
+        int resetY = 2;
+        if (!moveDown && entryWidget instanceof ShatterColorWidget) {
+            int centeredY = entryWidget.getLocalY() + (entryWidget.getHeight() - resetButton.getHeight()) / 2;
+            resetY = Math.max(2, centeredY);
+        }
+        resetButton.setPosition(resetX, resetY);
 
         int descriptionWrapWidth = resolveDescriptionWrapWidth(moveDown);
         wrappedDescriptionLines = wrapDescriptionLines(descriptionWrapWidth);
@@ -165,14 +172,14 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(font, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, NAME_COLOR, true);
+        drawHighlightedString(guiGraphics, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, NAME_COLOR);
         renderDescription(guiGraphics);
         resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
         entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     private void renderDescription(GuiGraphics guiGraphics) {
-        List<FormattedCharSequence> lines = wrappedDescriptionLines;
+        List<String> lines = wrappedDescriptionLines;
         if (lines.isEmpty()) {
             return;
         }
@@ -182,7 +189,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         guiGraphics.pose().scale(DESCRIPTION_SCALE);
 
         for (int i = 0; i < lines.size(); i++) {
-            guiGraphics.drawString(font, lines.get(i), 0, i * font.lineHeight, DESCRIPTION_COLOR, true);
+            drawHighlightedString(guiGraphics, lines.get(i), 0, i * font.lineHeight, DESCRIPTION_COLOR);
         }
 
         guiGraphics.pose().popMatrix();
@@ -217,8 +224,8 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         return Math.max(1, rightLimit - CONTENT_PADDING);
     }
 
-    private List<FormattedCharSequence> wrapDescriptionLines(int availableWidth) {
-        List<FormattedCharSequence> wrappedLines = new ArrayList<>();
+    private List<String> wrapDescriptionLines(int availableWidth) {
+        List<String> wrappedLines = new ArrayList<>();
         String description = info.description();
         if (description == null || description.isEmpty()) {
             return wrappedLines;
@@ -229,15 +236,20 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         String[] explicitLines = description.split("\\n", -1);
         for (String explicitLine : explicitLines) {
             if (explicitLine.isEmpty()) {
-                wrappedLines.add(Component.empty().getVisualOrderText());
+                wrappedLines.add("");
                 continue;
             }
 
-            List<FormattedCharSequence> split = font.split(Component.literal(explicitLine), unscaledWrapWidth);
-            if (split.isEmpty()) {
-                wrappedLines.add(Component.empty().getVisualOrderText());
-            } else {
-                wrappedLines.addAll(split);
+            String remaining = explicitLine;
+            while (!remaining.isEmpty()) {
+                String linePart = font.plainSubstrByWidth(remaining, unscaledWrapWidth);
+                if (linePart.isEmpty()) {
+                    int firstCodePointEnd = remaining.offsetByCodePoints(0, 1);
+                    linePart = remaining.substring(0, firstCodePointEnd);
+                }
+
+                wrappedLines.add(linePart);
+                remaining = remaining.substring(linePart.length());
             }
         }
 
@@ -405,6 +417,20 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
     }
 
+    void applySearchHighlight(String query) {
+        this.searchHighlightQuery = normalizeSearchQuery(query);
+
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.applySearchHighlight(this.searchHighlightQuery);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.applySearchHighlight(this.searchHighlightQuery);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.applySearchHighlight(this.searchHighlightQuery);
+        } else if (entryWidget instanceof SearchHighlightAware highlightAware) {
+            highlightAware.setSearchHighlightQuery(this.searchHighlightQuery);
+        }
+    }
+
     boolean matchesSearchQuery(String query) {
         String normalizedQuery = normalizeSearchQuery(query);
         if (normalizedQuery.isEmpty()) {
@@ -413,7 +439,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
 
         if (containsSearchToken(info.name(), normalizedQuery)
                 || containsSearchToken(info.description(), normalizedQuery)
-                || containsEntryValue(entryWidget, normalizedQuery)) {
+                || containsSearchToken(getEntryValueForSearch(), normalizedQuery)) {
             return true;
         }
 
@@ -432,33 +458,23 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         return false;
     }
 
-    private static boolean containsEntryValue(@Nullable AbstractEntryWidget<?> widget, String normalizedQuery) {
-        if (widget == null) {
-            return false;
+    void collectSearchMatches(String normalizedQuery, List<FieldWidget> matches) {
+        if (normalizedQuery.isEmpty()) {
+            return;
         }
 
-        Object value = widget.getValue();
-        String valueText = toSearchText(value);
-        return containsSearchToken(valueText, normalizedQuery);
-    }
-
-    private static String toSearchText(@Nullable Object value) {
-        if (value == null) {
-            return "null";
+        if (containsSearchToken(info.name(), normalizedQuery)
+                || containsSearchToken(info.description(), normalizedQuery)
+                || containsSearchToken(getEntryValueForSearch(), normalizedQuery)) {
+            matches.add(this);
         }
 
-        if (value instanceof CharSequence
-                || value instanceof Number
-                || value instanceof Boolean
-                || value instanceof Character
-                || value instanceof Enum<?>) {
-            return String.valueOf(value);
-        }
-
-        try {
-            return Json5Utils.encode(value).toString();
-        } catch (Throwable ignored) {
-            return String.valueOf(value);
+        if (entryWidget instanceof GenericObjectWidget objectWidget) {
+            objectWidget.collectSearchMatches(normalizedQuery, matches);
+        } else if (entryWidget instanceof ListWidget<?> listWidget) {
+            listWidget.collectSearchMatches(normalizedQuery, matches);
+        } else if (entryWidget instanceof MapWidget<?> mapWidget) {
+            mapWidget.collectSearchMatches(normalizedQuery, matches);
         }
     }
 
@@ -468,6 +484,51 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
 
         return value.toLowerCase(Locale.ROOT).contains(normalizedQuery);
+    }
+
+    private @Nullable String getEntryValueForSearch() {
+        if (entryWidget == null) {
+            return null;
+        }
+
+        try {
+            Object value = entryWidget.getValue();
+            if (value == null) {
+                return null;
+            }
+
+            if (value instanceof Enum<?> enumValue) {
+                return enumValue.name();
+            }
+
+            return String.valueOf(value);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    private void drawHighlightedString(GuiGraphics guiGraphics, @Nullable String text, int x, int y, int baseColor) {
+        String value = text == null ? "" : text;
+        guiGraphics.drawString(font, value, x, y, baseColor, true);
+
+        if (searchHighlightQuery.isEmpty() || value.isEmpty()) {
+            return;
+        }
+
+        String lowered = value.toLowerCase(Locale.ROOT);
+        int fromIndex = 0;
+        while (true) {
+            int index = lowered.indexOf(searchHighlightQuery, fromIndex);
+            if (index < 0) {
+                return;
+            }
+
+            int end = index + searchHighlightQuery.length();
+            int offsetX = font.width(value.substring(0, index));
+            String highlighted = value.substring(index, end);
+            guiGraphics.drawString(font, highlighted, x + offsetX, y, HIGHLIGHT_COLOR, true);
+            fromIndex = end;
+        }
     }
 
     private static String normalizeSearchQuery(@Nullable String query) {

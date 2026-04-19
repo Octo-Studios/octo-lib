@@ -1,4 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
+import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
+import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
@@ -22,12 +25,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ScrollableWidget extends AbstractWidget implements ContainerEventHandler, PathContainerWidget {
-    private static final int SCROLLBAR_WIDTH = 6;
+    private static final int SCROLLBAR_WIDTH = 4;
     private static final int SCROLLBAR_MIN_THUMB_HEIGHT = 14;
     private static final int SCROLLBAR_TRACK_COLOR = 0x33111116;
     private static final int SCROLLBAR_THUMB_COLOR = 0xffffffff;
     private static final int SCROLLBAR_THUMB_HOVER_COLOR = 0xffdddddd;
     private static final int SCROLLBAR_THUMB_DRAG_COLOR = 0xffbbbbbb;
+    private static final double SCROLL_STEP = 72.0;
+    private static final double SCROLL_TWEEN_DURATION = 0.12;
+    private static final double SCROLL_TO_TWEEN_DURATION = 0.16;
 
     List<AbstractWidget> widgets = new ArrayList<>();
     private @Nullable AbstractWidget focused;
@@ -36,6 +42,9 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
     private double scrollbarDragOffsetY;
     private boolean pinScrollbarToScreenRight;
     private int scrollbarRightInset;
+    private Tween scrollTween = Tween.create();
+    private double scrollAnimationTarget;
+    private boolean hasScrollAnimationTarget;
 
     public double maxScrollY = 0;
 
@@ -77,6 +86,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         if (event.button() == 0 && this.hasScrollbar() && this.isInsideScrollbar(event.x(), event.y())) {
+            this.stopScrollTween();
             int thumbTop = this.getScrollbarThumbTop();
             int thumbHeight = this.getScrollbarThumbHeight();
 
@@ -117,6 +127,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
         if (this.scrollbarDragging) {
+            this.stopScrollTween();
             this.setScrollFromThumbTop(event.y() - this.scrollbarDragOffsetY);
             return true;
         }
@@ -141,24 +152,19 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
             return childHandled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
 
-        boolean scrolled = false;
-        for (AbstractWidget widget : this.widgets) {
-            if (widget instanceof Scrollable scrollable) {
-                scrollable.scroll(scrollY * 20);
-                scrollable.clamp(-maxScrollY, 0);
-                scrolled = true;
-            }
-        }
+        boolean scrolled = animateScrollBy(scrollY * SCROLL_STEP);
 
         return scrolled || childHandled || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     public void clamp() {
+        this.stopScrollTween();
         this.children().forEach(widget -> {
             if (widget instanceof Scrollable scrollable) {
                 scrollable.clamp(-maxScrollY, 0);
             }
         });
+        this.syncScrollAnimationTargetToCurrent();
     }
 
     @Override
@@ -240,6 +246,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     @Override
     public void requestRelayout() {
+        this.stopScrollTween();
         for (AbstractWidget widget : this.children()) {
             if (widget instanceof DynamicallySized ds) {
                 ds.repositionElements();
@@ -292,7 +299,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
             thumbColor = SCROLLBAR_THUMB_HOVER_COLOR;
         }
 
-        UIElements.SCROLLBAR_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x+1, thumbTop, SCROLLBAR_WIDTH-2, thumbHeight, thumbColor);
+        UIElements.SCROLLBAR_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x, thumbTop, SCROLLBAR_WIDTH, thumbHeight, thumbColor);
     }
 
     private boolean hasScrollbar() {
@@ -373,6 +380,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
                     scrollable.clamp(-this.maxScrollY, 0);
                 }
             }
+            this.syncScrollAnimationTargetToCurrent();
             return;
         }
 
@@ -386,6 +394,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
                 scrollable.clamp(-this.maxScrollY, 0);
             }
         }
+        this.syncScrollAnimationTargetToCurrent();
     }
 
     private @Nullable Scrollable getScrollableChild() {
@@ -408,6 +417,90 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
 
     public int getScrollbarWidth() {
         return SCROLLBAR_WIDTH;
+    }
+
+    public void scrollToOffset(double targetOffset, boolean smooth) {
+        Scrollable scrollable = this.getScrollableChild();
+        if (scrollable == null) {
+            this.stopScrollTween();
+            return;
+        }
+
+        double clampedTarget = Math.clamp(targetOffset, -this.maxScrollY, 0);
+        if (!smooth || this.maxScrollY <= 0) {
+            this.stopScrollTween();
+            this.setScrollableOffsetAndClamp(clampedTarget);
+            this.syncScrollAnimationTargetToCurrent();
+            return;
+        }
+
+        this.scrollAnimationTarget = clampedTarget;
+        this.hasScrollAnimationTarget = true;
+        this.animateScrollTo(clampedTarget, SCROLL_TO_TWEEN_DURATION);
+    }
+
+    private boolean animateScrollBy(double delta) {
+        Scrollable scrollable = this.getScrollableChild();
+        if (scrollable == null) {
+            return false;
+        }
+
+        double currentOffset = scrollable.getScrollOffset();
+        if (!hasScrollAnimationTarget) {
+            scrollAnimationTarget = currentOffset;
+            hasScrollAnimationTarget = true;
+        } else if (Math.abs(currentOffset - scrollAnimationTarget) > SCROLL_STEP) {
+            scrollAnimationTarget = currentOffset;
+        }
+
+        scrollAnimationTarget = Math.clamp(scrollAnimationTarget + delta, -this.maxScrollY, 0);
+        return this.animateScrollTo(scrollAnimationTarget, SCROLL_TWEEN_DURATION);
+    }
+
+    private boolean animateScrollTo(double to, double duration) {
+        Scrollable scrollable = this.getScrollableChild();
+        if (scrollable == null) {
+            return false;
+        }
+
+        double from = scrollable.getScrollOffset();
+        if (Math.abs(to - from) < 0.0001d) {
+            return false;
+        }
+
+        scrollTween.kill();
+        scrollTween = Tween.create();
+        scrollTween.tweenMethod(this::setScrollableOffsetAndClamp, from, to, duration)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.SINE);
+        scrollTween.start();
+        return true;
+    }
+
+    private void setScrollableOffsetAndClamp(Double offset) {
+        double target = offset == null ? 0 : offset;
+        for (AbstractWidget widget : this.widgets) {
+            if (widget instanceof Scrollable scrollable) {
+                scrollable.setScrollOffset(target);
+                scrollable.clamp(-this.maxScrollY, 0);
+            }
+        }
+    }
+
+    private void stopScrollTween() {
+        scrollTween.kill();
+        hasScrollAnimationTarget = false;
+    }
+
+    private void syncScrollAnimationTargetToCurrent() {
+        Scrollable scrollable = this.getScrollableChild();
+        if (scrollable == null) {
+            hasScrollAnimationTarget = false;
+            return;
+        }
+
+        scrollAnimationTarget = Math.clamp(scrollable.getScrollOffset(), -this.maxScrollY, 0);
+        hasScrollAnimationTarget = true;
     }
 
     @Override

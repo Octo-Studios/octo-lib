@@ -92,6 +92,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
     private void rebuild() {
         entries.clear();
+        renderables.clear();
 
         Map<String, V> map = getSafeValue();
         int i = 0;
@@ -101,9 +102,9 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
                     new MapEntryWidget<>(this, e.getKey(), i++);
             entry.applySearchQuery(searchQuery);
             entries.add(entry);
+            renderables.add(entry);
         }
 
-        rebuildFilteredRenderables();
         refreshChildListeners();
 
         relayoutAndPropagate();
@@ -198,6 +199,13 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         }
     }
 
+    void applySearchHighlight(String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        for (MapEntryWidget<V> entry : entries) {
+            entry.applySearchHighlight(normalizedQuery);
+        }
+    }
+
     boolean applySearchQuery(@Nullable String query) {
         String normalizedQuery = normalizeSearchQuery(query);
         if (Objects.equals(this.searchQuery, normalizedQuery)) {
@@ -208,8 +216,6 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         for (MapEntryWidget<V> entry : entries) {
             entry.applySearchQuery(normalizedQuery);
         }
-        rebuildFilteredRenderables();
-        refreshChildListeners();
 
         return true;
     }
@@ -219,7 +225,13 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             return true;
         }
 
-        return !renderables.isEmpty();
+        for (MapEntryWidget<V> entry : entries) {
+            if (entry.hasSearchResults()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static String normalizeSearchQuery(@Nullable String query) {
@@ -228,6 +240,16 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         }
 
         return query.toLowerCase(Locale.ROOT).trim();
+    }
+
+    void collectSearchMatches(String normalizedQuery, List<FieldWidget> matches) {
+        if (normalizedQuery.isEmpty()) {
+            return;
+        }
+
+        for (MapEntryWidget<V> entry : entries) {
+            entry.collectSearchMatches(normalizedQuery, matches);
+        }
     }
 
     @Override
@@ -241,7 +263,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 
         int y = 8;
 
-        for (MapEntryWidget<V> entry : renderables) {
+        for (MapEntryWidget<V> entry : entries) {
             entry.setPosition(4, y);
             entry.setWidth(this.width - 4);
             entry.repositionElements();
@@ -282,7 +304,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         childListeners.add(collapseButton);
 
         if (!collapsed) {
-            childListeners.addAll(renderables);
+            childListeners.addAll(entries);
             childListeners.add(addButton);
         }
     }
@@ -338,7 +360,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
             return true;
         }
 
-        for (MapEntryWidget<V> entry : renderables) {
+        for (MapEntryWidget<V> entry : entries) {
             if (entry.isMouseOver(mouseX, mouseY)) {
                 return true;
             }
@@ -347,23 +369,13 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
         return false;
     }
 
-    private void rebuildFilteredRenderables() {
-        renderables.clear();
-
-        for (MapEntryWidget<V> entry : entries) {
-            if (entry.hasSearchResults()) {
-                renderables.add(entry);
-            }
-        }
-    }
-
     @Override
     public List<? extends GuiEventListener> children() {
         List<GuiEventListener> listeners = new ArrayList<>();
         listeners.add(collapseButton);
 
         if (!collapsed) {
-            listeners.addAll(renderables);
+            listeners.addAll(entries);
             listeners.add(addButton);
         }
 

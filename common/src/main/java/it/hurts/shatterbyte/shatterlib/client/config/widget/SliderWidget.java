@@ -14,16 +14,20 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
+public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> implements SearchHighlightAware {
+    private static final int HIGHLIGHT_COLOR = 0xffffd74a;
     private double min = 0;
     private double max = 100;
     private double step = 0;
     private final Class<?> valueClass;
+    private String searchHighlightQuery = "";
 
     @Setter
     double visualValue;
@@ -110,7 +114,10 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
 
         Font font = Minecraft.getInstance().font;
         String string = String.format("%.1f", this.getValue().doubleValue());
-        guiGraphics.drawString(font, string, this.getX() + Math.round((this.width - font.width(string)) / 2f), this.getY() + 1+2, 0xffffffff, true);
+        int textX = this.getX() + Math.round((this.width - font.width(string)) / 2f);
+        int textY = this.getY() + 3;
+        guiGraphics.drawString(font, string, textX, textY, 0xffffffff, true);
+        drawSearchHighlight(guiGraphics, string, textX, textY, font);
     }
 
     @Override
@@ -190,5 +197,38 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> {
         }
 
         return fallback;
+    }
+
+    @Override
+    public void setSearchHighlightQuery(@Nullable String query) {
+        this.searchHighlightQuery = normalizeSearchQuery(query);
+    }
+
+    private void drawSearchHighlight(GuiGraphics guiGraphics, String text, int x, int y, Font font) {
+        if (searchHighlightQuery.isEmpty() || text.isEmpty()) {
+            return;
+        }
+
+        String lowered = text.toLowerCase(Locale.ROOT);
+        int fromIndex = 0;
+        while (true) {
+            int index = lowered.indexOf(searchHighlightQuery, fromIndex);
+            if (index < 0) {
+                return;
+            }
+
+            int end = index + searchHighlightQuery.length();
+            int offsetX = font.width(text.substring(0, index));
+            guiGraphics.drawString(font, text.substring(index, end), x + offsetX, y, HIGHLIGHT_COLOR, true);
+            fromIndex = end;
+        }
+    }
+
+    private static String normalizeSearchQuery(@Nullable String query) {
+        if (query == null) {
+            return "";
+        }
+
+        return query.toLowerCase(Locale.ROOT).trim();
     }
 }

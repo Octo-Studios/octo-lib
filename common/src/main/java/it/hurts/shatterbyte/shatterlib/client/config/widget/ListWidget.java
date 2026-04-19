@@ -93,15 +93,16 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
     private void rebuild() {
         entries.clear();
+        renderables.clear();
 
         List<E> list = getSafeValue();
         for (int i = 0; i < list.size(); i++) {
             ListEntryWidget<E> entry = new ListEntryWidget<>(this, i);
             entry.applySearchQuery(searchQuery);
             entries.add(entry);
+            renderables.add(entry);
         }
 
-        rebuildFilteredRenderables();
         refreshChildListeners();
 
         relayoutAndPropagate();
@@ -152,6 +153,13 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         }
     }
 
+    void applySearchHighlight(String query) {
+        String normalizedQuery = normalizeSearchQuery(query);
+        for (ListEntryWidget<E> entry : entries) {
+            entry.applySearchHighlight(normalizedQuery);
+        }
+    }
+
     boolean applySearchQuery(@Nullable String query) {
         String normalizedQuery = normalizeSearchQuery(query);
         if (Objects.equals(this.searchQuery, normalizedQuery)) {
@@ -162,8 +170,6 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         for (ListEntryWidget<E> entry : entries) {
             entry.applySearchQuery(normalizedQuery);
         }
-        rebuildFilteredRenderables();
-        refreshChildListeners();
 
         return true;
     }
@@ -173,7 +179,13 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             return true;
         }
 
-        return !renderables.isEmpty();
+        for (ListEntryWidget<E> entry : entries) {
+            if (entry.hasSearchResults()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static String normalizeSearchQuery(@Nullable String query) {
@@ -182,6 +194,16 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         }
 
         return query.toLowerCase(Locale.ROOT).trim();
+    }
+
+    void collectSearchMatches(String normalizedQuery, List<FieldWidget> matches) {
+        if (normalizedQuery.isEmpty()) {
+            return;
+        }
+
+        for (ListEntryWidget<E> entry : entries) {
+            entry.collectSearchMatches(normalizedQuery, matches);
+        }
     }
 
     /* ---------- layout ---------- */
@@ -197,7 +219,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 
         int y = 8;
 
-        for (ListEntryWidget<E> entry : renderables) {
+        for (ListEntryWidget<E> entry : entries) {
             entry.setPosition(4, y);
             entry.setWidth(this.width - 4);
             entry.repositionElements();
@@ -239,7 +261,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         childListeners.add(collapseButton);
 
         if (!collapsed) {
-            childListeners.addAll(renderables);
+            childListeners.addAll(entries);
             childListeners.add(addButton);
         }
     }
@@ -300,7 +322,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
             return true;
         }
 
-        for (ListEntryWidget<E> entry : renderables) {
+        for (ListEntryWidget<E> entry : entries) {
             if (entry.isMouseOver(mouseX, mouseY)) {
                 return true;
             }
@@ -309,23 +331,13 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
         return false;
     }
 
-    private void rebuildFilteredRenderables() {
-        renderables.clear();
-
-        for (ListEntryWidget<E> entry : entries) {
-            if (entry.hasSearchResults()) {
-                renderables.add(entry);
-            }
-        }
-    }
-
     @Override
     public List<? extends GuiEventListener> children() {
         List<GuiEventListener> listeners = new ArrayList<>();
         listeners.add(collapseButton);
 
         if (!collapsed) {
-            listeners.addAll(renderables);
+            listeners.addAll(entries);
             listeners.add(addButton);
         }
 

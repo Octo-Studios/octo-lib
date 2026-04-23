@@ -35,6 +35,7 @@ public class ConfigScreen extends Screen {
     private static final int SEARCH_NAV_GAP = 2;
 
     public static final Atlas ATLAS = new Atlas(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/config_atlas.png"), 263, 76);
+    public static final Identifier LOGO = Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/config/logo.png");
 
     ShatterConfig config;
     Screen prevScreen;

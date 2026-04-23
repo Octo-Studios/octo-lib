@@ -10,7 +10,9 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 
+import java.io.ObjectInputFilter;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,6 +150,8 @@ public class MultipleConfigScreen extends ConfigScreen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.vLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
         guiGraphics.hLine(0, this.width, 31, 0xff1c1c17);
+
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
         //guiGraphics.vLine(129, 0, this.height, 0xff1c1c17);
     }
 }

@@ -21,6 +21,7 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -74,12 +75,14 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.registerConstructor(Enum.class, clazz -> clazz.getEnumConstants()[0]);
         EntryWidgetRegistry.registerConstructor(String.class, clazz -> "");
         EntryWidgetRegistry.registerConstructor(ShatterColor.class, clazz -> ShatterColor.WHITE);
+        EntryWidgetRegistry.registerConstructor(Identifier.class, clazz -> Identifier.parse("minecraft:empty"));
         EntryWidgetRegistry.registerConstructor(Item.class, clazz -> Items.AIR);
 
         EntryWidgetRegistry.register(Object.class, GenericObjectWidget::new);
         EntryWidgetRegistry.register(boolean.class, (EntryWidgetFactory<Boolean>) ToggleWidget::new);
         EntryWidgetRegistry.register(Boolean.class, (EntryWidgetFactory<Boolean>) ToggleWidget::new);
         EntryWidgetRegistry.register(String.class, (EntryWidgetFactory<String>) TextAreaWidget::new);
+        EntryWidgetRegistry.register(Identifier.class, (EntryWidgetFactory<Identifier>) IdentifierWidget::new);
         EntryWidgetRegistry.register(Item.class, (EntryWidgetFactory<Item>) ItemWidget::new);
         EntryWidgetRegistry.register(ShatterColor.class, (EntryWidgetFactory<ShatterColor>) ShatterColorWidget::new);
 

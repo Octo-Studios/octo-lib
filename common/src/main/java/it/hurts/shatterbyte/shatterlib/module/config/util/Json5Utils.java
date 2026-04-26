@@ -13,6 +13,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Exclude;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -39,7 +40,7 @@ public class Json5Utils {
         }
 
         @SuppressWarnings("unchecked")
-        TypeAdapter<T> customAdapter = (TypeAdapter<T>) ADAPTERS.get(value.getClass());
+        TypeAdapter<T> customAdapter = (TypeAdapter<T>) findAdapter(value.getClass());
         if (customAdapter != null) {
             return customAdapter.encode(value);
         }
@@ -436,5 +437,26 @@ public class Json5Utils {
             return getRawClass(((WildcardType) type).getUpperBounds()[0]);
         }
         throw new IllegalArgumentException("Cannot determine raw class for Type: " + type.getTypeName());
+    }
+
+    private static @Nullable TypeAdapter<?> findAdapter(Class<?> clazz) {
+        Class<?> current = clazz;
+        while (current != null) {
+            TypeAdapter<?> adapter = ADAPTERS.get(current);
+            if (adapter != null) {
+                return adapter;
+            }
+
+            for (Class<?> interfaceClass : current.getInterfaces()) {
+                adapter = ADAPTERS.get(interfaceClass);
+                if (adapter != null) {
+                    return adapter;
+                }
+            }
+
+            current = current.getSuperclass();
+        }
+
+        return null;
     }
 }

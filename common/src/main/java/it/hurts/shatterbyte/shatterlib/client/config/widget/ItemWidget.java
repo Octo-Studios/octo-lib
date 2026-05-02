@@ -40,26 +40,35 @@ public class ItemWidget extends IdentifierWidget {
     @Override
     protected void renderLeading(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         ItemStack stack = getPreviewStack();
+
         if (stack.isEmpty()) {
             return;
         }
 
-        guiGraphics.item(stack, this.getX(), this.getY());
+        guiGraphics.fakeItem(stack, this.getX(), this.getY());
     }
 
     private ItemStack getPreviewStack() {
         String textValue = getTextValue();
         if (!textValue.isBlank()) {
             Item parsedItem = parseItem(textValue);
-            if (parsedItem != null) {
-                return new ItemStack(parsedItem);
+            if (parsedItem == null) {
+                return ItemStack.EMPTY;
             }
 
-            return new ItemStack(Items.BARRIER);
+            if (!parsedItem.builtInRegistryHolder().areComponentsBound()) {
+                return ItemStack.EMPTY;
+            }
+
+            return parsedItem.getDefaultInstance();
         }
 
         Item currentValue = resolveItem(normalizeIdentifier(this.getValue(), getDefaultValue()));
         if (currentValue == Items.AIR) {
+            return ItemStack.EMPTY;
+        }
+
+        if (!currentValue.builtInRegistryHolder().areComponentsBound()) {
             return ItemStack.EMPTY;
         }
 

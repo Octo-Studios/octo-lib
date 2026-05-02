@@ -1,48 +1,55 @@
 plugins {
-    id 'com.github.johnrengelman.shadow'
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
-configurations {
-    common {
-        canBeResolved = true
-        canBeConsumed = false
-    }
-
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-
-    shadowBundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
+    id 'net.fabricmc.fabric-loom-remap' version '1.16.1'
 }
 
 repositories {
+    maven {
+        name = "Fabric"
+        url = "https://maven.fabricmc.net/"
+    }
     maven {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
     }
 }
 
+loom {
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDir file('../common/src/main/java')
+        resources.srcDir file('../common/src/main/resources')
+    }
+}
+
 dependencies {
+    minecraft "com.mojang:minecraft:$rootProject.minecraft_version"
+    mappings loom.layered() {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
+    }
+
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
 
-    modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
-
     modImplementation "com.terraformersmc:modmenu:$rootProject.modmenu_version"
 
-    shadowBundle "de.marhali:json5-java:3.0.0"
-
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+    implementation "de.marhali:json5-java:3.0.0"
+    include "de.marhali:json5-java:3.0.0"
 }
 
 def resourceTargets = ['fabric.mod.json']
@@ -58,17 +65,4 @@ processResources {
     filesMatching(resourceTargets) {
         expand replaceProperties
     }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
-    relocate 'de.marhali', 'it.hurts.shatterbyte.shaded.de.marhali'
-    mergeServiceFiles()
-}
-
-remapJar {
-    dependsOn shadowJar
-    input.set(shadowJar.archiveFile)
-    archiveClassifier.set('')
 }

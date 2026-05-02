@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
-import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
@@ -115,7 +115,7 @@ public class ConfigScreen extends Screen {
         this.setFocused(null);
 
         if (config != null) {
-            config.save(Platform.getConfigFolder());
+            config.save(ShatterLibServices.platform().getConfigDirectory());
         }
 
         this.minecraft.setScreen(prevScreen);

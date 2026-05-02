@@ -1,11 +1,4 @@
 plugins {
-    id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
-}
-
-architectury {
-    minecraft = project.minecraft_version
 }
 
 allprojects {
@@ -22,46 +15,34 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
-
-    base {
-        archivesName = "$rootProject.mod_name" + "-" + "$project.name".toUpperCase()
-    }
-
-    dependencies {
-        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-
-        loom {
-            silentMojangMappingsLicense()
-        }
-
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
-        }
-
-        api("de.marhali:json5-java:3.0.0")
-
-        compileOnly 'org.projectlombok:lombok:1.18.32'
-        annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-        testCompileOnly 'org.projectlombok:lombok:1.18.32'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-        implementation 'org.jetbrains:annotations:20.1.0'
-    }
-
-    java {
-        withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
 
     tasks.withType(JavaCompile).configureEach {
         it.options.release = 21
+    }
+
+    plugins.withId('java') {
+        dependencies {
+            compileOnly 'org.projectlombok:lombok:1.18.32'
+            annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+            testCompileOnly 'org.projectlombok:lombok:1.18.32'
+            testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+            implementation 'org.jetbrains:annotations:20.1.0'
+        }
+
+        java {
+            withSourcesJar()
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+        }
+    }
+
+    plugins.withId('java') {
+        base {
+            archivesName = "$rootProject.mod_name" + "-" + "$project.name".toUpperCase()
+        }
     }
 
     publishing {
@@ -75,12 +56,17 @@ subprojects {
                 }
             }
         }
-        publications {
-            maven(MavenPublication) {
-                groupId = group
-                artifactId = project.mod_id + "-" + project.name
-                version = version
-                from components.java
+    }
+
+    plugins.withId('java') {
+        publishing {
+            publications {
+                maven(MavenPublication) {
+                    groupId = group
+                    artifactId = project.mod_id + "-" + project.name
+                    version = version
+                    from components.java
+                }
             }
         }
     }

@@ -1,10 +1,5 @@
 package it.hurts.shatterbyte.shatterlib;
 
-import dev.architectury.event.events.common.CommandRegistrationEvent;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
@@ -15,11 +10,18 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPac
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import com.mojang.brigadier.CommandDispatcher;
 
 public final class ShatterLib {
     public static final String MOD_ID = "shatterlib";
@@ -30,45 +32,46 @@ public final class ShatterLib {
     public static ShakeConfig EXAMPLE_SHAKE_CONFIG = new ShakeConfig();
 
     public static void init() {
-        registerCommands();
-        registerEvents();
-
         ShatterLibNetwork.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
         ShatterLibNetwork.registerS2CPayloadType(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC);
 
-        if (Platform.isDevelopmentEnvironment()) {
+        if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
             ConfigManager.register(MOD_ID, CONFIG);
             ConfigManager.register(MOD_ID, SERVER_CONFIG);
             ConfigManager.register(MOD_ID, EXAMPLE);
             ConfigManager.register(MOD_ID, EXAMPLE_SHAKE_CONFIG);
         }
-
-        LifecycleEvent.SETUP.register(() -> {
-            if (Platform.getEnvironment() == Env.CLIENT) {
-                LOGGER.info("Loading client configs");
-                ConfigManager.loadAllClientConfigs();
-            }
-
-            LOGGER.info("Loading common configs");
-            ConfigManager.loadAllCommonConfigs();
-
-            LOGGER.info("Loading server configs");
-            ConfigManager.loadAllServerConfigs();
-        });
-
-        LifecycleEvent.SERVER_BEFORE_START.register(serverState -> {
-            Path serverConfigFolder = serverState.getWorldPath(ConfigManager.SERVER_CONFIG);
-
-            LOGGER.info("Loading server config overrides");
-            ConfigManager.loadServerConfigOverrides(serverConfigFolder);
-        });
     }
-    
-    private static void registerEvents() {
-        PlayerEvent.PLAYER_JOIN.register(ConfigManager::syncServerConfigs);
+
+    public static void onCommonSetup() {
+        if (ShatterLibServices.platform().isClientEnvironment()) {
+            LOGGER.info("Loading client configs");
+            ConfigManager.loadAllClientConfigs();
+        }
+
+        LOGGER.info("Loading common configs");
+        ConfigManager.loadAllCommonConfigs();
+
+        LOGGER.info("Loading server configs");
+        ConfigManager.loadAllServerConfigs();
     }
-    
-    private static void registerCommands() {
-        CommandRegistrationEvent.EVENT.register(ShatterLibCommand::register);
+
+    public static void onServerBeforeStart(MinecraftServer server) {
+        Path serverConfigFolder = ConfigManager.getServerConfigFolder(server);
+
+        LOGGER.info("Loading server config overrides");
+        ConfigManager.loadServerConfigOverrides(serverConfigFolder);
+    }
+
+    public static void onPlayerJoin(ServerPlayer player) {
+        ConfigManager.syncServerConfigs(player);
+    }
+
+    public static void registerCommands(
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            CommandBuildContext buildContext,
+            Commands.CommandSelection commandSelection
+    ) {
+        ShatterLibCommand.register(dispatcher, buildContext, commandSelection);
     }
 }

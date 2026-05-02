@@ -1,15 +1,10 @@
 package it.hurts.shatterbyte.shatterlib;
 
-import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
-import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.client.ClientTickEvent;
-import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetFactory;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
-import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibClientCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyClientConfig;
@@ -18,9 +13,11 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -35,13 +32,11 @@ public final class ShatterLibClient {
     public static final ShatterConfig CONFIG = new MyClientConfig();
 
     public static void init() {
-        registerEvents();
-
-        ShatterLibNetwork.registerS2CReceiver(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, (value, context) -> {
+        ShatterLibNetwork.registerS2CReceiver(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, value -> {
             Minecraft.getInstance().setScreen(new TestGearScreen());
         });
 
-        ShatterLibNetwork.registerS2CReceiver(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC, (value, context) -> {
+        ShatterLibNetwork.registerS2CReceiver(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC, value -> {
             ShatterConfig config = ConfigManager.getConfig(value.path);
             if (config == null) {
                 return;
@@ -50,8 +45,6 @@ public final class ShatterLibClient {
             config.loadFromJson(value.json);
             config.updateSchemaCache();
         });
-
-        ClientCommandRegistrationEvent.EVENT.register(ShatterLibClientCommand::register);
 
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
@@ -141,14 +134,17 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(List.class, (EntryWidgetFactory<List>) ListWidget::new);
         EntryWidgetRegistry.register(Map.class, (EntryWidgetFactory<Map>) MapWidget::new);
 
-        if (Platform.isDevelopmentEnvironment()) {
+        if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
             ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
         }
     }
-    
-    private static void registerEvents() {
-        ClientTickEvent.CLIENT_LEVEL_PRE.register(ShatterRenderManager::clientTick);
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(ShatterRenderManager::worldExit);
+
+    public static void onClientLevelPre(ClientLevel level) {
+        ShatterRenderManager.clientTick(level);
+    }
+
+    public static void onClientDisconnect() {
+        ShatterRenderManager.worldExit();
     }
 
     public static double getDeltaTime() {

@@ -1,11 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.module.config;
 
 import de.marhali.json5.Json5Object;
-import dev.architectury.networking.NetworkManager;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
+import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import lombok.SneakyThrows;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +25,7 @@ public class ConfigManager {
     private static final Map<String, ShatterConfig> COMMON = new HashMap<>();
     private static final Map<String, ShatterConfig> SERVER = new HashMap<>();
 
-    public static final LevelResource SERVER_CONFIG = new LevelResource("serverconfig");
+    public static final String SERVER_CONFIG = "serverconfig";
 
     @SneakyThrows
     public static void register(String modId, ShatterConfig config) {
@@ -34,7 +33,7 @@ public class ConfigManager {
 
         switch (config.getSide()) {
             case CLIENT -> {
-                if (Platform.getEnvironment() != Env.CLIENT) {
+                if (!ShatterLibServices.platform().isClientEnvironment()) {
                     break;
                 }
 
@@ -74,19 +73,19 @@ public class ConfigManager {
     }
 
     public static void loadAllCommonConfigs() {
-        ConfigManager.getCommonConfigs().forEach(config -> config.load(Platform.getConfigFolder()));
+        ConfigManager.getCommonConfigs().forEach(config -> config.load(ShatterLibServices.platform().getConfigDirectory()));
     }
 
     public static void loadAllClientConfigs() {
-        ConfigManager.getClientConfigs().forEach(config -> config.load(Platform.getConfigFolder()));
+        ConfigManager.getClientConfigs().forEach(config -> config.load(ShatterLibServices.platform().getConfigDirectory()));
     }
 
     public static void loadAllServerConfigs() {
-        ConfigManager.getServerConfigs().forEach(config -> config.load(Platform.getConfigFolder()));
+        ConfigManager.getServerConfigs().forEach(config -> config.load(ShatterLibServices.platform().getConfigDirectory()));
     }
 
     public static void loadServerConfigOverrides(Path serverConfigFolder) {
-        Path commonFolder = Platform.getConfigFolder();
+        Path commonFolder = ShatterLibServices.platform().getConfigDirectory();
 
         for (ShatterConfig config : ConfigManager.getServerConfigs()) {
             config.load(commonFolder);
@@ -105,7 +104,7 @@ public class ConfigManager {
             return;
         }
 
-        NetworkManager.sendToPlayers(server.getPlayerList().getPlayers(), new SyncServerConfigPacket(config));
+        ShatterLibNetwork.sendToPlayers(server.getPlayerList().getPlayers(), new SyncServerConfigPacket(config));
     }
 
     public static void syncServerConfig(ServerPlayer player, String path) {
@@ -115,12 +114,12 @@ public class ConfigManager {
             return;
         }
 
-        NetworkManager.sendToPlayer(player, new SyncServerConfigPacket(config));
+        ShatterLibNetwork.sendToPlayer(player, new SyncServerConfigPacket(config));
     }
 
     public static void syncServerConfigs(ServerPlayer serverPlayer) {
         for (ShatterConfig serverConfig : ConfigManager.getServerConfigs()) {
-            NetworkManager.sendToPlayer(serverPlayer, new SyncServerConfigPacket(serverConfig));
+            ShatterLibNetwork.sendToPlayer(serverPlayer, new SyncServerConfigPacket(serverConfig));
         }
     }
 
@@ -154,7 +153,7 @@ public class ConfigManager {
             return SERVER.get(path);
         }
 
-        if (Platform.getEnvironment() != Env.CLIENT) {
+        if (!ShatterLibServices.platform().isClientEnvironment()) {
             return null;
         }
 
@@ -168,10 +167,10 @@ public class ConfigManager {
     public static boolean reload(String path, @Nullable MinecraftServer server) {
         if (SERVER.containsKey(path)) {
             ShatterConfig serverConfig = SERVER.get(path);
-            serverConfig.load(Platform.getConfigFolder());
+            serverConfig.load(ShatterLibServices.platform().getConfigDirectory());
 
             if (server != null) {
-                Path serverConfigFolder = server.getWorldPath(SERVER_CONFIG);
+                Path serverConfigFolder = getServerConfigFolder(server);
                 Path overrideFile = serverConfigFolder.resolve(serverConfig.getFileName());
                 if (Files.exists(overrideFile)) {
                     serverConfig.load(serverConfigFolder, false);
@@ -184,16 +183,16 @@ public class ConfigManager {
         }
 
         if (COMMON.containsKey(path)) {
-            COMMON.get(path).load(Platform.getConfigFolder());
+            COMMON.get(path).load(ShatterLibServices.platform().getConfigDirectory());
             return true;
         }
 
-        if (Platform.getEnvironment() != Env.CLIENT) {
+        if (!ShatterLibServices.platform().isClientEnvironment()) {
             return false;
         }
 
         if (CLIENT.containsKey(path)) {
-            CLIENT.get(path).load(Platform.getConfigFolder());
+            CLIENT.get(path).load(ShatterLibServices.platform().getConfigDirectory());
             return true;
         }
 
@@ -206,5 +205,9 @@ public class ConfigManager {
 
     public static SchemaFixer getFixer(Class<? extends ShatterConfig> configClass, int from) {
         return SCHEMA_FIXERS.get(configClass).get(from);
+    }
+
+    public static Path getServerConfigFolder(MinecraftServer server) {
+        return server.getWorldPath(LevelResource.ROOT).resolve(SERVER_CONFIG);
     }
 }

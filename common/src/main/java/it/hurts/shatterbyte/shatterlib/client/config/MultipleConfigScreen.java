@@ -1,12 +1,12 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
-import dev.architectury.platform.Platform;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ConfigButton;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.GenericObjectWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.ScrollableWidget;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
@@ -57,7 +57,7 @@ public class MultipleConfigScreen extends ConfigScreen {
         this.setFocused(null);
 
         if (this.config != null) {
-            this.config.save(Platform.getConfigFolder());
+            this.config.save(ShatterLibServices.platform().getConfigDirectory());
         }
 
         this.config = config;

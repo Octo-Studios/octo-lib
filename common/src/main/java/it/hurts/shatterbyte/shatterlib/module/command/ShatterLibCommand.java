@@ -4,22 +4,18 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.architectury.networking.NetworkManager;
-import dev.architectury.platform.Platform;
-//import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
+import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.Permissions;
-
-import java.util.concurrent.ConcurrentNavigableMap;
 
 public class ShatterLibCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
@@ -61,14 +57,14 @@ public class ShatterLibCommand {
                                         })))
                 );
 
-        if (Platform.isDevelopmentEnvironment()) {
+        if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
             builder.then(Commands.literal("animatorSystemTestScreen")
                     .executes(component -> {
                         if (component.getSource().getPlayer() == null) {
                             component.getSource().sendFailure(Component.literal("This command should be ran by a player.").withStyle(ChatFormatting.RED));
                         }
 
-                        NetworkManager.sendToPlayer(component.getSource().getPlayer(), new TestScreenPacket());
+                        ShatterLibNetwork.sendToPlayer(component.getSource().getPlayer(), new TestScreenPacket());
                         return Command.SINGLE_SUCCESS;
                     }));
         }

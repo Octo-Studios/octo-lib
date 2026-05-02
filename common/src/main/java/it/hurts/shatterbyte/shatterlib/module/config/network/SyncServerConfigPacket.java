@@ -1,8 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.config.network;
 
-import dev.architectury.networking.NetworkManager;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
-import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.network.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;

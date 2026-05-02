@@ -16,7 +16,7 @@ public class ShatterRenderManager {
     static Queue<RenderProvider<?, ?>> providers = new ArrayDeque<>();
     static WeakHashMap<RenderProvider<?, ?>, RenderBuffer<?, ?>> map = new WeakHashMap<>();
 
-    public static void worldExit(LocalPlayer player) {
+    public static void worldExit() {
         map.clear();
         providers.clear();
         //ConfigManager.reloadAll();

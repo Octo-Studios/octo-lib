@@ -1,6 +1,5 @@
 package it.hurts.shatterbyte.shatterlib.module.network;
 
-import dev.architectury.networking.NetworkManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

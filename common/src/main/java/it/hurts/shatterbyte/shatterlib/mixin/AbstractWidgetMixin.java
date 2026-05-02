@@ -2,7 +2,7 @@ package it.hurts.shatterbyte.shatterlib.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
-import dev.architectury.platform.Platform;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.HasRenderMatrix;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
@@ -57,7 +57,7 @@ public abstract class AbstractWidgetMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void debugHoverRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!Platform.isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
+        if (!ShatterLibServices.platform().isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
             return;
         }
 

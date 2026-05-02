@@ -7,10 +7,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
     }
 }
 
@@ -18,24 +14,27 @@ subprojects {
     apply plugin: 'maven-publish'
 
     tasks.withType(JavaCompile).configureEach {
-        it.options.release = 21
+        it.options.release = 25
     }
 
     plugins.withId('java') {
         dependencies {
-            compileOnly 'org.projectlombok:lombok:1.18.32'
-            annotationProcessor 'org.projectlombok:lombok:1.18.32'
+            compileOnly 'org.projectlombok:lombok:1.18.40'
+            annotationProcessor 'org.projectlombok:lombok:1.18.40'
 
-            testCompileOnly 'org.projectlombok:lombok:1.18.32'
-            testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+            testCompileOnly 'org.projectlombok:lombok:1.18.40'
+            testAnnotationProcessor 'org.projectlombok:lombok:1.18.40'
 
             implementation 'org.jetbrains:annotations:20.1.0'
         }
 
         java {
             withSourcesJar()
-            sourceCompatibility = JavaVersion.VERSION_21
-            targetCompatibility = JavaVersion.VERSION_21
+            sourceCompatibility = JavaVersion.VERSION_25
+            targetCompatibility = JavaVersion.VERSION_25
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(25)
+            }
         }
     }
 

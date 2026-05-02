@@ -7,7 +7,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -310,17 +310,17 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     }
 
     @Override
-    protected void renderEntry(GuiGraphics g, int mouseX, int mouseY, float pt) {
+    protected void renderEntry(GuiGraphicsExtractor g, int mouseX, int mouseY, float pt) {
         //g.hLine(getX(), getX() + width - 1, getY() + 1, 0xff1c1c17);
         //g.hLine(getX(), getX() + width - 1, getY() + 2, 0xff3c3c42);
-        collapseButton.render(g, mouseX, mouseY, pt);
+        collapseButton.extractRenderState(g, mouseX, mouseY, pt);
 
         if (collapsed) {
             return;
         }
 
         collapseButton.renderExpandedBranchLine(g);
-        addButton.render(g, mouseX, mouseY, pt);
+        addButton.extractRenderState(g, mouseX, mouseY, pt);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int left = getX();
@@ -338,7 +338,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 //                g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
 //                g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
 //            }
-            e.render(g, mouseX, mouseY, pt);
+            e.extractRenderState(g, mouseX, mouseY, pt);
         }
     }
 

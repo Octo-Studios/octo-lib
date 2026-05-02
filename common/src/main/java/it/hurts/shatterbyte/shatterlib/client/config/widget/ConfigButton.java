@@ -5,7 +5,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -46,7 +46,7 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff0000ff);
         int iconOffset = 0;
         boolean selected = selectedSupplier.getAsBoolean();
@@ -84,7 +84,7 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
     }
 
     private void drawScrollingLine(
-            GuiGraphics guiGraphics, Font font, String text, int x, int y, int width, int height, float scale, int color, boolean allowScrolling
+            GuiGraphicsExtractor guiGraphics, Font font, String text, int x, int y, int width, int height, float scale, int color, boolean allowScrolling
     ) {
         if (width <= 0 || height <= 0 || text.isEmpty()) {
             return;
@@ -101,7 +101,7 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(x - textOffset, y);
         guiGraphics.pose().scale(scale);
-        guiGraphics.drawString(font, text, 0, 0, color, true);
+        guiGraphics.text(font, text, 0, 0, color, true);
         guiGraphics.pose().popMatrix();
         guiGraphics.disableScissor();
     }

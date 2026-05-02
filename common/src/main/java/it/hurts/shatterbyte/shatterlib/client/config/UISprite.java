@@ -3,7 +3,7 @@ package it.hurts.shatterbyte.shatterlib.client.config;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlice {
     @Getter
@@ -29,7 +29,7 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
+        public void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
             guiGraphics.blit(pipeline, this.atlas.location, x, y, this.x, this.y, width, height, this.width, this.height, this.atlas.textureWidth, this.atlas.textureHeight, color);
         }
     }
@@ -66,7 +66,7 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
+        public void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color) {
             // source sizes from regions
             int leftW = topLeft.width;
             int rightW = topRight.width;
@@ -186,7 +186,7 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         }
     }
 
-    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int color) {
+    public final void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y, int color) {
         if (this instanceof UISprite.Single single) {
             this.render(guiGraphics, pipeline, x, y, single.getWidth(), single.getHeight(), color);
             return;
@@ -195,13 +195,13 @@ public abstract sealed class UISprite permits UISprite.Single, UISprite.NineSlic
         throw new IllegalArgumentException("Tried to render a nine-slice sprite without specifying width and height.");
     }
 
-    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y) {
+    public final void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y) {
         this.render(guiGraphics, pipeline, x, y, 0xffffffff);
     }
 
-    public final void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height) {
+    public final void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height) {
         this.render(guiGraphics, pipeline, x, y, width, height, 0xffffffff);
     }
 
-    public abstract void render(GuiGraphics guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color);
+    public abstract void render(GuiGraphicsExtractor guiGraphics, RenderPipeline pipeline, int x, int y, int width, int height, int color);
 }

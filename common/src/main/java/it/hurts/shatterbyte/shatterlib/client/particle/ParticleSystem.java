@@ -1,6 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.particle;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ public class ParticleSystem {
         SCREEN_PARTICLES.values().removeIf(List::isEmpty);
     }
 
-    public static void renderScreenParticles(Screen screen, GuiGraphics guiGraphics, float partialTicks) {
+    public static void renderScreenParticles(Screen screen, GuiGraphicsExtractor guiGraphics, float partialTicks) {
         if (SCREEN_PARTICLES.containsKey(screen)) {
             SCREEN_PARTICLES.get(screen).forEach(uiParticle -> uiParticle.render(guiGraphics, partialTicks));
         }
     }
 
-    public static void renderGuiParticles(GuiGraphics guiGraphics, float partialTicks) {
+    public static void renderGuiParticles(GuiGraphicsExtractor guiGraphics, float partialTicks) {
         GUI_PARTICLES.forEach(uiParticle -> uiParticle.render(guiGraphics, partialTicks));
     }
 }

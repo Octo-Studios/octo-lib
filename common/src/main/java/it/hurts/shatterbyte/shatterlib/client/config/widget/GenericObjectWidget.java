@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -180,10 +180,10 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         //guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.width, this.getY()+this.height, 0x20000000);
         //this.repositionWidgets();
-        collapseButton.render(guiGraphics, mouseX, mouseY, partialTick);
+        collapseButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         if (collapsed) {
             return;
@@ -191,8 +191,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
 
         collapseButton.renderExpandedBranchLine(guiGraphics);
 
-        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
-        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
+        //guiGraphics.horizontalLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
+        //guiGraphics.horizontalLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int left = this.getX();
         int right = left + this.width - 1;
@@ -206,8 +206,8 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            guiGraphics.hLine(left + 4, right, widgetBottom + 1, 0xff1c1c17);
-            guiGraphics.hLine(left + 4, right, widgetBottom + 2, 0xff3c3c42);
+            guiGraphics.horizontalLine(left + 4, right, widgetBottom + 1, 0xff1c1c17);
+            guiGraphics.horizontalLine(left + 4, right, widgetBottom + 2, 0xff3c3c42);
         }
 
         for (int i = renderables.size() - 1; i >= 0; i--) {
@@ -218,12 +218,12 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            widget.render(guiGraphics, mouseX, mouseY, partialTick);
+            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         }
 
-        //guiGraphics.vLine(this.getX()+4, this.getY()+16, this.getY()+this.getHeight(), 0xff1c1c17);
+        //guiGraphics.verticalLine(this.getX()+4, this.getY()+16, this.getY()+this.getHeight(), 0xff1c1c17);
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff1f1e23);
-        //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);
+        //guiGraphics.horizontalLine(this.getX(), this.getX() + this.width -1, this.getY() + this.height, 0xff3c3c42);
     }
 
     @Nullable

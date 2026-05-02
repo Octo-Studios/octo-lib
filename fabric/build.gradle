@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom-remap' version '1.16.1'
+    id 'net.fabricmc.fabric-loom' version '1.16.1'
 }
 
 repositories {
@@ -37,16 +37,9 @@ sourceSets {
 
 dependencies {
     minecraft "com.mojang:minecraft:$rootProject.minecraft_version"
-    mappings loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
-    }
-
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
-
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
-
-    modImplementation "com.terraformersmc:modmenu:$rootProject.modmenu_version"
+    implementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+    implementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version"
+    implementation "com.terraformersmc:modmenu:$rootProject.modmenu_version"
 
     implementation "de.marhali:json5-java:3.0.0"
     include "de.marhali:json5-java:3.0.0"

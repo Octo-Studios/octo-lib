@@ -7,7 +7,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.util.Json5Utils;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -138,11 +138,11 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     }
 
     @Override
-    protected final void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected final void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderEntry(guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    protected abstract void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick);
+    protected abstract void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick);
 
     public E getValue() {
         if (this.cachedValue == null) {

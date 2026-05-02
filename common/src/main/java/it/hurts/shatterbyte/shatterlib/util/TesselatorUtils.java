@@ -1,8 +1,10 @@
 package it.hurts.shatterbyte.shatterlib.util;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,9 +23,8 @@ import static net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_
 public class TesselatorUtils {
 
     public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
-            .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-            .withBlend(BlendFunction.LIGHTNING)
-            .withColorWrite(true)
+            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
             .withPolygonMode(PolygonMode.FILL)
             .withVertexShader("core/position_color")
             .withFragmentShader("core/position_color")

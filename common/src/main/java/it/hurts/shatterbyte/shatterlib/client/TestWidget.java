@@ -9,7 +9,7 @@ import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -42,7 +42,7 @@ public class TestWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int i, int j, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float partialTick) {
         float actualPartialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
 
         guiGraphics.pose().pushMatrix();
@@ -60,7 +60,7 @@ public class TestWidget extends AbstractWidget {
         guiGraphics.pose().translate(this.getX(), this.getY());
         RenderUtils.renderOutline(guiGraphics,-2, -12, 112, this.getHeight() + 14, 0x50ffffff);
         guiGraphics.pose().scale(0.75f, 1);
-        guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), 0, -10, 0x50ffffff, true);
+        guiGraphics.text(Minecraft.getInstance().font, this.getMessage(), 0, -10, 0x50ffffff, true);
         guiGraphics.pose().popMatrix();
     }
 

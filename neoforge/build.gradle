@@ -30,11 +30,6 @@ sourceSets {
 neoForge {
     version = rootProject.neoforge_version
 
-    parchment {
-        minecraftVersion = rootProject.minecraft_version
-        mappingsVersion = "2025.12.20"
-    }
-
     runs {
         client {
             client()

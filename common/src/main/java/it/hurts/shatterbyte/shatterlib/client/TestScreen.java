@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.client.particle.GalacticUIParticle;
 import it.hurts.shatterbyte.shatterlib.client.particle.UIParticle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -46,7 +46,7 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(this.width/2f, this.height/2f);
         guiGraphics.pose().scale((float) this.squeeze.x, (float) this.squeeze.y);
@@ -56,13 +56,13 @@ public class TestScreen extends Screen {
         uiParticle.setScreen(this);
         uiParticle.instantiate();
 
-        super.render(guiGraphics, i, j, f);
-        guiGraphics.drawString(
+        super.extractRenderState(guiGraphics, i, j, f);
+        guiGraphics.text(
                 Minecraft.getInstance().font,
                 String.valueOf(ticker),
                 this.width - Minecraft.getInstance().font.width(String.valueOf(ticker)) - 4,
                 4, 0xffffffff, true);
-        guiGraphics.drawString(
+        guiGraphics.text(
                 Minecraft.getInstance().font,
                 String.valueOf(f),
                 this.width - Minecraft.getInstance().font.width(String.valueOf(f)) - 4,

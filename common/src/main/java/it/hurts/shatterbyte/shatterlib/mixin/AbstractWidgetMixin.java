@@ -7,7 +7,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.HasRenderMatrix;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -55,8 +55,8 @@ public abstract class AbstractWidgetMixin {
         }
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
-    private void debugHoverRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+    @Inject(method = "extractRenderState", at = @At("TAIL"))
+    private void debugHoverRender(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (!ShatterLibServices.platform().isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
             return;
         }
@@ -70,7 +70,7 @@ public abstract class AbstractWidgetMixin {
         //}
     }
 
-    @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/AbstractWidget;isHovered:Z", opcode = Opcodes.PUTFIELD))
+    @Redirect(method = "extractRenderState", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/AbstractWidget;isHovered:Z", opcode = Opcodes.PUTFIELD))
     private void injectAsWell(AbstractWidget instance, boolean value, @Local(ordinal = 0, argsOnly = true) int mouseX, @Local(ordinal = 1, argsOnly = true) int mouseY) {
         if (this instanceof Child<?>) {
             this.isHovered = this.isMouseOver(mouseX, mouseY);

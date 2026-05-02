@@ -45,7 +45,7 @@ public final class FabricPlatformHelper implements ShatterLibPlatform {
             StreamCodec<RegistryFriendlyByteBuf, T> codec
     ) {
         if (clientboundPayloads.add(type)) {
-            PayloadTypeRegistry.playS2C().register(type, codec);
+            PayloadTypeRegistry.clientboundPlay().register(type, codec);
         }
     }
 
@@ -66,7 +66,7 @@ public final class FabricPlatformHelper implements ShatterLibPlatform {
             ServerPayloadHandler<T> handler
     ) {
         if (serverboundPayloads.add(type)) {
-            PayloadTypeRegistry.playC2S().register(type, codec);
+            PayloadTypeRegistry.serverboundPlay().register(type, codec);
         }
         ServerPlayNetworking.registerGlobalReceiver(type, (payload, context) -> handler.handle(payload, context.player()));
     }

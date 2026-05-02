@@ -18,12 +18,12 @@ public final class ShatterLibNeoForgeClientCommands {
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
                                 .then(Commands.literal("all")
-                                        .executes(context -> ShatterLibClientCommand.reloadAll(message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().displayClientMessage(message, true))))
+                                        .executes(context -> ShatterLibClientCommand.reloadAll(message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().sendSystemMessage(message))))
                                 .then(Commands.argument("path", StringArgumentType.string())
                                         .suggests((context, builder) -> SharedSuggestionProvider.suggest(ConfigManager.getClientPaths().stream().map(string -> '"' + string + '"'), builder))
                                         .executes(context -> ShatterLibClientCommand.reloadOne(
                                                 context.getArgument("path", String.class),
-                                                message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().displayClientMessage(message, true)
+                                                message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().sendSystemMessage(message)
                                         ))))));
     }
 }

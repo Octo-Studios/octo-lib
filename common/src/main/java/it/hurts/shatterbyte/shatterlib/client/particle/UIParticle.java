@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.particle;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -8,7 +9,7 @@ import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -20,8 +21,7 @@ import java.util.ArrayList;
 
 public class UIParticle {
     public static final RenderPipeline ADDITIVE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
-            .withBlend(BlendFunction.LIGHTNING)
-            .withColorWrite(true)
+            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
             .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "additive"))
             .build();
 
@@ -126,7 +126,7 @@ public class UIParticle {
         }
     }
 
-    public void render(GuiGraphics guiGraphics, float partialTicks) {
+    public void render(GuiGraphicsExtractor guiGraphics, float partialTicks) {
         if (this.isExpired()) return;
 
         Texture2D tex = getTexture();

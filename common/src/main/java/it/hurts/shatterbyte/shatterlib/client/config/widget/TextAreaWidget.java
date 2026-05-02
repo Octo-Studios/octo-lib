@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
@@ -161,7 +161,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         String value = this.getSafeValue();
 
         UIElements.TEXT_AREA.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
@@ -176,16 +176,16 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
         int textX = clipX - this.scrollX;
         int textY = this.getY() + 4;
         if (value.isEmpty() && !this.isFocused() && !placeholder.isEmpty()) {
-            guiGraphics.drawString(font, placeholder, clipX, textY, 0xff7f7f87, true);
+            guiGraphics.text(font, placeholder, clipX, textY, 0xff7f7f87, true);
         } else {
             renderSelection(guiGraphics, value, textX);
-            guiGraphics.drawString(font, value, textX, textY, 0xffcccccc, true);
+            guiGraphics.text(font, value, textX, textY, 0xffcccccc, true);
             renderSearchHighlight(guiGraphics, value, textX, textY);
         }
 
         if (this.isFocused()) {
             int cursorX = textX + (int) Math.round(getCursorPixelX(value));
-            guiGraphics.vLine(
+            guiGraphics.verticalLine(
                     cursorX,
                     this.getY() + 2,
                     this.getY() + this.height - 3,
@@ -196,7 +196,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
         guiGraphics.disableScissor();
     }
 
-    private void renderSelection(GuiGraphics guiGraphics, String value, int textX) {
+    private void renderSelection(GuiGraphicsExtractor guiGraphics, String value, int textX) {
         if (!this.isFocused() || !this.hasSelection()) {
             return;
         }
@@ -408,7 +408,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
         return this.cursorPos != this.selectionPos;
     }
 
-    private void renderSearchHighlight(GuiGraphics guiGraphics, String value, int textX, int textY) {
+    private void renderSearchHighlight(GuiGraphicsExtractor guiGraphics, String value, int textX, int textY) {
         if (searchHighlightQuery.isEmpty() || value.isEmpty()) {
             return;
         }
@@ -424,7 +424,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
             int end = index + searchHighlightQuery.length();
             int offsetX = this.font.width(value.substring(0, index));
             String highlighted = value.substring(index, end);
-            guiGraphics.drawString(this.font, highlighted, textX + offsetX, textY, HIGHLIGHT_COLOR, true);
+            guiGraphics.text(this.font, highlighted, textX + offsetX, textY, HIGHLIGHT_COLOR, true);
             fromIndex = end;
         }
     }

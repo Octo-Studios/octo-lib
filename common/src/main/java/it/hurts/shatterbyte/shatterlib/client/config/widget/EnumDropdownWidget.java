@@ -4,7 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         int x = this.getX();
         int y = this.getY();
         int w = this.getWidth();
@@ -230,8 +230,8 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         this.searchHighlightQuery = normalizeSearchQuery(query);
     }
 
-    private void drawHighlightedString(GuiGraphics guiGraphics, String text, int x, int y, int baseColor) {
-        guiGraphics.drawString(Minecraft.getInstance().font, text, x, y, baseColor, true);
+    private void drawHighlightedString(GuiGraphicsExtractor guiGraphics, String text, int x, int y, int baseColor) {
+        guiGraphics.text(Minecraft.getInstance().font, text, x, y, baseColor, true);
 
         if (searchHighlightQuery.isEmpty() || text.isEmpty()) {
             return;
@@ -247,7 +247,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
 
             int end = index + searchHighlightQuery.length();
             int offsetX = Minecraft.getInstance().font.width(text.substring(0, index));
-            guiGraphics.drawString(
+            guiGraphics.text(
                     Minecraft.getInstance().font,
                     text.substring(index, end),
                     x + offsetX,

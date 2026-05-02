@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -59,9 +59,9 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.enableScissor(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
-        this.children().reversed().forEach(widget -> widget.render(guiGraphics, mouseX, mouseY, partialTick));
+        this.children().reversed().forEach(widget -> widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick));
         guiGraphics.disableScissor();
         this.renderScrollbar(guiGraphics, mouseX, mouseY);
     }
@@ -274,7 +274,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
         this.maxScrollY = Math.max(0, contentBottom - this.height);
     }
 
-    private void renderScrollbar(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    private void renderScrollbar(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
         if (!this.hasScrollbar()) {
             return;
         }

@@ -7,7 +7,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -146,12 +146,12 @@ public class MultipleConfigScreen extends ConfigScreen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.vLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
-        guiGraphics.hLine(0, this.width, 31, 0xff1c1c17);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.verticalLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
+        guiGraphics.horizontalLine(0, this.width, 31, 0xff1c1c17);
 
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
-        //guiGraphics.vLine(129, 0, this.height, 0xff1c1c17);
+        //guiGraphics.verticalLine(129, 0, this.height, 0xff1c1c17);
     }
 }

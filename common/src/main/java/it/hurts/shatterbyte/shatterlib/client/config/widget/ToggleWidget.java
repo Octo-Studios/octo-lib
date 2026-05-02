@@ -8,7 +8,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
@@ -33,7 +33,7 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         UIElements.TOGGLE_DISABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 3);
         if (this.progress > 0f) {
             guiGraphics.enableScissor(this.getX(), this.getY(), Mth.ceil(this.getX() + progress * 10), this.getY() + this.height + 1);

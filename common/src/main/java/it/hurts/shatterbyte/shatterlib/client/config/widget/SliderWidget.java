@@ -11,7 +11,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +87,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         double current = visualValue;
         double pct = (max == min) ? 0.0 : (current - min) / (max - min);
         pct = Math.max(0.0, Math.min(1.0, pct));
@@ -116,7 +116,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
         String string = String.format("%.1f", this.getValue().doubleValue());
         int textX = this.getX() + Math.round((this.width - font.width(string)) / 2f);
         int textY = this.getY() + 3;
-        guiGraphics.drawString(font, string, textX, textY, 0xffffffff, true);
+        guiGraphics.text(font, string, textX, textY, 0xffffffff, true);
         drawSearchHighlight(guiGraphics, string, textX, textY, font);
     }
 
@@ -204,7 +204,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
         this.searchHighlightQuery = normalizeSearchQuery(query);
     }
 
-    private void drawSearchHighlight(GuiGraphics guiGraphics, String text, int x, int y, Font font) {
+    private void drawSearchHighlight(GuiGraphicsExtractor guiGraphics, String text, int x, int y, Font font) {
         if (searchHighlightQuery.isEmpty() || text.isEmpty()) {
             return;
         }
@@ -219,7 +219,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
 
             int end = index + searchHighlightQuery.length();
             int offsetX = font.width(text.substring(0, index));
-            guiGraphics.drawString(font, text.substring(index, end), x + offsetX, y, HIGHLIGHT_COLOR, true);
+            guiGraphics.text(font, text.substring(index, end), x + offsetX, y, HIGHLIGHT_COLOR, true);
             fromIndex = end;
         }
     }

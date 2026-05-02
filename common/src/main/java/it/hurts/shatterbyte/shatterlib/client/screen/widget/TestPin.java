@@ -4,7 +4,7 @@ import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -34,7 +34,7 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (this.isHovered() && this.color == ShatterColor.GREEN) {
             this.color = ShatterColor.BLUE;
         } else if (!this.isHovered() && this.color == ShatterColor.BLUE) {

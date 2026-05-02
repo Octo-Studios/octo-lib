@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -343,7 +343,7 @@ public class MapEntryWidget<V> extends AbstractWidget
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (this.index == 0) {
             up.active = false;
         } else {
@@ -356,11 +356,11 @@ public class MapEntryWidget<V> extends AbstractWidget
             down.active = true;
         }
 
-        up.render(guiGraphics, mouseX, mouseY, partialTick);
-        down.render(guiGraphics, mouseX, mouseY, partialTick);
-        remove.render(guiGraphics, mouseX, mouseY, partialTick);
-        keyWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        up.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        down.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        remove.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        keyWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        entryWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

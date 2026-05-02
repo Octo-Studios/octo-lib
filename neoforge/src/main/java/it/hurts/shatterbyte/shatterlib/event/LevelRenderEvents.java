@@ -13,7 +13,7 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 public class LevelRenderEvents {
     
     @SubscribeEvent
-    public static void renderLevelRender(RenderLevelStageEvent.AfterParticles event) {
+    public static void renderLevelRender(RenderLevelStageEvent.AfterTranslucentParticles event) {
         CommonCode.renderTrails(event.getLevelRenderState().cameraRenderState.pos, Minecraft.getInstance().renderBuffers().bufferSource(), event.getPoseStack(), Minecraft.getInstance().getDeltaTracker());
     }
 

@@ -6,12 +6,12 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.particle.RenderProvider;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
 
 public class CommonCode {
-    public static void applyShake(GuiGraphics guiGraphics, float partialTick) {
+    public static void applyShake(GuiGraphicsExtractor guiGraphics, float partialTick) {
 
     }
 

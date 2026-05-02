@@ -5,7 +5,7 @@ import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Setter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -44,7 +44,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f);
         guiGraphics.pose().rotate((float) Math.toRadians(rot));
@@ -54,7 +54,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
         RenderUtils.renderOutline(guiGraphics,this.getX(), this.getY(), this.width, this.height, 0xffffffff);
         this.children().forEach(child -> {
             if (child instanceof Renderable renderable) {
-                renderable.render(guiGraphics, mouseX, mouseY, partialTick);
+                renderable.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
             }
         });
 

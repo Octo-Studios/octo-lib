@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.particle.UIParticle;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.TestGear;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -49,13 +49,13 @@ public class TestGearScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         //super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         if (shouldTick) {
             this.shouldTick = false;
             guiGraphics.pose().pushMatrix();

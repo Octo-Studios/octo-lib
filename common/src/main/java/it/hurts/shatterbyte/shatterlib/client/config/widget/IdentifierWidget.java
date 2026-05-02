@@ -3,7 +3,7 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -59,7 +59,7 @@ public class IdentifierWidget extends AbstractEntryWidget<Identifier> implements
         return TEXT_HEIGHT;
     }
 
-    protected void renderLeading(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderLeading(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
     }
 
     protected @Nullable Identifier parseIdentifier(@Nullable String value) {
@@ -146,9 +146,9 @@ public class IdentifierWidget extends AbstractEntryWidget<Identifier> implements
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderLeading(guiGraphics, mouseX, mouseY, partialTick);
-        textWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        textWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

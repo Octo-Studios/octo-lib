@@ -1,6 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -20,16 +20,16 @@ public class CollapseButtonWidget<E extends AbstractWidget> extends AbstractChil
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         //guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, BRANCH_LINE_COLOR);
-        guiGraphics.hLine(this.getX()+1, this.getX()+3, this.getY()+2, 0xffffffff);
+        guiGraphics.horizontalLine(this.getX()+1, this.getX()+3, this.getY()+2, 0xffffffff);
 
         if (collapsedSupplier.getAsBoolean()) {
-            guiGraphics.vLine(this.getX()+2, this.getY(), this.getY()+4, 0xffffffff);
+            guiGraphics.verticalLine(this.getX()+2, this.getY(), this.getY()+4, 0xffffffff);
         }
     }
 
-    public void renderExpandedBranchLine(GuiGraphics guiGraphics) {
+    public void renderExpandedBranchLine(GuiGraphicsExtractor guiGraphics) {
         E parent = this.getParent();
         if (parent == null) {
             return;
@@ -39,7 +39,7 @@ public class CollapseButtonWidget<E extends AbstractWidget> extends AbstractChil
         int top = this.getY() + this.height;
         int bottom = parent.getY() + parent.getHeight() - 1;
         if (bottom > top) {
-            guiGraphics.vLine(x, top, bottom, BRANCH_LINE_COLOR);
+            guiGraphics.verticalLine(x, top, bottom, BRANCH_LINE_COLOR);
         }
     }
 

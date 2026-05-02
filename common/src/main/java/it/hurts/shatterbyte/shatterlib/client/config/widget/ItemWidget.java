@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
@@ -38,13 +38,13 @@ public class ItemWidget extends IdentifierWidget {
     }
 
     @Override
-    protected void renderLeading(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderLeading(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         ItemStack stack = getPreviewStack();
         if (stack.isEmpty()) {
             return;
         }
 
-        guiGraphics.renderItem(stack, this.getX(), this.getY());
+        guiGraphics.item(stack, this.getX(), this.getY());
     }
 
     private ItemStack getPreviewStack() {

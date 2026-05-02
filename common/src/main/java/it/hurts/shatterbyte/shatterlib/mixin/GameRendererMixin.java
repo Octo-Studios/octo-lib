@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,8 +29,8 @@ public class GameRendererMixin {
         ShatterRenderManager.clientRenderTick();
     }
 
-    @Inject(require = 0, method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", shift = At.Shift.AFTER))
-    private void renderScreenParticles(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphics guiGraphics) {
+    @Inject(require = 0, method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V", shift = At.Shift.AFTER))
+    private void renderScreenParticles(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphicsExtractor guiGraphics) {
         ParticleSystem.renderScreenParticles(minecraft.screen, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false));
     }
 }

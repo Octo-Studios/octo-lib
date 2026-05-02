@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -199,7 +199,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     }
 
     @Override
-    protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float pt) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float pt) {
         //g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
         if (this.index == 0) {
             up.active = false;
@@ -213,10 +213,10 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
             down.active = true;
         }
 
-        up.render(g, mouseX, mouseY, pt);
-        down.render(g, mouseX, mouseY, pt);
-        remove.render(g, mouseX, mouseY, pt);
-        entryWidget.render(g, mouseX, mouseY, pt);
+        up.extractRenderState(g, mouseX, mouseY, pt);
+        down.extractRenderState(g, mouseX, mouseY, pt);
+        remove.extractRenderState(g, mouseX, mouseY, pt);
+        entryWidget.extractRenderState(g, mouseX, mouseY, pt);
     }
 
     @Override

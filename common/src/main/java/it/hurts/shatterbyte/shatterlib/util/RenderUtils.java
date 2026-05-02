@@ -1,8 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.util;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import it.hurts.shatterbyte.shatterlib.mixin.GuiGraphicsAccessor;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec2;
@@ -31,7 +30,7 @@ public class RenderUtils {
                 pointInTriangle(x, y, quad[0], quad[2], quad[3]);
     }
 
-    public static void renderOutline(GuiGraphics guiGraphics, int x, int y, int width, int height, int color) {
+    public static void renderOutline(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height, int color) {
         guiGraphics.fill(x, y, x + width, y + 1, color);
         guiGraphics.fill(x, y + height - 1, x + width, y + height, color);
         guiGraphics.fill(x, y + 1, x + 1, y + height - 1, color);
@@ -50,14 +49,14 @@ public class RenderUtils {
         return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
-        public static void renderTextureFromCenter(RenderPipeline pipeline, Identifier texture, GuiGraphics guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
+        public static void renderTextureFromCenter(RenderPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
         renderTextureFromCenter(pipeline, texture, guiGraphics, centerX, centerY, 0f, 0f, (int) width, (int) height, width, height, scale, color);
     }
 
     public static void renderTextureFromCenter(
             RenderPipeline pipeline,
             Identifier texture,
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             float centerX,
             float centerY,
             float texOffX,
@@ -88,7 +87,7 @@ public class RenderUtils {
         guiGraphics.blit(pipeline, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
     }
 
-    public static void renderTilingTexture(RenderPipeline pipeline, Identifier texture, GuiGraphics guiGraphics, float x, float y, float texOffX, float texOffY,
+    public static void renderTilingTexture(RenderPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float x, float y, float texOffX, float texOffY,
                                            float texWidth, float texHeight, float width, float height,
                                            int color, boolean tileHorizontally, boolean tileVertically) {
         float uStart = texOffX / texWidth;
@@ -107,8 +106,7 @@ public class RenderUtils {
 //                .addVertex(width, 0f, 100).setUv(uEnd, vStart).setColor(color)
 //                .addVertex(0f, 0f, 100).setUv(uStart, vStart).setColor(color);
 
-        GuiGraphicsAccessor accessor = (GuiGraphicsAccessor) guiGraphics;
-        accessor.innerBlitAccessor(pipeline, texture, 0, (int) width, 0, (int) height, uStart, uEnd, vStart, vEnd, color);
+        guiGraphics.blit(texture, 0, 0, (int) width, (int) height, uStart, vStart, uEnd, vEnd);
 
         //guiGraphics.renderOutline(0,0, (int) width, (int) height,color);
         matrix.popMatrix();

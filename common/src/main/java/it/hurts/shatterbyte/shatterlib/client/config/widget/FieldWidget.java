@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -171,14 +171,14 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         drawHighlightedString(guiGraphics, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, NAME_COLOR);
         renderDescription(guiGraphics);
-        resetButton.render(guiGraphics, mouseX, mouseY, partialTick);
-        entryWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        resetButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        entryWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
     }
 
-    private void renderDescription(GuiGraphics guiGraphics) {
+    private void renderDescription(GuiGraphicsExtractor guiGraphics) {
         List<String> lines = wrappedDescriptionLines;
         if (lines.isEmpty()) {
             return;
@@ -507,9 +507,9 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
         }
     }
 
-    private void drawHighlightedString(GuiGraphics guiGraphics, @Nullable String text, int x, int y, int baseColor) {
+    private void drawHighlightedString(GuiGraphicsExtractor guiGraphics, @Nullable String text, int x, int y, int baseColor) {
         String value = text == null ? "" : text;
-        guiGraphics.drawString(font, value, x, y, baseColor, true);
+        guiGraphics.text(font, value, x, y, baseColor, true);
 
         if (searchHighlightQuery.isEmpty() || value.isEmpty()) {
             return;
@@ -526,7 +526,7 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
             int end = index + searchHighlightQuery.length();
             int offsetX = font.width(value.substring(0, index));
             String highlighted = value.substring(index, end);
-            guiGraphics.drawString(font, highlighted, x + offsetX, y, HIGHLIGHT_COLOR, true);
+            guiGraphics.text(font, highlighted, x + offsetX, y, HIGHLIGHT_COLOR, true);
             fromIndex = end;
         }
     }

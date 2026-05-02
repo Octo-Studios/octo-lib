@@ -6,7 +6,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -414,9 +414,9 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
     }
 
     @Override
-    protected void renderEntry(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        rowHexWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        togglePopupButton.render(guiGraphics, mouseX, mouseY, partialTick);
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        rowHexWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        togglePopupButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         renderToggleColorSwatch(guiGraphics);
 
         if (!expanded) {
@@ -434,23 +434,23 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         renderFieldLabel(guiGraphics, "HSV", layout.labelLocalX(), layout.hsvFieldLocalY());
         renderFieldLabel(guiGraphics, "HSL", layout.labelLocalX(), layout.hslFieldLocalY());
 
-        popupHexWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        rgbRWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        rgbGWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        rgbBWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        popupHexWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        rgbRWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        rgbGWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        rgbBWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
-        cmykCWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        cmykMWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        cmykYWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        cmykKWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        cmykCWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        cmykMWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        cmykYWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        cmykKWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
-        hsvHWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        hsvSWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        hsvVWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        hsvHWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hsvSWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hsvVWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
-        hslHWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        hslSWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-        hslLWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+        hslHWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hslSWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hslLWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
 
         Rect svRect = toGlobalRect(layout.pickerLocalX(), layout.svLocalY(), layout.pickerWidth(), SV_H);
         Rect hueRect = toGlobalRect(layout.pickerLocalX(), layout.hueLocalY(), layout.pickerWidth(), SLIDER_H);
@@ -469,7 +469,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         renderSliderMarker(guiGraphics, alphaRect, alpha);
     }
 
-    private void renderToggleColorSwatch(GuiGraphics guiGraphics) {
+    private void renderToggleColorSwatch(GuiGraphicsExtractor guiGraphics) {
         int swatchSize = 9;
         int offsetY = togglePopupButton.isHovered() ? 1 : 0;
         int x = togglePopupButton.getX() + (togglePopupButton.getWidth() - swatchSize) / 2;
@@ -487,10 +487,10 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         guiGraphics.fill(rect.right() - 1, rect.y(), rect.right(), rect.bottom(), 0xff101015);
     }
 
-    private void renderFieldLabel(GuiGraphics guiGraphics, String label, int labelLocalX, int fieldLocalY) {
+    private void renderFieldLabel(GuiGraphicsExtractor guiGraphics, String label, int labelLocalX, int fieldLocalY) {
         int x = this.getX() + labelLocalX;
         int y = this.getY() + fieldLocalY + 4;
-        guiGraphics.drawString(Minecraft.getInstance().font, label, x, y, LABEL_COLOR, true);
+        guiGraphics.text(Minecraft.getInstance().font, label, x, y, LABEL_COLOR, true);
     }
 
     @Override
@@ -841,7 +841,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         return new Rect(this.getX() + localX, this.getY() + localY, width, height);
     }
 
-    private void renderSvArea(GuiGraphics guiGraphics, Rect rect) {
+    private void renderSvArea(GuiGraphicsExtractor guiGraphics, Rect rect) {
         int right = rect.right();
         for (int x = rect.x(); x < right; x++) {
             float t = rect.width() <= 1 ? 0f : (x - rect.x()) / (float) (rect.width() - 1);
@@ -850,7 +850,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
     }
 
-    private void renderHueSlider(GuiGraphics guiGraphics, Rect rect) {
+    private void renderHueSlider(GuiGraphicsExtractor guiGraphics, Rect rect) {
         int right = rect.right();
         for (int x = rect.x(); x < right; x++) {
             float t = rect.width() <= 1 ? 0f : (x - rect.x()) / (float) (rect.width() - 1);
@@ -858,7 +858,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
     }
 
-    private void renderAlphaSlider(GuiGraphics guiGraphics, Rect rect) {
+    private void renderAlphaSlider(GuiGraphicsExtractor guiGraphics, Rect rect) {
         renderCheckerboard(guiGraphics, rect);
         ShatterColor opaque = ShatterColor.fromHSV(hue, saturation, value, 1f);
         int right = rect.right();
@@ -868,7 +868,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
     }
 
-    private void renderCheckerboard(GuiGraphics guiGraphics, Rect rect) {
+    private void renderCheckerboard(GuiGraphicsExtractor guiGraphics, Rect rect) {
         int tileSize = 3;
         for (int y = rect.y(); y < rect.bottom(); y += tileSize) {
             for (int x = rect.x(); x < rect.right(); x += tileSize) {
@@ -879,19 +879,19 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
     }
 
-    private void renderSvMarker(GuiGraphics guiGraphics, Rect rect) {
+    private void renderSvMarker(GuiGraphicsExtractor guiGraphics, Rect rect) {
         int markerX = rect.x() + Math.round(saturation * Math.max(0, rect.width() - 1));
         int markerY = rect.y() + Math.round((1f - value) * Math.max(0, rect.height() - 1));
         renderCircleMarker(guiGraphics, markerX, markerY, 4);
     }
 
-    private void renderSliderMarker(GuiGraphics guiGraphics, Rect rect, float progress) {
+    private void renderSliderMarker(GuiGraphicsExtractor guiGraphics, Rect rect, float progress) {
         int markerX = rect.x() + Math.round(clamp01(progress) * Math.max(0, rect.width() - 1));
         int markerY = rect.y() + rect.height() / 2;
         renderCircleMarker(guiGraphics, markerX, markerY, 5);
     }
 
-    private void renderCircleMarker(GuiGraphics guiGraphics, int centerX, int centerY, int radius) {
+    private void renderCircleMarker(GuiGraphicsExtractor guiGraphics, int centerX, int centerY, int radius) {
         int outerSq = radius * radius;
         int innerRadius = Math.max(1, radius - 1);
         int innerSq = innerRadius * innerRadius;
@@ -911,7 +911,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         }
     }
 
-    private void renderFrame(GuiGraphics guiGraphics, Rect rect) {
+    private void renderFrame(GuiGraphicsExtractor guiGraphics, Rect rect) {
         UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, rect.x() - 1, rect.y() - 1, rect.width() + 2, rect.height() + 2);
         guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.y() + 1, PANEL_BORDER);
         guiGraphics.fill(rect.x(), rect.bottom() - 1, rect.right(), rect.bottom(), PANEL_BORDER);

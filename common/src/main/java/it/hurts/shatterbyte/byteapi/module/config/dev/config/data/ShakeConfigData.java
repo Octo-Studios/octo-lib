@@ -1,0 +1,68 @@
+package it.hurts.shatterbyte.byteapi.module.config.dev.config.data;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ShakeConfigData {
+    @Builder.Default
+    private float rangeMultiplier = 1F;
+
+    @Builder.Default
+    private float rotationAmplitude = 0.1F;
+
+    @Builder.Default
+    private float offsetAmplitude = 0.1F;
+
+    @Builder.Default
+    private float fovAmplitude = 0.1F;
+
+    @Builder.Default
+    private float rotationSpeed = 5F;
+
+    @Builder.Default
+    private float offsetSpeed = 5F;
+
+    @Builder.Default
+    private float fovSpeed = 5F;
+
+    @Builder.Default
+    private int duration = 10;
+
+    @Builder.Default
+    private int fadeInTime = 0;
+
+    @Builder.Default
+    private int fadeOutTime = -1;
+
+    public static class ShakeConfigDataBuilder {
+        public ShakeConfigDataBuilder amplitude(float rotationAmplitude, float offsetAmplitude, float fovAmplitude) {
+            this.rotationAmplitude(rotationAmplitude);
+            this.offsetAmplitude(offsetAmplitude);
+            this.fovAmplitude(fovAmplitude);
+
+            return this;
+        }
+
+        public ShakeConfigDataBuilder amplitude(float amplitude) {
+            return amplitude(amplitude, amplitude, amplitude);
+        }
+
+        public ShakeConfigDataBuilder speed(float rotationSpeed, float offsetSpeed, float fovSpeed) {
+            this.rotationSpeed(rotationSpeed);
+            this.offsetSpeed(offsetSpeed);
+            this.fovSpeed(fovSpeed);
+
+            return this;
+        }
+
+        public ShakeConfigDataBuilder speed(float speed) {
+            return speed(speed, speed, speed);
+        }
+    }
+}

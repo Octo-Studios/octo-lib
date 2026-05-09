@@ -11,18 +11,18 @@
   "environment": "*",
   "entrypoints": {
     "modmenu": [
-      "it.hurts.shatterbyte.shatterlib.fabric.ShatterLibModMenuImpl"
+      "it.hurts.shatterbyte.byteapi.fabric.ByteAPIModMenuImpl"
     ],
     "main": [
-      "it.hurts.shatterbyte.${mod_id}.fabric.ShatterLibFabric"
+      "it.hurts.shatterbyte.byteapi.fabric.ByteAPIFabric"
     ],
     "client": [
-      "it.hurts.shatterbyte.${mod_id}.fabric.ShatterLibFabricClient"
+      "it.hurts.shatterbyte.byteapi.fabric.ByteAPIFabricClient"
     ]
   },
   "mixins": [
-    "shatterlib-common.mixins.json",
-    "shatterlib-fabric.mixins.json"
+    "byte-common.mixins.json",
+    "byte-fabric.mixins.json"
   ],
   "depends": {
     "minecraft": ">=26.1.2",

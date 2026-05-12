@@ -57,17 +57,17 @@ public abstract class AbstractWidgetMixin {
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void debugHoverRender(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        if (!ByteAPIServices.platform().isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
-            return;
-        }
-
-        if (this.isHovered()) {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x55ff0000);
-        }
-
-        //if (this.isFocused()) {
-            RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
-        //}
+//        if (!ByteAPIServices.platform().isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
+//            return;
+//        }
+//
+//        if (this.isHovered()) {
+//            guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0x55ff0000);
+//        }
+//
+//        //if (this.isFocused()) {
+//            RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xffff0000);
+//        //}
     }
 
     @Redirect(method = "extractRenderState", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/AbstractWidget;isHovered:Z", opcode = Opcodes.PUTFIELD))

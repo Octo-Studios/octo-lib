@@ -119,8 +119,8 @@ publishing {
             }
         }
         maven {
-            name = 'octo'
-            url = uri('https://maven.octo-studios.com/releases')
+            name = 'shatterbyte'
+            url = uri('https://maven.shatterbyte.com/releases')
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)

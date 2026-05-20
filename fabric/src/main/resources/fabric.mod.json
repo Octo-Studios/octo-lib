@@ -21,8 +21,8 @@
     ]
   },
   "mixins": [
-    "byte-common.mixins.json",
-    "byte-fabric.mixins.json"
+    "byteapi-common.mixins.json",
+    "byteapi-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",

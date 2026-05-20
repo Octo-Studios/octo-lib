@@ -24,7 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import com.mojang.brigadier.CommandDispatcher;
 
 public final class ByteAPI {
-    public static final String MOD_ID = "byte";
+    public static final String MOD_ID = "byteapi";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static MyConfig CONFIG = new MyConfig();
     public static TestServerConfig SERVER_CONFIG = new TestServerConfig();

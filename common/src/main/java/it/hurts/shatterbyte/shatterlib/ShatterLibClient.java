@@ -3,7 +3,7 @@ package it.hurts.shatterbyte.shatterlib;
 import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetFactory;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
-import it.hurts.shatterbyte.byteapi.client.config.widget.*;
+import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;

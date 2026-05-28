@@ -12,6 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -158,13 +159,13 @@ public class MultipleConfigScreen extends ConfigScreen {
         guiGraphics.verticalLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
         guiGraphics.horizontalLine(0, this.width, 31, 0xff1c1c17);
 
-        //guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
-        int width = font.width(modName);
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().translate(64, 10);
-        guiGraphics.pose().scale(2f, 2);
-        guiGraphics.text(font, modName, -width/2, 0, 0xffffffff);
-        guiGraphics.pose().popMatrix();
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
+//        int width = font.width(modName);
+//        guiGraphics.pose().pushMatrix();
+//        guiGraphics.pose().translate(64, 10);
+//        guiGraphics.pose().scale(2f, 2);
+//        guiGraphics.text(font, modName, -width/2, 0, 0xffffffff);
+//        guiGraphics.pose().popMatrix();
         //guiGraphics.verticalLine(129, 0, this.height, 0xff1c1c17);
     }
 }

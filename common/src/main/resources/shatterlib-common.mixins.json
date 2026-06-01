@@ -10,7 +10,11 @@
     "ClientLevelMixin",
     "GameRendererMixin",
     "GuiMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "chromatic_aberration.GameRendererMixin",
+    "post_effect.GameRendererMixin",
+    "post_effect.PostChainAccessor",
+    "post_effect.PostPassAccessor"
   ],
   "mixins": [
   ],

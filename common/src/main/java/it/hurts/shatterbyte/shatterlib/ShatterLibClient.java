@@ -6,6 +6,8 @@ import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
+import it.hurts.shatterbyte.shatterlib.module.chromatic_aberration.ChromaticAberrationManager;
+import it.hurts.shatterbyte.shatterlib.module.chromatic_aberration.misc.S2CChromaticAberrationPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.MyClientConfig;
@@ -14,6 +16,8 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
+import it.hurts.shatterbyte.shatterlib.module.post_effect.init.ShatterLibPostEffects;
+import it.hurts.shatterbyte.shatterlib.module.post_effect.instances.ChromaticAberrationPostEffect;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -46,6 +50,18 @@ public final class ShatterLibClient {
             config.loadFromJson(value.json);
             config.updateSchemaCache();
         });
+
+        ShatterLibNetwork.registerS2CReceiver(S2CChromaticAberrationPacket.TYPE, S2CChromaticAberrationPacket.STREAM_CODEC, value -> {
+            var player = Minecraft.getInstance().player;
+
+            if (player == null)
+                return;
+
+            ChromaticAberrationManager.add(player.level(), value.getChromaticAberration());
+        });
+
+        ShatterLibPostEffects.register(ChromaticAberrationPostEffect::new);
+        ShatterLibPostEffects.init();
 
         TweenSystem.init();
         //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);

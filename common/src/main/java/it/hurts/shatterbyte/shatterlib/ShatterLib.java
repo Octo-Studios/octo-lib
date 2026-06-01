@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib;
 
+import it.hurts.shatterbyte.shatterlib.module.chromatic_aberration.misc.S2CChromaticAberrationPacket;
 import it.hurts.shatterbyte.shatterlib.module.command.ShatterLibCommand;
 import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import it.hurts.shatterbyte.shatterlib.module.config.dev.ExampleConfig;
@@ -32,6 +33,7 @@ public final class ShatterLib {
     public static void init() {
         ShatterLibNetwork.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
         ShatterLibNetwork.registerS2CPayloadType(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC);
+        ShatterLibNetwork.registerS2CPayloadType(S2CChromaticAberrationPacket.TYPE, S2CChromaticAberrationPacket.STREAM_CODEC);
 
         if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
             ConfigManager.register(MOD_ID, CONFIG);

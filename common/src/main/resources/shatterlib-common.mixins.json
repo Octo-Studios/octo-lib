@@ -14,7 +14,10 @@
     "chromatic_aberration.GameRendererMixin",
     "post_effect.GameRendererMixin",
     "post_effect.PostChainAccessor",
-    "post_effect.PostPassAccessor"
+    "post_effect.PostPassAccessor",
+    "shake.GameRendererMixin",
+    "shake.CameraMixin",
+    "shake.AbstractClientPlayerMixin"
   ],
   "mixins": [
   ],

@@ -10,6 +10,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.dev.config.ShakeConfig;
 import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
+import it.hurts.shatterbyte.shatterlib.module.camera_shake.misc.S2CCameraShakePacket;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,7 @@ public final class ShatterLib {
         ShatterLibNetwork.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
         ShatterLibNetwork.registerS2CPayloadType(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC);
         ShatterLibNetwork.registerS2CPayloadType(S2CChromaticAberrationPacket.TYPE, S2CChromaticAberrationPacket.STREAM_CODEC);
+        ShatterLibNetwork.registerS2CPayloadType(S2CCameraShakePacket.TYPE, S2CCameraShakePacket.STREAM_CODEC);
 
         if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
             ConfigManager.register(MOD_ID, CONFIG);

@@ -4,7 +4,6 @@ import it.hurts.shatterbyte.shatterlib.client.animation.TweenSystem;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetFactory;
 import it.hurts.shatterbyte.shatterlib.client.config.EntryWidgetRegistry;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
-import it.hurts.shatterbyte.shatterlib.client.config.widget.*;
 import it.hurts.shatterbyte.shatterlib.client.screen.TestGearScreen;
 import it.hurts.shatterbyte.shatterlib.module.chromatic_aberration.ChromaticAberrationManager;
 import it.hurts.shatterbyte.shatterlib.module.chromatic_aberration.misc.S2CChromaticAberrationPacket;
@@ -18,6 +17,8 @@ import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.init.ShatterLibPostEffects;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.instances.ChromaticAberrationPostEffect;
+import it.hurts.shatterbyte.shatterlib.module.camera_shake.CameraShakeManager;
+import it.hurts.shatterbyte.shatterlib.module.camera_shake.misc.S2CCameraShakePacket;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.util.DeltaTimeTracker;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
@@ -58,6 +59,15 @@ public final class ShatterLibClient {
                 return;
 
             ChromaticAberrationManager.add(player.level(), value.getChromaticAberration());
+        });
+
+        ShatterLibNetwork.registerS2CReceiver(S2CCameraShakePacket.TYPE, S2CCameraShakePacket.STREAM_CODEC, value -> {
+            var player = Minecraft.getInstance().player;
+
+            if (player == null)
+                return;
+
+            CameraShakeManager.add(player.level(), value.getShake());
         });
 
         ShatterLibPostEffects.register(ChromaticAberrationPostEffect::new);

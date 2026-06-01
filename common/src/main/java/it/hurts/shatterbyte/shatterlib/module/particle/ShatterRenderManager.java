@@ -43,6 +43,11 @@ public class ShatterRenderManager {
             if (time % updateFrequency == 0) {
                 buffer.tick(p);
             }
+
+            if (!p.shouldRender(Cast.cast(buffer))) {
+                map.remove(p);
+                iterator.remove();
+            }
         }
     }
 

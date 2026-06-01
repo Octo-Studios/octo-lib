@@ -14,7 +14,6 @@ public class DefaultTrailBuffer implements TrailBuffer {
 
     private final Deque<TrailPoint> points = new ArrayDeque<>();
     private final int maxSize;
-    private double lastFrameTime = Double.NaN;
 
     public DefaultTrailBuffer(int maxSize) {
         this.maxSize = Math.max(1, maxSize);
@@ -39,20 +38,6 @@ public class DefaultTrailBuffer implements TrailBuffer {
             return;
         }
 
-        var now = level.getGameTime() + partialTick;
-        if (Double.isNaN(lastFrameTime)) {
-            lastFrameTime = now;
-        }
-
-        var deltaTicks = now - lastFrameTime;
-        lastFrameTime = now;
-
-        if (deltaTicks > 0 && deltaTicks < 5) {
-            for (var point : points) {
-                point.ageTicks += deltaTicks;
-            }
-        }
-
         if (provider.isTrailAlive() && provider.isTrailGrowing()) {
             var currentPos = provider.getTrailPosition(partialTick);
             var head = points.peekFirst();
@@ -72,20 +57,26 @@ public class DefaultTrailBuffer implements TrailBuffer {
             }
         }
 
-        var maxAge = Math.max(1.0, provider.getTrailLifetimeTicks());
-        while (!points.isEmpty() && points.peekLast().ageTicks > maxAge) {
-            remove();
+        trim(provider);
+    }
+
+    @Override
+    public void tick(TrailProvider provider) {
+        if (Minecraft.getInstance().level == null) {
+            clear();
+            return;
         }
 
-        while (points.size() > getHardLimit(provider)) {
-            remove();
+        for (var point : points) {
+            point.ageTicks++;
         }
+
+        trim(provider);
     }
 
     @Override
     public void clear() {
         points.clear();
-        lastFrameTime = Double.NaN;
     }
 
     private int getHardLimit() {
@@ -94,6 +85,17 @@ public class DefaultTrailBuffer implements TrailBuffer {
 
     private int getHardLimit(TrailProvider provider) {
         return Math.max(getHardLimit(), provider.getTrailMaxPointCount());
+    }
+
+    private void trim(TrailProvider provider) {
+        var maxAge = Math.max(1.0, provider.getTrailLifetimeTicks());
+        while (!points.isEmpty() && points.peekLast().ageTicks > maxAge) {
+            remove();
+        }
+
+        while (points.size() > getHardLimit(provider)) {
+            remove();
+        }
     }
 
     @Override

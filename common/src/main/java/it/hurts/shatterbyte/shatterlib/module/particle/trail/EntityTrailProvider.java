@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.module.particle.trail;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,7 +23,7 @@ public abstract class EntityTrailProvider<T extends Entity> extends TrailProvide
 
     @Override
     public boolean isTrailAlive() {
-        return entity.isAlive();
+        return entity.isAlive() && !entity.isRemoved() && entity.level() == Minecraft.getInstance().level;
     }
 
     @Override

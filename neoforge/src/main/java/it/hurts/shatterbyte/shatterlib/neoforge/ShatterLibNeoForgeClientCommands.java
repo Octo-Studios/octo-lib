@@ -7,7 +7,6 @@ import it.hurts.shatterbyte.shatterlib.module.config.ConfigManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.neoforged.neoforge.client.ClientCommandSourceStack;
 
 public final class ShatterLibNeoForgeClientCommands {
     private ShatterLibNeoForgeClientCommands() {
@@ -18,12 +17,12 @@ public final class ShatterLibNeoForgeClientCommands {
                 .then(Commands.literal("config")
                         .then(Commands.literal("reload")
                                 .then(Commands.literal("all")
-                                        .executes(context -> ShatterLibClientCommand.reloadAll(message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().sendSystemMessage(message))))
+                                        .executes(context -> ShatterLibClientCommand.reloadAll(message -> context.getSource().sendSuccess(() -> message, false))))
                                 .then(Commands.argument("path", StringArgumentType.string())
                                         .suggests((context, builder) -> SharedSuggestionProvider.suggest(ConfigManager.getClientPaths().stream().map(string -> '"' + string + '"'), builder))
                                         .executes(context -> ShatterLibClientCommand.reloadOne(
                                                 context.getArgument("path", String.class),
-                                                message -> ((ClientCommandSourceStack) context.getSource()).getPlayer().sendSystemMessage(message)
+                                                message -> context.getSource().sendSuccess(() -> message, false)
                                         ))))));
     }
 }

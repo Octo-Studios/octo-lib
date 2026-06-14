@@ -35,7 +35,7 @@ public final class ShatterLibNeoForge {
             NeoForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
             NeoForge.EVENT_BUS.addListener(this::onClientTick);
             NeoForge.EVENT_BUS.addListener(this::onClientDisconnect);
-            container.registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
+            //container.registerExtensionPoint(IConfigScreenFactory.class, (mod, prevScreen) -> new MultipleConfigScreen(ShatterLib.MOD_ID, prevScreen));
         }
     }
 

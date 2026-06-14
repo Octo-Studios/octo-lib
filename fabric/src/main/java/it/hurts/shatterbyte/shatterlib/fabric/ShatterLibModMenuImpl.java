@@ -14,12 +14,12 @@ public class ShatterLibModMenuImpl implements ModMenuApi {
 //        return screen -> new MultipleConfigScreen(ByteAPI.MOD_ID, screen);
 //    }
 
-    @Override
-    public Map<String, ConfigScreenFactory<?>> getProvidedConfigScreenFactories() {
-        Map<String, ConfigScreenFactory<?>> screens = new HashMap<>();
-        ConfigManager.CONFIGS_BY_MODID.keySet().forEach(key -> {
-            screens.put(key, prevScreen -> new MultipleConfigScreen(key, prevScreen));
-        });
-        return screens;
-    }
+//    @Override
+//    public Map<String, ConfigScreenFactory<?>> getProvidedConfigScreenFactories() {
+//        Map<String, ConfigScreenFactory<?>> screens = new HashMap<>();
+//        ConfigManager.CONFIGS_BY_MODID.keySet().forEach(key -> {
+//            screens.put(key, prevScreen -> new MultipleConfigScreen(key, prevScreen));
+//        });
+//        return screens;
+//    }
 }

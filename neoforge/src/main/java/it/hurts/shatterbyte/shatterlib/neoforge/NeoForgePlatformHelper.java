@@ -8,12 +8,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.loading.moddiscovery.ModInfo;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -46,14 +48,19 @@ public final class NeoForgePlatformHelper implements ShatterLibPlatform {
 
     @Override
     public String getModName(String modId) {
-        List<ModInfo> mods = FMLLoader.getCurrent().getLoadingModList().getMods();
-        for (ModInfo mod : mods) {
+        List<IModInfo> mods = ModList.get().getMods();
+        for (IModInfo mod : mods) {
             if (mod.getModId().equals(modId)) {
                 return mod.getDisplayName();
             }
         }
 
         return "???";
+    }
+
+    @Override
+    public boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
     }
 
     @Override

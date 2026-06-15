@@ -5,21 +5,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 
 public interface TrailBuffer extends Iterable<Vec3>, RenderBuffer<TrailProvider, TrailBuffer> {
-    
+
     void write(Vec3 vec3);
-    
+
     int size();
-    
+
     void remove();
-    
+
+    void clear();
+
+    void renderTick(TrailProvider provider, float partialTick);
+
     @Override
     default void tick(TrailProvider provider) {
-        var position = provider.getTrailPosition(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
-        
-        if (provider.isTrailAlive() && provider.isTrailGrowing()) {
-            write(position);
-        } else if (size() > 0)
-            remove();
+
     }
-    
 }

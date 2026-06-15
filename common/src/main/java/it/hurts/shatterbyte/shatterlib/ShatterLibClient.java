@@ -15,6 +15,8 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.config.type.annotation.Range;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
+import it.hurts.shatterbyte.shatterlib.module.particle.trail.EntityTrailRegistry;
+import it.hurts.shatterbyte.shatterlib.module.particle.trail.TestArrowTrail;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.init.ShatterLibPostEffects;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.instances.ChromaticAberrationPostEffect;
 import it.hurts.shatterbyte.shatterlib.module.camera_shake.CameraShakeManager;
@@ -25,6 +27,7 @@ import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -74,8 +77,15 @@ public final class ShatterLibClient {
         ShatterLibPostEffects.init();
 
         TweenSystem.init();
-        //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        ShatterLibClient.registerEntryWidgets();
 
+        if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
+            ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
+        }
+    }
+
+    private static void registerEntryWidgets() {
         EntryWidgetRegistry.registerConstructor(Number.class, clazz -> 0d);
         EntryWidgetRegistry.registerConstructor(byte.class, clazz -> (byte) 0);
         EntryWidgetRegistry.registerConstructor(Byte.class, clazz -> (byte) 0);
@@ -160,10 +170,6 @@ public final class ShatterLibClient {
         EntryWidgetRegistry.register(Enum.class, (EntryWidgetFactory<Enum>) EnumDropdownWidget::new);
         EntryWidgetRegistry.register(List.class, (EntryWidgetFactory<List>) ListWidget::new);
         EntryWidgetRegistry.register(Map.class, (EntryWidgetFactory<Map>) MapWidget::new);
-
-        if (ShatterLibServices.platform().isDevelopmentEnvironment()) {
-            ConfigManager.register(ShatterLib.MOD_ID, CONFIG);
-        }
     }
 
     public static void onClientLevelPre(ClientLevel level) {

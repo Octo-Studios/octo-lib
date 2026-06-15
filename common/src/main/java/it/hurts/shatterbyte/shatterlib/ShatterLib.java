@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.module.config.network.SyncServerConfigPac
 import it.hurts.shatterbyte.shatterlib.module.config.network.TestScreenPacket;
 import it.hurts.shatterbyte.shatterlib.module.network.ShatterLibNetwork;
 import it.hurts.shatterbyte.shatterlib.module.camera_shake.misc.S2CCameraShakePacket;
+import it.hurts.shatterbyte.shatterlib.platform.ShatterLibPlatform;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,7 @@ import com.mojang.brigadier.CommandDispatcher;
 
 public final class ShatterLib {
     public static final String MOD_ID = "shatterlib";
+    public static final boolean IRIS_LOADED = ShatterLibServices.platform().isModLoaded("iris");
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static void init() {

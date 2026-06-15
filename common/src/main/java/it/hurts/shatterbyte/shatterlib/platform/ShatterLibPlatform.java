@@ -17,6 +17,8 @@ public interface ShatterLibPlatform {
 
     String getModName(String modId);
 
+    boolean isModLoaded(String modId);
+
     <T extends CustomPacketPayload> void registerClientboundPayload(
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec

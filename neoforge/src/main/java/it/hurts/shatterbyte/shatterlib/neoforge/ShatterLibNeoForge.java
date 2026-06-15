@@ -32,6 +32,8 @@ public final class ShatterLibNeoForge {
 
         if (FMLLoader.getCurrent().getDist() == Dist.CLIENT) {
             ShatterLibClient.init();
+            Compatibility.init();
+
             NeoForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
             NeoForge.EVENT_BUS.addListener(this::onClientTick);
             NeoForge.EVENT_BUS.addListener(this::onClientDisconnect);

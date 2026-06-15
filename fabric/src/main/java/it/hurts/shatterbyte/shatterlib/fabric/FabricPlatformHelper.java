@@ -55,6 +55,11 @@ public final class FabricPlatformHelper implements ShatterLibPlatform {
     }
 
     @Override
+    public boolean isModLoaded(String modId) {
+        return FabricLoader.getInstance().isModLoaded(modId);
+    }
+
+    @Override
     public <T extends CustomPacketPayload> void registerClientboundPayload(
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec

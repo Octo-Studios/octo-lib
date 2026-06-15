@@ -13,6 +13,8 @@ public final class ShatterLibFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ShatterLibClient.init();
+        Compatibility.init();
+
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> ShatterLibFabricClientCommands.register(dispatcher));
         ClientTickEvents.START_LEVEL_TICK.register(ShatterLibClient::onClientLevelPre);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ShatterLibClient.onClientDisconnect());

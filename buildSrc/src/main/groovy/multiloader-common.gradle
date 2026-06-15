@@ -44,6 +44,21 @@ repositories {
         name = 'Terraformers'
         url = 'https://maven.terraformersmc.com/'
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name "CaffeineMC"
+        url "https://maven.caffeinemc.net/releases"
+    }
 }
 
 sourcesJar {

@@ -19,7 +19,7 @@ public class CommonCode {
         double e = cameraPos.y();
         double g = cameraPos.z();
 
-        VertexConsumer consumer = consumers.getBuffer(TesselatorUtils.TRAIL_RENDER_TYPE);
+        VertexConsumer consumer = consumers.getBuffer(TesselatorUtils.getType());
         float f = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         for (RenderProvider trail : ShatterRenderManager.getProviders()) {
@@ -30,6 +30,6 @@ public class CommonCode {
             poseStack.popPose();
         }
 
-        consumers.endBatch(TesselatorUtils.TRAIL_RENDER_TYPE);
+        consumers.endBatch(TesselatorUtils.getType());
     }
 }

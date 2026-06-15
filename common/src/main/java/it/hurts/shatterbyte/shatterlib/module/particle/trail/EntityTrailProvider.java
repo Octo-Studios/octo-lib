@@ -16,11 +16,6 @@ public abstract class EntityTrailProvider<T extends Entity> extends TrailProvide
     }
 
     @Override
-    public int getTrailUpdateFrequency() {
-        return 0;
-    }
-
-    @Override
     public boolean isTrailAlive() {
         return entity.isAlive();
     }

@@ -116,7 +116,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         if (smoothPoints.size() < 2) return;
 
         var origin = getRenderPosition(pTicks);
-        var cameraLocal = Minecraft.getInstance().gameRenderer.getMainCamera().position().subtract(origin);
+        var cameraLocal = Minecraft.getInstance().gameRenderer.mainCamera().position().subtract(origin);
         var ribbon = buildRibbonFrames(smoothPoints, cameraLocal);
         if (ribbon.size() < 2) return;
 

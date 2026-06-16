@@ -77,7 +77,7 @@ public final class ShatterLibClient {
         ShatterLibPostEffects.init();
 
         TweenSystem.init();
-        EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
         ShatterLibClient.registerEntryWidgets();
 
         if (ShatterLibServices.platform().isDevelopmentEnvironment()) {

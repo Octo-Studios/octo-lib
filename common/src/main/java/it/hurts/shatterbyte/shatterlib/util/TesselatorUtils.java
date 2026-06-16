@@ -44,14 +44,6 @@ public class TesselatorUtils {
             .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "trail"))
             .build();
 
-    public static final RenderType TRAIL_RENDER_TYPE = RenderType.create("shatterparticle_trail",
-            RenderSetup.builder(TRAIL_PIPELINE)
-                    .bufferSize(256)
-                    .affectsCrumbling()
-                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
-                    .setOutputTarget(OutputTarget.MAIN_TARGET)
-                    .createRenderSetup());
-
     private static final Function<Identifier, RenderType> RENDER_TYPE_FUNCTION = Util.memoize(
             (identifier) -> {
                 RenderSetup renderSetup = RenderSetup.builder(TRAIL_PIPELINE)
@@ -66,9 +58,7 @@ public class TesselatorUtils {
             }
     );
 
-    public static RenderType getType() {
-        return RENDER_TYPE_FUNCTION.apply(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/trail.png"));
-    }
+    public static final RenderType TRAIL = RENDER_TYPE_FUNCTION.apply(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "textures/trail.png"));
 
     public static void drawFullQuadWithColor(VertexConsumer tes, Matrix4f matrix4f, float pos1X, float pos1Y, float pos1Z, float pos2X,
                                              float pos2Y, float pos2Z, float pos3X, float pos3Y, float pos3Z, float pos4X, float pos4Y,

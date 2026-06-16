@@ -6,7 +6,6 @@ import it.hurts.shatterbyte.shatterlib.module.particle.ShatterRenderManager;
 import it.hurts.shatterbyte.shatterlib.module.particle.RenderProvider;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.phys.Vec3;
 
 public class CommonCode {
@@ -19,7 +18,7 @@ public class CommonCode {
         double e = cameraPos.y();
         double g = cameraPos.z();
 
-        VertexConsumer consumer = consumers.getBuffer(TesselatorUtils.getType());
+        VertexConsumer consumer = consumers.getBuffer(TesselatorUtils.TRAIL);
         float f = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         for (RenderProvider trail : ShatterRenderManager.getProviders()) {

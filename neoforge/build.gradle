@@ -48,9 +48,8 @@ dependencies {
         }
     }
 
-    //implementation "net.caffeinemc:sodium-neoforge-api:${sodium_version}"
     runtimeOnly "net.caffeinemc:sodium-neoforge:${sodium_version}"
-    implementation "maven.modrinth:iris:${iris_version}-neoforge"
+    //implementation "maven.modrinth:iris:${iris_version}-neoforge"
 }
 
 def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)

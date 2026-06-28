@@ -183,6 +183,6 @@ public class UIParticle {
             return;
         }
 
-        ParticleSystem.GUI_PARTICLES.add(this);
+        ParticleSystem.HUD_PARTICLES.add(this);
     }
 }

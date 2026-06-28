@@ -28,9 +28,4 @@ public class GameRendererMixin {
     private void renderTick(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ShatterRenderManager.clientRenderTick();
     }
-
-//    @Inject(require = 0, method = "render", at = @At(value = "INVOKE", target = "", shift = At.Shift.AFTER))
-//    private void renderScreenParticles(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local GuiGraphicsExtractor guiGraphics) {
-//        ParticleSystem.renderScreenParticles(minecraft.gui.screen(), guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false));
-//    }
 }

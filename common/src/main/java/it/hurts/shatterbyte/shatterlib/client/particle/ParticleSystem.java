@@ -9,14 +9,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class ParticleSystem {
-    protected static List<UIParticle> GUI_PARTICLES = new ArrayList<>();
+    protected static List<UIParticle> HUD_PARTICLES = new ArrayList<>();
     protected static Map<Screen, List<UIParticle>> SCREEN_PARTICLES = new WeakHashMap<>();
 
     public static void tick() {
-        GUI_PARTICLES.forEach(UIParticle::tick);
+        HUD_PARTICLES.forEach(UIParticle::tick);
         SCREEN_PARTICLES.values().forEach(uiParticles -> uiParticles.forEach(UIParticle::tick));
 
-        GUI_PARTICLES.removeIf(UIParticle::isExpired);
+        HUD_PARTICLES.removeIf(UIParticle::isExpired);
         SCREEN_PARTICLES.values().forEach(uiParticles -> uiParticles.removeIf(UIParticle::isExpired));
         SCREEN_PARTICLES.values().removeIf(List::isEmpty);
     }
@@ -27,7 +27,7 @@ public class ParticleSystem {
         }
     }
 
-    public static void renderGuiParticles(GuiGraphicsExtractor guiGraphics, float partialTicks) {
-        GUI_PARTICLES.forEach(uiParticle -> uiParticle.render(guiGraphics, partialTicks));
+    public static void renderHudParticles(GuiGraphicsExtractor guiGraphics, float partialTicks) {
+        HUD_PARTICLES.forEach(uiParticle -> uiParticle.render(guiGraphics, partialTicks));
     }
 }

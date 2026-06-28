@@ -15,7 +15,7 @@ public class MinecraftMixin {
         TweenSystem.RenderThreadExecutor.executeAll();
     }
 
-    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;tick(Z)V"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;tick()V"))
     private void tick(CallbackInfo ci) {
         ParticleSystem.tick();
     }

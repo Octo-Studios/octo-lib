@@ -117,7 +117,7 @@ public class ConfigScreen extends Screen {
             config.save(ShatterLibServices.platform().getConfigDirectory());
         }
 
-        this.minecraft.setScreen(prevScreen);
+        this.minecraft.gui.setScreen(prevScreen);
     }
 
     @Override

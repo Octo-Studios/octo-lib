@@ -3,13 +3,15 @@
   "package": "it.hurts.shatterbyte.shatterlib.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "client": [
+    "client": [
     "AbstractContainerScreenMixin",
     "AbstractWidgetAccessor",
     "AbstractWidgetMixin",
     "ClientLevelMixin",
+    "FeatureRenderDispatcherMixin",
     "GameRendererMixin",
     "GuiMixin",
+    "LevelRendererMixin",
     "MinecraftMixin",
     "chromatic_aberration.GameRendererMixin",
     "post_effect.GameRendererMixin",

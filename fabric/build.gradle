@@ -8,8 +8,8 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    //compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
-    //localRuntime "com.terraformersmc:modmenu:${modmenu_version}"
+    compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
+    localRuntime "com.terraformersmc:modmenu:${modmenu_version}"
 
     compileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
     localRuntime "net.caffeinemc:sodium-fabric:${sodium_version}"

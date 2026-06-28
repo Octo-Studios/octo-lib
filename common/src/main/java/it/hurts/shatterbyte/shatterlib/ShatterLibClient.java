@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
@@ -42,7 +43,7 @@ public final class ShatterLibClient {
 
     public static void init() {
         ShatterLibNetwork.registerS2CReceiver(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, value -> {
-            Minecraft.getInstance().setScreen(new TestGearScreen());
+            Minecraft.getInstance().gui.setScreen(new TestGearScreen());
         });
 
         ShatterLibNetwork.registerS2CReceiver(SyncServerConfigPacket.TYPE, SyncServerConfigPacket.STREAM_CODEC, value -> {
@@ -77,7 +78,7 @@ public final class ShatterLibClient {
         ShatterLibPostEffects.init();
 
         TweenSystem.init();
-        //EntityTrailRegistry.registerProvider(EntityType.ARROW, TestArrowTrail::new);
+        //EntityTrailRegistry.registerProvider(EntityTypes.ARROW, TestArrowTrail::new);
         ShatterLibClient.registerEntryWidgets();
 
         if (ShatterLibServices.platform().isDevelopmentEnvironment()) {

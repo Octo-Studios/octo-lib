@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.mixin.post_effect;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.RenderStage;
 import it.hurts.shatterbyte.shatterlib.module.post_effect.init.ShatterLibPostEffects;
@@ -27,6 +28,9 @@ public class GameRendererMixin {
     @Shadow
     private CrossFrameResourcePool resourcePool;
 
+    @Shadow
+    private RenderTarget mainRenderTarget;
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
     private void shatterlib$onRenderLevel(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
         this.shatterlib$renderPostEffects(RenderStage.LEVEL);
@@ -53,7 +57,7 @@ public class GameRendererMixin {
 
             postEffect.construct(postChain);
 
-            postChain.process(minecraft.getMainRenderTarget(), resourcePool);
+            postChain.process(this.mainRenderTarget, resourcePool);
         }
     }
 }

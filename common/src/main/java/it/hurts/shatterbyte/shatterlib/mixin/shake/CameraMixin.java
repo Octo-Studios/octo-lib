@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.mixin.shake;
 
 import it.hurts.shatterbyte.shatterlib.module.camera_shake.CameraShakeManager;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import org.joml.Quaternionf;
@@ -23,7 +24,7 @@ public abstract class CameraMixin {
     public abstract Quaternionf rotation();
 
     @Inject(method = "extractRenderState", at = @At("HEAD"))
-    private void shatterlib$applyShake(CameraRenderState cameraState, float partialTicks, CallbackInfo ci) {
+    private void shatterlib$applyShake(CameraRenderState cameraState, DeltaTracker deltaTracker, CallbackInfo ci) {
         var player = Minecraft.getInstance().player;
 
         if (player == null)
@@ -31,6 +32,7 @@ public abstract class CameraMixin {
 
         var shakeRotation = new Vector3f();
         var shakeOffset = new Vector3f();
+        var partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         for (var effect : CameraShakeManager.SHAKES.values()) {
             shakeRotation.add(effect.getShakeRotation(player, partialTicks));

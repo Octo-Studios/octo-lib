@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
@@ -20,7 +21,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -263,15 +263,15 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
         }
 
         switch (key) {
-            case GLFW.GLFW_KEY_BACKSPACE -> {
+            case InputConstants.KEY_BACKSPACE -> {
                 deleteFromCursor(-1, moveByWord);
                 return true;
             }
-            case GLFW.GLFW_KEY_DELETE -> {
+            case InputConstants.KEY_DELETE -> {
                 deleteFromCursor(1, moveByWord);
                 return true;
             }
-            case GLFW.GLFW_KEY_LEFT -> {
+            case InputConstants.KEY_LEFT -> {
                 if (!keepSelection && !moveByWord && hasSelection()) {
                     moveCursorTo(getSelectionStart(), false);
                 } else if (moveByWord) {
@@ -281,7 +281,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
                 }
                 return true;
             }
-            case GLFW.GLFW_KEY_RIGHT -> {
+            case InputConstants.KEY_RIGHT -> {
                 if (!keepSelection && !moveByWord && hasSelection()) {
                     moveCursorTo(getSelectionEnd(), false);
                 } else if (moveByWord) {
@@ -291,11 +291,11 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
                 }
                 return true;
             }
-            case GLFW.GLFW_KEY_HOME -> {
+            case InputConstants.KEY_HOME -> {
                 moveCursorTo(0, keepSelection);
                 return true;
             }
-            case GLFW.GLFW_KEY_END -> {
+            case InputConstants.KEY_END -> {
                 moveCursorTo(this.getSafeValue().length(), keepSelection);
                 return true;
             }
@@ -344,7 +344,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         boolean handled = super.mouseClicked(event, isDoubleClick);
-        if (handled && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (handled && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             this.moveCursorTo(cursorFromMouse(event.x()), isShiftDown());
             this.selectingWithMouse = true;
         }
@@ -354,7 +354,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (this.selectingWithMouse && event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (this.selectingWithMouse && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             this.moveCursorTo(cursorFromMouse(event.x()), true);
             return true;
         }
@@ -364,7 +364,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             this.selectingWithMouse = false;
         }
 
@@ -534,19 +534,19 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
     }
 
     private static boolean isSelectAllShortcut(KeyEvent event) {
-        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_A);
+        return isControlOnlyShortcut(event, InputConstants.KEY_A);
     }
 
     private static boolean isCopyShortcut(KeyEvent event) {
-        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_C);
+        return isControlOnlyShortcut(event, InputConstants.KEY_C);
     }
 
     private static boolean isPasteShortcut(KeyEvent event) {
-        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_V);
+        return isControlOnlyShortcut(event, InputConstants.KEY_V);
     }
 
     private static boolean isCutShortcut(KeyEvent event) {
-        return isControlOnlyShortcut(event, GLFW.GLFW_KEY_X);
+        return isControlOnlyShortcut(event, InputConstants.KEY_X);
     }
 
     public static Predicate<String> floatPredicate() {

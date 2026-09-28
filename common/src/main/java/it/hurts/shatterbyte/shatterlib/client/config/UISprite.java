@@ -1,6 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

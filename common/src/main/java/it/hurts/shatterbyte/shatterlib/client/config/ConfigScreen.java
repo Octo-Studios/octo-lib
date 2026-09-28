@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.client.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import it.hurts.shatterbyte.shatterlib.client.config.widget.FieldWidget;
@@ -17,7 +18,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLScancode;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -123,13 +124,13 @@ public class ConfigScreen extends Screen {
     @Override
     public boolean keyPressed(KeyEvent event) {
         if (searchWidget != null) {
-            if (event.hasControlDownWithQuirk() && event.key() == GLFW.GLFW_KEY_F) {
+            if (event.hasControlDownWithQuirk() && event.key() == InputConstants.KEY_F) {
                 searchWidget.setFocused(true);
                 this.setFocused(searchWidget);
                 return true;
             }
 
-            if (event.key() == GLFW.GLFW_KEY_F3) {
+            if (event.key() == InputConstants.KEY_F3) {
                 if (Minecraft.getInstance().hasShiftDown()) {
                     focusPreviousSearchMatch();
                 } else {
@@ -138,7 +139,7 @@ public class ConfigScreen extends Screen {
                 return true;
             }
 
-            if (searchWidget.isFocused() && event.key() == GLFW.GLFW_KEY_ENTER) {
+            if (searchWidget.isFocused() && event.key() == InputConstants.KEY_RETURN) {
                 if (Minecraft.getInstance().hasShiftDown()) {
                     focusPreviousSearchMatch();
                 } else {
@@ -147,7 +148,7 @@ public class ConfigScreen extends Screen {
                 return true;
             }
 
-            if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+            if (event.key() == InputConstants.KEY_ESCAPE) {
                 if (!searchQuery.isEmpty()) {
                     searchWidget.setValue("");
                     searchWidget.setFocused(true);

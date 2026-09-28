@@ -10,7 +10,9 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollection;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.phase.FeatureRenderPhase;
 import net.minecraft.client.renderer.feature.phase.TranslucentFeatureRenderPhase;
+import net.minecraft.client.renderer.feature.submit.TranslucentSubmit;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
@@ -33,7 +35,7 @@ public class LevelRendererMixin {
         DeltaTracker deltaTracker = Minecraft.getInstance().getDeltaTracker();
 
         SubmitNodeCollection collection = this.submitNodeStorage.order(0);
-        TranslucentFeatureRenderPhase phase = collection.translucentModels;
+        FeatureRenderPhase<? super TranslucentSubmit> phase = collection.translucentModels;
 
         for (RenderProvider<?, ?> trail : ShatterRenderManager.getProviders()) {
             phase.submit(new TrailFeatureRenderer.TrailSubmit(cameraPos, poseStack, trail, deltaTracker));

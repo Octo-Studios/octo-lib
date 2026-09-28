@@ -31,13 +31,13 @@ public class GameRendererMixin {
     @Shadow
     private RenderTarget mainRenderTarget;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;doEntityOutline()V", shift = At.Shift.AFTER))
-    private void shatterlib$onRenderLevel(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;blitEntityOutline()V", shift = At.Shift.AFTER))
+    private void shatterlib$onRenderLevel(CallbackInfo ci) {
         this.shatterlib$renderPostEffects(RenderStage.LEVEL);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void shatterlib$onRenderScreen(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    private void shatterlib$onRenderScreen(CallbackInfo ci) {
         this.shatterlib$renderPostEffects(RenderStage.SCREEN);
     }
 

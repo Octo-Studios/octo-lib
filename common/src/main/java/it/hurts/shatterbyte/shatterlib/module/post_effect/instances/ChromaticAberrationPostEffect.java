@@ -10,11 +10,9 @@ import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.Identifier;
 
 public class ChromaticAberrationPostEffect extends PostEffect {
-    private static final Minecraft MC = Minecraft.getInstance();
-
     @Override
     public void construct(PostChain postChain) {
-        var player = MC.player;
+        var player = Minecraft.getInstance().player;
 
         if (player == null)
             return;

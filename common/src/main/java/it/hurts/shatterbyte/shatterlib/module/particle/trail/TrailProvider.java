@@ -82,10 +82,6 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         return 1;
     }
 
-    public double getTrailSampleMinDistance() {
-        return Math.max(0.01, getTrailScale() * 0.25);
-    }
-
     public double getTrailLifetimeTicks() {
         return Math.max(1.0, getTrailMaxLength() * Math.max(1, getTrailUpdateFrequency()));
     }
@@ -109,11 +105,12 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
 
         buffer.renderTick(this, pTicks);
 
-        var points = collectRenderPoints(buffer, pTicks);
-        if (points.size() < 2) return;
+        var renderTime = world.getGameTime() - 1 + pTicks;
+        var points = collectRenderPoints(buffer, pTicks, renderTime);
+        if (points.positions().size() < 2) return;
 
         var smoothPoints = buildSmoothedPoints(points);
-        if (smoothPoints.size() < 2) return;
+        if (smoothPoints.positions().size() < 2) return;
 
         var origin = getRenderPosition(pTicks);
         var cameraLocal = Minecraft.getInstance().gameRenderer.mainCamera().position().subtract(origin);
@@ -123,50 +120,90 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         drawRibbon(ribbon, poseStack.last().pose(), consumer);
     }
 
-    private List<Vec3> collectRenderPoints(TrailBuffer buffer, float partialTick) {
+    private RenderPoints collectRenderPoints(TrailBuffer buffer, float partialTick, double renderTime) {
         var origin = getRenderPosition(partialTick);
-        var points = new ArrayList<Vec3>(buffer.size() + 1);
+        var maxAge = Math.max(1.0, getTrailLifetimeTicks());
+
+        var positions = new ArrayList<Vec3>(buffer.size() + 1);
+        var ages = new ArrayList<Double>(buffer.size() + 1);
+        Vec3 lead = null;
 
         if (isTrailAlive()) {
-            points.add(Vec3.ZERO);
+            positions.add(Vec3.ZERO);
+            ages.add(0.0);
         }
 
-        for (var point : buffer) {
-            if (point != null) {
-                points.add(point.subtract(origin));
+        for (var sample : buffer) {
+            if (sample == null) {
+                continue;
             }
+
+            var position = sample.position().subtract(origin);
+            var age = renderTime - sample.time();
+
+            if (age < 0) {
+                lead = position;
+                continue;
+            }
+
+            if (age > maxAge) {
+                if (!positions.isEmpty()) {
+                    var lastAge = ages.get(ages.size() - 1);
+                    var t = (maxAge - lastAge) / Math.max(EPSILON, age - lastAge);
+
+                    positions.add(positions.get(positions.size() - 1).lerp(position, Mth.clamp(t, 0.0, 1.0)));
+                    ages.add(maxAge);
+                }
+
+                break;
+            }
+
+            positions.add(position);
+            ages.add(age);
         }
 
-        return compactPoints(getTrailRenderPositions(points, partialTick));
+        var custom = getTrailRenderPositions(positions, partialTick);
+        var size = Math.min(custom.size(), ages.size());
+
+        return compactPoints(new RenderPoints(new ArrayList<>(custom.subList(0, size)), new ArrayList<>(ages.subList(0, size)), lead));
     }
 
-    private List<Vec3> buildSmoothedPoints(List<Vec3> points) {
-        if (points.size() < 3) {
+    private RenderPoints buildSmoothedPoints(RenderPoints points) {
+        var positions = points.positions();
+        var ages = points.ages();
+
+        if (positions.size() < 2) {
             return points;
         }
 
-        var smooth = new ArrayList<Vec3>();
+        var smoothPositions = new ArrayList<Vec3>();
+        var smoothAges = new ArrayList<Double>();
 
-        for (int i = 0; i < points.size() - 1; i++) {
-            var p0 = points.get(Math.max(0, i - 1));
-            var p1 = points.get(i);
-            var p2 = points.get(i + 1);
-            var p3 = points.get(Math.min(points.size() - 1, i + 2));
+        smoothPositions.add(positions.get(0));
+        smoothAges.add(ages.get(0));
 
-            if (smooth.isEmpty()) {
-                smooth.add(p1);
-            }
+        for (int i = 0; i < positions.size() - 1; i++) {
+            var p0 = i == 0 ? (points.lead() != null ? points.lead() : positions.get(0)) : positions.get(i - 1);
+            var p1 = positions.get(i);
+            var p2 = positions.get(i + 1);
+            var p3 = positions.get(Math.min(positions.size() - 1, i + 2));
+
+            var a1 = ages.get(i);
+            var a2 = ages.get(i + 1);
 
             int subdivisions = getSegmentSubdivisions(p1, p2);
             for (int j = 1; j <= subdivisions; j++) {
                 float t = j / (float) (subdivisions + 1);
-                smooth.add(VectorUtils.catmullromVec(t, p0, p1, p2, p3));
+
+                smoothPositions.add(VectorUtils.catmullromVec(t, p0, p1, p2, p3));
+                smoothAges.add(Mth.lerp(t, a1, a2));
             }
 
-            smooth.add(p2);
+            smoothPositions.add(p2);
+            smoothAges.add(a2);
         }
 
-        return compactPoints(smooth);
+        return compactPoints(new RenderPoints(smoothPositions, smoothAges, null));
     }
 
     private int getSegmentSubdivisions(Vec3 p1, Vec3 p2) {
@@ -178,14 +215,17 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         return Math.max(base, adaptive);
     }
 
-    private List<RibbonFrame> buildRibbonFrames(List<Vec3> points, Vec3 cameraLocal) {
-        var frames = new ArrayList<RibbonFrame>(points.size());
+    private List<RibbonFrame> buildRibbonFrames(RenderPoints points, Vec3 cameraLocal) {
+        var positions = points.positions();
+        var ages = points.ages();
+        var frames = new ArrayList<RibbonFrame>(positions.size());
         var fallbackTangent = VectorUtils.Z_VEC;
+        var oldestAge = Math.max(EPSILON, ages.get(ages.size() - 1));
 
-        for (int i = 0; i < points.size(); i++) {
-            var current = points.get(i);
-            var previous = points.get(Math.max(0, i - 1));
-            var next = points.get(Math.min(points.size() - 1, i + 1));
+        for (int i = 0; i < positions.size(); i++) {
+            var current = positions.get(i);
+            var previous = positions.get(Math.max(0, i - 1));
+            var next = positions.get(Math.min(positions.size() - 1, i + 1));
 
             var tangent = safeNormalize(next.subtract(previous), fallbackTangent);
             if (tangent.lengthSqr() > EPSILON) {
@@ -207,12 +247,12 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
                 continue;
             }
 
-            var progress = i / (double) Math.max(1, points.size() - 1);
+            var progress = Mth.clamp(ages.get(i) / oldestAge, 0.0, 1.0);
             var taper = 1.0 - progress * progress;
             var halfWidth = Math.max(0.0015, getTrailScale() * taper);
             var offset = side.scale(halfWidth);
 
-            frames.add(new RibbonFrame(current.add(offset), current.subtract(offset)));
+            frames.add(new RibbonFrame(current.add(offset), current.subtract(offset), (float) progress));
         }
 
         return frames;
@@ -226,11 +266,8 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
             var current = ribbon.get(i);
             var next = ribbon.get(i + 1);
 
-            var t0 = i / (float) (ribbon.size() - 1);
-            var t1 = (i + 1) / (float) (ribbon.size() - 1);
-
-            var c0 = ColorUtils.blend(startColor, endColor, t0);
-            var c1 = ColorUtils.blend(startColor, endColor, t1);
+            var c0 = ColorUtils.blend(startColor, endColor, current.progress());
+            var c1 = ColorUtils.blend(startColor, endColor, next.progress());
 
             TesselatorUtils.drawQuadGradient(consumer, matrix4f,
                     next.left,
@@ -248,20 +285,24 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         }
     }
 
-    private List<Vec3> compactPoints(List<Vec3> points) {
-        var compacted = new ArrayList<Vec3>(points.size());
+    private RenderPoints compactPoints(RenderPoints points) {
+        var positions = new ArrayList<Vec3>(points.positions().size());
+        var ages = new ArrayList<Double>(points.ages().size());
 
-        for (var point : points) {
+        for (int i = 0; i < points.positions().size(); i++) {
+            var point = points.positions().get(i);
+
             if (point == null || !Double.isFinite(point.x) || !Double.isFinite(point.y) || !Double.isFinite(point.z)) {
                 continue;
             }
 
-            if (compacted.isEmpty() || compacted.get(compacted.size() - 1).distanceToSqr(point) > EPSILON) {
-                compacted.add(point);
+            if (positions.isEmpty() || positions.get(positions.size() - 1).distanceToSqr(point) > EPSILON) {
+                positions.add(point);
+                ages.add(points.ages().get(i));
             }
         }
 
-        return compacted;
+        return new RenderPoints(positions, ages, points.lead());
     }
 
     private Vec3 safeNormalize(Vec3 vector, Vec3 fallback) {
@@ -276,6 +317,9 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         return VectorUtils.Z_VEC;
     }
 
-    private record RibbonFrame(Vec3 left, Vec3 right) {
+    private record RenderPoints(List<Vec3> positions, List<Double> ages, Vec3 lead) {
+    }
+
+    private record RibbonFrame(Vec3 left, Vec3 right, float progress) {
     }
 }

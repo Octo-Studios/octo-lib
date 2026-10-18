@@ -7,24 +7,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class DefaultTrailBuffer implements TrailBuffer {
-    private static final double EPSILON = 1.0E-6;
+    private static final int MAX_TICK_GAP = 20;
 
-    private final Deque<TrailPoint> points = new ArrayDeque<>();
+    private final Deque<TrailSample> points = new ArrayDeque<>();
     private final int maxSize;
-    private double lastFrameTime = Double.NaN;
 
     public DefaultTrailBuffer(int maxSize) {
         this.maxSize = Math.max(1, maxSize);
     }
 
     @Override
-    public void write(Vec3 vec3) {
+    public void write(Vec3 vec3, double time) {
         if (vec3 == null) return;
 
-        points.addFirst(new TrailPoint(vec3, 0));
+        points.addFirst(new TrailSample(vec3, time));
 
         while (points.size() > getHardLimit()) {
             remove();
@@ -39,41 +37,33 @@ public class DefaultTrailBuffer implements TrailBuffer {
             return;
         }
 
-        var now = level.getGameTime() + partialTick;
-        if (Double.isNaN(lastFrameTime)) {
-            lastFrameTime = now;
-        }
+        var gameTime = level.getGameTime();
+        var renderTime = gameTime - 1 + partialTick;
+        var maxAge = Math.max(1.0, provider.getTrailLifetimeTicks());
 
-        var deltaTicks = now - lastFrameTime;
-        lastFrameTime = now;
-
-        if (deltaTicks > 0 && deltaTicks < 5) {
-            for (var point : points) {
-                point.ageTicks += deltaTicks;
-            }
+        var newest = points.peekFirst();
+        if (newest != null && (newest.time() > gameTime || gameTime - newest.time() > maxAge + MAX_TICK_GAP)) {
+            clear();
         }
 
         if (provider.isTrailAlive() && provider.isTrailGrowing()) {
-            var currentPos = provider.getTrailPosition(partialTick);
-            var head = points.peekFirst();
+            newest = points.peekFirst();
 
-            if (head == null) {
-                write(currentPos);
-            } else {
-                var minDistance = Math.max(EPSILON, provider.getTrailSampleMinDistance());
-                var minDistanceSqr = minDistance * minDistance;
+            if (newest == null || newest.time() < gameTime - 1) {
+                write(provider.getTrailPosition(0F), gameTime - 1);
+            }
 
-                if (head.position.distanceToSqr(currentPos) >= minDistanceSqr) {
-                    write(currentPos);
-                } else {
-                    head.position = currentPos;
-                    head.ageTicks = 0;
-                }
+            if (points.peekFirst().time() < gameTime) {
+                write(provider.getTrailPosition(1F), gameTime);
             }
         }
 
-        var maxAge = Math.max(1.0, provider.getTrailLifetimeTicks());
-        while (!points.isEmpty() && points.peekLast().ageTicks > maxAge) {
+        var cutoff = renderTime - maxAge;
+        while (points.size() > 1 && getSecondLast().time() < cutoff) {
+            remove();
+        }
+
+        if (points.size() == 1 && points.peekLast().time() < cutoff) {
             remove();
         }
 
@@ -82,10 +72,21 @@ public class DefaultTrailBuffer implements TrailBuffer {
         }
     }
 
+    private TrailSample getSecondLast() {
+        var iterator = points.descendingIterator();
+        iterator.next();
+
+        return iterator.next();
+    }
+
+    @Override
+    public TrailSample peekFirst() {
+        return points.peekFirst();
+    }
+
     @Override
     public void clear() {
         points.clear();
-        lastFrameTime = Double.NaN;
     }
 
     private int getHardLimit() {
@@ -109,33 +110,7 @@ public class DefaultTrailBuffer implements TrailBuffer {
     }
 
     @Override
-    public @NotNull Iterator<Vec3> iterator() {
-        var delegate = points.iterator();
-
-        return new Iterator<>() {
-            @Override
-            public boolean hasNext() {
-                return delegate.hasNext();
-            }
-
-            @Override
-            public Vec3 next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-
-                return delegate.next().position;
-            }
-        };
-    }
-
-    private static class TrailPoint {
-        private Vec3 position;
-        private double ageTicks;
-
-        private TrailPoint(Vec3 position, double ageTicks) {
-            this.position = position;
-            this.ageTicks = ageTicks;
-        }
+    public @NotNull Iterator<TrailSample> iterator() {
+        return points.iterator();
     }
 }

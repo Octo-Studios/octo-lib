@@ -68,7 +68,7 @@ public class SchemeInjector implements EntryInjector<ConfigEntry> {
     protected ArrayEntry injectSeq(ArrayEntry pattern, ArrayEntry target) {
         var patternTag = pattern.getType();
         
-        if (patternTag == null)
+        if (patternTag == null || target.isEmpty())
             return target;
         
         target.setType(patternTag);

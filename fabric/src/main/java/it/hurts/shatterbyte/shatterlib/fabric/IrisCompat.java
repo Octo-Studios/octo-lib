@@ -1,9 +1,6 @@
 package it.hurts.shatterbyte.shatterlib.fabric;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.irisshaders.iris.api.v0.IrisApi;
-import net.irisshaders.iris.api.v0.IrisProgram;
-
 import static it.hurts.shatterbyte.shatterlib.util.TesselatorUtils.TRAIL_PIPELINE;
 
 public class IrisCompat {
@@ -15,6 +12,6 @@ public class IrisCompat {
     }
 
     public static void registerPipelines() {
-        IrisApi.getInstance().assignPipeline(TRAIL_PIPELINE, IrisProgram.ENTITIES_TRANSLUCENT);
+        //IrisApi.getInstance().assignPipeline(TRAIL_PIPELINE, IrisProgram.ENTITIES_TRANSLUCENT);
     }
 }

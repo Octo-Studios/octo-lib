@@ -15,8 +15,8 @@ public class ResetFieldButtonWidget extends IconButtonWidget<FieldWidget> {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         this.active = !isEqualToDefault.get();
-        super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractWidgetRenderState(guiGraphics);
     }
 }

@@ -343,7 +343,7 @@ public class MapEntryWidget<V> extends AbstractWidget
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         if (this.index == 0) {
             up.active = false;
         } else {
@@ -356,11 +356,11 @@ public class MapEntryWidget<V> extends AbstractWidget
             down.active = true;
         }
 
-        up.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        down.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        remove.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        keyWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        entryWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        up.extractRenderState(guiGraphics);
+        down.extractRenderState(guiGraphics);
+        remove.extractRenderState(guiGraphics);
+        keyWidget.extractRenderState(guiGraphics);
+        entryWidget.extractRenderState(guiGraphics);
     }
 
     @Override

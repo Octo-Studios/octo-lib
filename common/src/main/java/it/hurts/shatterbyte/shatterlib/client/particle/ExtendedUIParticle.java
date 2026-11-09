@@ -40,7 +40,7 @@ public class ExtendedUIParticle extends UIParticle {
         }
 
         // Apply friction
-        this.setSpeed(Mth.clamp(this.getSpeed() * (1 - friction), 0, this.getMaxSpeed()));
+        this.setSpeed(Math.clamp(this.getSpeed() * (1 - friction), 0, this.getMaxSpeed()));
 
         // Apply gravity
         gravityAccel += gravity;

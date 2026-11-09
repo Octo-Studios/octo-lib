@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.Child;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -15,7 +16,6 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -59,11 +59,11 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.enableScissor(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight());
-        this.children().reversed().forEach(widget -> widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick));
+        this.children().reversed().forEach(widget -> widget.extractRenderState(guiGraphics));
         guiGraphics.disableScissor();
-        this.renderScrollbar(guiGraphics, mouseX, mouseY);
+        this.renderScrollbar(guiGraphics);
     }
 
     @Override
@@ -274,11 +274,13 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
         this.maxScrollY = Math.max(0, contentBottom - this.height);
     }
 
-    private void renderScrollbar(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+    private void renderScrollbar(GuiGraphicsExtractor guiGraphics) {
         if (!this.hasScrollbar()) {
             return;
         }
 
+        int mouseX = guiGraphics.mouseX();
+        int mouseY = guiGraphics.mouseY();
         int x = this.getScrollbarX();
         int y = this.getScrollbarY();
         int h = this.getScrollbarHeight();
@@ -299,7 +301,7 @@ public class ScrollableWidget extends AbstractWidget implements ContainerEventHa
             thumbColor = SCROLLBAR_THUMB_HOVER_COLOR;
         }
 
-        UIElements.SCROLLBAR_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x, thumbTop, SCROLLBAR_WIDTH, thumbHeight, thumbColor);
+        UIElements.SCROLLBAR_THINGY.render(guiGraphics, GuiPipeline.TEXTURED, x, thumbTop, SCROLLBAR_WIDTH, thumbHeight, thumbColor);
     }
 
     private boolean hasScrollbar() {

@@ -10,9 +10,9 @@ import it.hurts.shatterbyte.shatterlib.platform.ShatterLibServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -152,14 +152,14 @@ public class MultipleConfigScreen extends ConfigScreen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
         Font font = Minecraft.getInstance().font;
 
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(guiGraphics);
         guiGraphics.verticalLine(SIDEBAR_WIDTH, 0, this.height, 0xff1c1c17);
         guiGraphics.horizontalLine(0, this.width, 31, 0xff1c1c17);
 
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
+        guiGraphics.blit(GuiPipeline.TEXTURED, ConfigScreen.LOGO, 0, 0, 0, 0, 128, 32, 128, 32);
 //        int width = font.width(modName);
 //        guiGraphics.pose().pushMatrix();
 //        guiGraphics.pose().translate(64, 10);

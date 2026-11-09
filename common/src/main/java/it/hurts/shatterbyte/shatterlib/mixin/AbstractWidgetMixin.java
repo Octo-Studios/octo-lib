@@ -53,7 +53,7 @@ public abstract class AbstractWidgetMixin {
     }
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void debugHoverRender(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+    private void debugHoverRender(GuiGraphicsExtractor guiGraphics, CallbackInfo ci) {
 //        if (!ByteAPIServices.platform().isDevelopmentEnvironment() || !Minecraft.getInstance().hasShiftDown()) {
 //            return;
 //        }
@@ -68,9 +68,9 @@ public abstract class AbstractWidgetMixin {
     }
 
     @Redirect(method = "extractRenderState", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/AbstractWidget;isHovered:Z", opcode = Opcodes.PUTFIELD))
-    private void injectAsWell(AbstractWidget instance, boolean value, @Local(ordinal = 0, argsOnly = true) int mouseX, @Local(ordinal = 1, argsOnly = true) int mouseY) {
+    private void injectAsWell(AbstractWidget instance, boolean value, @Local(ordinal = 0, argsOnly = true) GuiGraphicsExtractor guiGraphicsExtractor) {
         if (this instanceof Child<?>) {
-            this.isHovered = this.isMouseOver(mouseX, mouseY);
+            this.isHovered = this.isMouseOver(guiGraphicsExtractor.mouseX(), guiGraphicsExtractor.mouseY());
         } else this.isHovered = value;
     }
 

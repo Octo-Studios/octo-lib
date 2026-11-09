@@ -3,10 +3,12 @@ package it.hurts.shatterbyte.shatterlib.client.config.widget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.client.config.UISprite;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.variant.GuiRenderPipelineVariant;
 import org.jetbrains.annotations.Nullable;
 
 public class IconButtonWidget<E extends AbstractWidget> extends AbstractChildWidget<E> {
@@ -21,19 +23,19 @@ public class IconButtonWidget<E extends AbstractWidget> extends AbstractChildWid
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         // TODO: render button
         int iconOffset = 0;
         if (this.isActive()) {
             if (this.isHovered()) {
-                UIElements.BUTTON_HOVERED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff555555);
+                UIElements.BUTTON_HOVERED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff555555);
                 iconOffset = 1;
             } else {
-                sprite.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
+                sprite.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
             }
 
         } else {
-            UIElements.BUTTON_PRESSED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
+            UIElements.BUTTON_PRESSED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
             iconOffset = 2;
         }
 
@@ -43,7 +45,7 @@ public class IconButtonWidget<E extends AbstractWidget> extends AbstractChildWid
 
         int x = this.width / 2 - icon.getWidth() / 2 + this.getX();
         int y = this.height / 2 - icon.getHeight() / 2 + this.getY() - 1 + iconOffset;
-        icon.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x, y, !this.isActive() || this.sprite == UIElements.BUTTON_PRESSED ? 0xff666666 : 0xffffffff);
+        icon.render(guiGraphics, GuiPipeline.TEXTURED, x, y, !this.isActive() || this.sprite == UIElements.BUTTON_PRESSED ? 0xff666666 : 0xffffffff);
     }
 
     @Override

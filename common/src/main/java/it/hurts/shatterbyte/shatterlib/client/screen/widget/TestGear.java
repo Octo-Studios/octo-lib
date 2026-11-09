@@ -44,7 +44,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f);
         guiGraphics.pose().rotate((float) Math.toRadians(rot));
@@ -54,7 +54,7 @@ public class TestGear extends AbstractWidget implements HasRenderMatrix, Contain
         RenderUtils.renderOutline(guiGraphics,this.getX(), this.getY(), this.width, this.height, 0xffffffff);
         this.children().forEach(child -> {
             if (child instanceof Renderable renderable) {
-                renderable.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+                renderable.extractRenderState(guiGraphics);
             }
         });
 

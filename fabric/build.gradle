@@ -11,11 +11,11 @@ dependencies {
     compileOnly "com.terraformersmc:modmenu:${modmenu_version}"
     localRuntime "com.terraformersmc:modmenu:${modmenu_version}"
 
-    compileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
-    localRuntime "net.caffeinemc:sodium-fabric:${sodium_version}"
+    //compileOnly "net.caffeinemc:sodium-fabric:${sodium_version}"
+    //localRuntime "net.caffeinemc:sodium-fabric:${sodium_version}"
 
-    compileOnly "maven.modrinth:iris:${iris_version}-fabric"
-    localRuntime "maven.modrinth:iris:${iris_version}-fabric"
+    //compileOnly "maven.modrinth:iris:${iris_version}-fabric"
+    //localRuntime "maven.modrinth:iris:${iris_version}-fabric"
 
     implementation "de.marhali:json5-java:3.0.0"
     include "de.marhali:json5-java:3.0.0"

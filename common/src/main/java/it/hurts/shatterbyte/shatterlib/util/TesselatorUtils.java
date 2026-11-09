@@ -1,15 +1,16 @@
 package it.hurts.shatterbyte.shatterlib.util;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
 import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.renderpearl.api.pipeline.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.BindGroupLayouts;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,16 +23,19 @@ import org.joml.Matrix4f;
 import java.awt.Color;
 import java.util.function.Function;
 
-import static net.minecraft.client.renderer.RenderPipelines.*;
-
 public class TesselatorUtils {
-
-    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(ENTITY_SNIPPET)
+    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(RenderPipelines.GLOBALS_SNIPPET)
             .withDepthStencilState(DepthStencilState.DEFAULT)
             .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
             .withShaderDefine("PER_FACE_LIGHTING")
             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
+            .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+            .withBindGroupLayout(BindGroupLayouts.FOG)
+            .withVertexShader("core/entity")
+            .withFragmentShader("core/entity")
+            .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
             .withPolygonMode(PolygonMode.FILL)
             .withVertexBinding(0, DefaultVertexFormat.ENTITY)
             .withPrimitiveTopology(PrimitiveTopology.QUADS)
@@ -40,7 +44,7 @@ public class TesselatorUtils {
 
     private static final Function<Identifier, RenderType> RENDER_TYPE_FUNCTION = Util.memoize(
             (identifier) -> {
-                RenderSetup renderSetup = RenderSetup.builder(TRAIL_PIPELINE)
+                RenderSetup renderSetup = RenderSetup.nonOitBuilder(TRAIL_PIPELINE)
                         .withTexture("Sampler0", identifier)
                         .useLightmap()
                         .useOverlay()

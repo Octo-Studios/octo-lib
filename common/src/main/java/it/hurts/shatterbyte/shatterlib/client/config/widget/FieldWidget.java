@@ -171,11 +171,11 @@ public class FieldWidget extends AbstractWidget implements ContainerEventHandler
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         drawHighlightedString(guiGraphics, info.name(), this.getX() + CONTENT_PADDING, this.getY() + NAME_Y, NAME_COLOR);
         renderDescription(guiGraphics);
-        resetButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        entryWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        resetButton.extractRenderState(guiGraphics);
+        entryWidget.extractRenderState(guiGraphics);
     }
 
     private void renderDescription(GuiGraphicsExtractor guiGraphics) {

@@ -5,8 +5,8 @@ import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -37,7 +37,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
         int x = this.getX();
         int y = this.getY();
         int w = this.getWidth();
@@ -45,7 +45,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
 
         guiGraphics.fill(x, y, x + w, y + h, 0xff1f1e23);
 
-        if (isMouseOver(mouseX, mouseY)) {
+        if (isMouseOver(guiGraphics.mouseX(), guiGraphics.mouseY())) {
             guiGraphics.fill(x, y, x + w, y + h, 0x20FFFFFF);
         }
 
@@ -59,9 +59,9 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
         int arrowW = 9;
         int ax = x + w - arrowW - 6;
         int ay = y + (h / 2) - 2;
-        (open ? UIElements.ICON_UP : UIElements.ICON_DOWN).render(guiGraphics, RenderPipelines.GUI_TEXTURED, ax, ay-3);
+        (open ? UIElements.ICON_UP : UIElements.ICON_DOWN).render(guiGraphics, GuiPipeline.TEXTURED, ax, ay-3);
 
-        UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, x - 1, y - 1, w + 2, h + 2);
+        UIElements.FRAME.render(guiGraphics, GuiPipeline.TEXTURED, x - 1, y - 1, w + 2, h + 2);
 
         if (!open) {
             hoveredIndex = -1;
@@ -74,7 +74,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
             int listW = r.width;
             int optionH = this.getHeight();
             int maxToShow = values.size();
-            hoveredIndex = getHoveredIndex(mouseX, mouseY);
+            hoveredIndex = getHoveredIndex(guiGraphics.mouseX(), guiGraphics.mouseY());
 
             for (int i = 0; i < maxToShow; i++) {
                 int oy = listY + i * optionH;
@@ -86,7 +86,7 @@ public class EnumDropdownWidget<E extends Enum<E>> extends AbstractEntryWidget<E
                 drawHighlightedString(guiGraphics, opt, listX + 6, oy + (optionH - 8) / 2, 0xffffffff);
             }
 
-            UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, listX - 1, listY - 1, listW + 2, optionH * maxToShow + 2);
+            UIElements.FRAME.render(guiGraphics, GuiPipeline.TEXTURED, listX - 1, listY - 1, listW + 2, optionH * maxToShow + 2);
         }
     }
 

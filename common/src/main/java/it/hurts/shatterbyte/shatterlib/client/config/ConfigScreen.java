@@ -97,15 +97,15 @@ public class ConfigScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+        super.extractRenderState(guiGraphics);
         //guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ATLAS.location, 0, 0, 0, 0, 263, 76, 263, 76);
         //UIElements.TEST.render(guiGraphics, RenderPipelines.GUI_TEXTURED, 0, 0, mouseX, mouseY);
         //UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, mouseX, mouseY);
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics) {
         guiGraphics.fill(0, 0, width, height,0xFF2C2B31);
         guiGraphics.fillGradient(0, (int) (this.height*0.75f), this.width, this.height, 0xFF2C2B31, 0xFF222226);
     }
@@ -252,7 +252,7 @@ public class ConfigScreen extends Screen {
         rebuildSearchMatches(true);
 
         if (scrollingObject != null) {
-            scrollingObject.visible = true;
+            scrollingObject.setVisible(true);
             scrollingObject.active = true;
         }
     }

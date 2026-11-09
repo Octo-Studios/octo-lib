@@ -151,7 +151,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
                     var lastAge = ages.get(ages.size() - 1);
                     var t = (maxAge - lastAge) / Math.max(EPSILON, age - lastAge);
 
-                    positions.add(positions.get(positions.size() - 1).lerp(position, Mth.clamp(t, 0.0, 1.0)));
+                    positions.add(positions.get(positions.size() - 1).lerp(position, Math.clamp(t, 0.0, 1.0)));
                     ages.add(maxAge);
                 }
 
@@ -210,7 +210,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
         int base = Math.max(0, getTrailInterpolationPoints());
         var segmentLength = p1.distanceTo(p2);
         var width = Math.max(0.02, getTrailScale());
-        var adaptive = Mth.clamp((int) Math.floor(segmentLength / (width * 0.75)), 0, 8);
+        var adaptive = Math.clamp((int) Math.floor(segmentLength / (width * 0.75)), 0, 8);
 
         return Math.max(base, adaptive);
     }
@@ -247,7 +247,7 @@ public abstract class TrailProvider implements RenderProvider<TrailProvider, Tra
                 continue;
             }
 
-            var progress = Mth.clamp(ages.get(i) / oldestAge, 0.0, 1.0);
+            var progress = Math.clamp(ages.get(i) / oldestAge, 0.0, 1.0);
             var taper = 1.0 - progress * progress;
             var halfWidth = Math.max(0.0015, getTrailScale() * taper);
             var offset = side.scale(halfWidth);

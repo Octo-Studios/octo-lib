@@ -12,8 +12,8 @@ import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -86,7 +86,7 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
         double current = visualValue;
         double pct = (max == min) ? 0.0 : (current - min) / (max - min);
         pct = Math.max(0.0, Math.min(1.0, pct));
@@ -101,15 +101,15 @@ public class SliderWidget<N extends Number> extends AbstractEntryWidget<N> imple
         int knobX = fillX - (knobWidth / 2);
         int knobY = this.getY() + 2;
 
-        UIElements.SLIDER_EMPTY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, trackX, trackY, trackWidth, trackHeight);
+        UIElements.SLIDER_EMPTY.render(guiGraphics, GuiPipeline.TEXTURED, trackX, trackY, trackWidth, trackHeight);
 
         if (fillX >= trackX) {
             guiGraphics.enableScissor(trackX, this.getY(), fillX + 1, this.getY() + this.getHeight());
-            UIElements.SLIDER_FULL.render(guiGraphics, RenderPipelines.GUI_TEXTURED, trackX, trackY, trackWidth, fillHeight);
+            UIElements.SLIDER_FULL.render(guiGraphics, GuiPipeline.TEXTURED, trackX, trackY, trackWidth, fillHeight);
             guiGraphics.disableScissor();
         }
 
-        UIElements.SLIDER_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, knobX, knobY);
+        UIElements.SLIDER_THINGY.render(guiGraphics, GuiPipeline.TEXTURED, knobX, knobY);
 
         Font font = Minecraft.getInstance().font;
         String string = String.format("%.1f", this.getValue().doubleValue());

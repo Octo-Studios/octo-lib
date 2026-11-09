@@ -1,6 +1,8 @@
 package it.hurts.shatterbyte.shatterlib.client.config.widget;
 
+import com.mojang.blaze3d.platform.ClipboardManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.realmsclient.util.TextRenderingUtils;
 import it.hurts.shatterbyte.shatterlib.client.animation.Tween;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.EaseType;
 import it.hurts.shatterbyte.shatterlib.client.animation.easing.TransitionType;
@@ -8,17 +10,18 @@ import it.hurts.shatterbyte.shatterlib.client.config.AbstractEntryWidget;
 import it.hurts.shatterbyte.shatterlib.client.config.UIElements;
 import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Setter;
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.font.TextFieldHelper;
+import net.minecraft.client.gui.GuiPipeline;
+import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -161,10 +164,10 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
         String value = this.getSafeValue();
 
-        UIElements.TEXT_AREA.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+        UIElements.TEXT_AREA.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.getWidth(), this.getHeight());
 
         int clipX = this.getX() + PADDING_X;
         int clipY = this.getY() + PADDING_Y - 1;
@@ -253,7 +256,7 @@ public class TextAreaWidget extends AbstractEntryWidget<String> implements Searc
             Minecraft.getInstance().keyboardHandler.setClipboard(this.getSelectedText());
             return true;
         } else if (isPasteShortcut(event)) {
-            String clipboard = TextFieldHelper.getClipboardContents(Minecraft.getInstance());
+            String clipboard = Minecraft.getInstance().keyboardHandler.getClipboard();
             insertText(clipboard);
             return true;
         } else if (isCutShortcut(event)) {

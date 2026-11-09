@@ -6,10 +6,10 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,20 +46,20 @@ public class ConfigButton extends AbstractWidget implements Child<ScrollableWidg
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         //RenderUtils.renderOutline(guiGraphics, this.getX(), this.getY(), this.width, this.height, 0xff0000ff);
         int iconOffset = 0;
         boolean selected = selectedSupplier.getAsBoolean();
         if (this.isActive()) {
             if (this.isHovered() || selected) {
-                UIElements.BUTTON_HOVERED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff555555);
+                UIElements.BUTTON_HOVERED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff555555);
                 iconOffset = 1;
             } else {
-                UIElements.BUTTON.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
+                UIElements.BUTTON.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
             }
 
         } else {
-            UIElements.BUTTON_PRESSED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
+            UIElements.BUTTON_PRESSED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY(), this.width, this.height + 1, 0xff666666);
             iconOffset = 2;
         }
 

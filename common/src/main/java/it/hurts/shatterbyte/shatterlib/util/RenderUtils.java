@@ -1,7 +1,7 @@
 package it.hurts.shatterbyte.shatterlib.util;
 
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.renderer.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec2;
@@ -49,12 +49,12 @@ public class RenderUtils {
         return s >= 0 && t >= 0 && (s + t) <= 2 * area * sign;
     }
 
-        public static void renderTextureFromCenter(RenderPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
+        public static void renderTextureFromCenter(GuiPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float centerX, float centerY, float width, float height, float scale, int color, float zOffset) {
         renderTextureFromCenter(pipeline, texture, guiGraphics, centerX, centerY, 0f, 0f, (int) width, (int) height, width, height, scale, color);
     }
 
     public static void renderTextureFromCenter(
-            RenderPipeline pipeline,
+            GuiPipeline pipeline,
             Identifier texture,
             GuiGraphicsExtractor guiGraphics,
             float centerX,
@@ -87,7 +87,7 @@ public class RenderUtils {
         guiGraphics.blit(pipeline, texture, (int) x, (int) y, u, v, regionW, regionH, texWidth, texHeight, color);
     }
 
-    public static void renderTilingTexture(RenderPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float x, float y, float texOffX, float texOffY,
+    public static void renderTilingTexture(GuiPipeline pipeline, Identifier texture, GuiGraphicsExtractor guiGraphics, float x, float y, float texOffX, float texOffY,
                                            float texWidth, float texHeight, float width, float height,
                                            int color, boolean tileHorizontally, boolean tileVertically) {
         float uStart = texOffX / texWidth;

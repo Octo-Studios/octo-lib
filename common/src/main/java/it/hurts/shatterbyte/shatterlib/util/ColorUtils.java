@@ -7,7 +7,7 @@ import java.awt.Color;
 public class ColorUtils {
 
     public static Color blend(Color a, Color b, double t) {
-        t = Mth.clamp(t, 0, 1);
+        t = Math.clamp(t, 0, 1);
 
         int aRed = a.getRed();
         int aGreen = a.getGreen();
@@ -28,7 +28,7 @@ public class ColorUtils {
     }
 
     public static int lerpInt(int colorStart, int colorEnd, float t) {
-        t = Mth.clamp(t, 0, 1);
+        t = Math.clamp(t, 0, 1);
 
         int aStart = (colorStart >> 24) & 0xFF;
         int rStart = (colorStart >> 16) & 0xFF;
@@ -49,6 +49,6 @@ public class ColorUtils {
     }
 
     private static int clamp(int value) {
-        return Mth.clamp(value, 0, 255);
+        return Math.clamp(value, 0, 255);
     }
 }

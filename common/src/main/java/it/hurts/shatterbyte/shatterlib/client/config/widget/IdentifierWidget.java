@@ -59,7 +59,7 @@ public class IdentifierWidget extends AbstractEntryWidget<Identifier> implements
         return TEXT_HEIGHT;
     }
 
-    protected void renderLeading(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderLeading(GuiGraphicsExtractor guiGraphics) {
     }
 
     protected @Nullable Identifier parseIdentifier(@Nullable String value) {
@@ -146,9 +146,9 @@ public class IdentifierWidget extends AbstractEntryWidget<Identifier> implements
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderLeading(guiGraphics, mouseX, mouseY, partialTick);
-        textWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
+        renderLeading(guiGraphics);
+        textWidget.extractRenderState(guiGraphics);
     }
 
     @Override

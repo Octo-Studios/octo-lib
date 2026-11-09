@@ -240,7 +240,7 @@ public class CameraShake {
         var src = anchor.getPosition(player.level());
         var distance = (float) player.position().distanceTo(src);
         if (distance >= r) return 0F;
-        return Mth.clamp(1F - (distance / r), 0F, 1F);
+        return Math.clamp(1F - (distance / r), 0F, 1F);
     }
 
     private float timeFactorSmooth() {
@@ -254,13 +254,13 @@ public class CameraShake {
         }
         if (elapsedTime > dur - fadeOut && fadeOut > 0) {
             var t = (float) (dur - elapsedTime) / fadeOut;
-            return smoothstep(Mth.clamp(t, 0F, 1F));
+            return smoothstep(Math.clamp(t, 0F, 1F));
         }
         return 1F;
     }
 
     private static float smoothstep(float t) {
-        t = Mth.clamp(t, 0F, 1F);
+        t = Math.clamp(t, 0F, 1F);
         return t * t * (3F - 2F * t);
     }
 
@@ -288,7 +288,7 @@ public class CameraShake {
 
     public float getProgress() {
         var dur = Math.max(1, getDurationResolved());
-        return Mth.clamp((float) elapsedTime / dur, 0F, 1F);
+        return Math.clamp((float) elapsedTime / dur, 0F, 1F);
     }
 
     @Deprecated

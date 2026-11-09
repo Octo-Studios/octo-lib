@@ -2,16 +2,15 @@ package it.hurts.shatterbyte.shatterlib.client.particle;
 
 import com.mojang.renderpearl.api.pipeline.BlendFunction;
 import com.mojang.renderpearl.api.pipeline.ColorTargetState;
-import com.mojang.renderpearl.api.pipeline.RenderPipeline;
-import it.hurts.shatterbyte.shatterlib.ShatterLib;
 import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.variant.GuiRenderPipelineVariant;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3x2f;
@@ -20,10 +19,13 @@ import org.joml.Vector2f;
 import java.util.ArrayList;
 
 public class UIParticle {
-    public static final RenderPipeline ADDITIVE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
-            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
-            .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "additive"))
-            .build();
+    public static final GuiRenderPipelineVariant ADDITIVE_VARIANT = new GuiRenderPipelineVariant(
+            "shatterlib_additive",
+            true,
+            new ColorTargetState(BlendFunction.LIGHTNING)
+    );
+
+    public static final GuiPipeline ADDITIVE_PIPELINE = GuiPipeline.of(ADDITIVE_VARIANT);
 
     @Data
     public static class Texture2D {
@@ -64,7 +66,7 @@ public class UIParticle {
     @Getter @Setter private int time;
     @Getter @Setter private float zOffset;
     @Getter private ShatterColor[] colors = new ShatterColor[]{ShatterColor.WHITE};
-    @Getter @Setter private RenderPipeline renderPipeline = RenderPipelines.GUI_TEXTURED;
+    @Getter @Setter private GuiPipeline guiPipeline = GuiPipeline.TEXTURED;
     private Matrix3x2f matrix = new Matrix3x2f();
 //    @Getter @Setter private boolean resizeWithLifetime;
 
@@ -115,7 +117,7 @@ public class UIParticle {
         if (this.isExpired()) return;
         this.transform.updateOldValues();
 
-        this.time = Mth.clamp(this.time + 1, 0, lifetime);
+        this.time = Math.clamp(this.time + 1, 0, lifetime);
 
         if (Mth.abs(this.speed) > 0.01f) {
             this.transform.getPosition().add(new Vector2f(direction).mul(speed));
@@ -139,7 +141,7 @@ public class UIParticle {
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().mul(matrix);
         RenderUtils.renderTextureFromCenter(
-                this.getRenderPipeline(),
+                this.getGuiPipeline(),
                 tex.rl,
                 guiGraphics,
                 0,

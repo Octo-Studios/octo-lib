@@ -199,7 +199,7 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float pt) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor g) {
         //g.fill(getX(), getY(), getX() + width, getY() + height, 0x18000000);
         if (this.index == 0) {
             up.active = false;
@@ -213,10 +213,10 @@ public class ListEntryWidget<E> extends AbstractWidget implements Child<ListWidg
             down.active = true;
         }
 
-        up.extractRenderState(g, mouseX, mouseY, pt);
-        down.extractRenderState(g, mouseX, mouseY, pt);
-        remove.extractRenderState(g, mouseX, mouseY, pt);
-        entryWidget.extractRenderState(g, mouseX, mouseY, pt);
+        up.extractRenderState(g);
+        down.extractRenderState(g);
+        remove.extractRenderState(g);
+        entryWidget.extractRenderState(g);
     }
 
     @Override

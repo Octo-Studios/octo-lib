@@ -310,17 +310,17 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor g, int mouseX, int mouseY, float pt) {
+    protected void renderEntry(GuiGraphicsExtractor g) {
         //g.hLine(getX(), getX() + width - 1, getY() + 1, 0xff1c1c17);
         //g.hLine(getX(), getX() + width - 1, getY() + 2, 0xff3c3c42);
-        collapseButton.extractRenderState(g, mouseX, mouseY, pt);
+        collapseButton.extractRenderState(g);
 
         if (collapsed) {
             return;
         }
 
         collapseButton.renderExpandedBranchLine(g);
-        addButton.extractRenderState(g, mouseX, mouseY, pt);
+        addButton.extractRenderState(g);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int left = getX();
@@ -338,7 +338,7 @@ public class MapWidget<V> extends AbstractEntryWidget<Map>
 //                g.hLine(left, right, entryBottom + 1, 0xff1c1c17);
 //                g.hLine(left, right, entryBottom + 2, 0xff3c3c42);
 //            }
-            e.extractRenderState(g, mouseX, mouseY, pt);
+            e.extractRenderState(g);
         }
     }
 

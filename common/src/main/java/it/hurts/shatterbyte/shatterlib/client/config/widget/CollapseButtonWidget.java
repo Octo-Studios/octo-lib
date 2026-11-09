@@ -20,7 +20,7 @@ public class CollapseButtonWidget<E extends AbstractWidget> extends AbstractChil
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         //guiGraphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, BRANCH_LINE_COLOR);
         guiGraphics.horizontalLine(this.getX()+1, this.getX()+3, this.getY()+2, 0xffffffff);
 

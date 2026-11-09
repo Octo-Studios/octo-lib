@@ -138,11 +138,11 @@ public abstract class AbstractEntryWidget<E> extends AbstractWidget implements C
     }
 
     @Override
-    protected final void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.renderEntry(guiGraphics, mouseX, mouseY, partialTick);
+    protected final void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
+        this.renderEntry(guiGraphics);
     }
 
-    protected abstract void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick);
+    protected abstract void renderEntry(GuiGraphicsExtractor guiGraphics);
 
     public E getValue() {
         if (this.cachedValue == null) {

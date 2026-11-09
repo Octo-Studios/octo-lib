@@ -38,7 +38,7 @@ public class ItemWidget extends IdentifierWidget {
     }
 
     @Override
-    protected void renderLeading(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderLeading(GuiGraphicsExtractor guiGraphics) {
         ItemStack stack = getPreviewStack();
 
         if (stack.isEmpty()) {

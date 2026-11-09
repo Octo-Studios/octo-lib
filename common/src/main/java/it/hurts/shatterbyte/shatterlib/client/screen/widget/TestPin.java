@@ -34,7 +34,7 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics) {
         if (this.isHovered() && this.color == ShatterColor.GREEN) {
             this.color = ShatterColor.BLUE;
         } else if (!this.isHovered() && this.color == ShatterColor.BLUE) {
@@ -48,7 +48,7 @@ public class TestPin extends AbstractWidget implements Child<TestGear> {
 
         if (this.getParent() instanceof HasRenderMatrix has) {
             guiGraphics.pose().pushMatrix();
-            Vec2 bleh = RenderUtils.toScreenCoords(has.getMatrix(), mouseX, mouseY);
+            Vec2 bleh = RenderUtils.toScreenCoords(has.getMatrix(), guiGraphics.mouseX(), guiGraphics.mouseY());
             guiGraphics.pose().translate((float) (bleh.x-0.5), (float) (bleh.y-0.5));
             RenderUtils.renderOutline(guiGraphics, 0, 0, 2, 2, 0xffff0000);
             guiGraphics.pose().popMatrix();

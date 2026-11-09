@@ -175,10 +175,10 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
         //guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.width, this.getY()+this.height, 0x20000000);
         //this.repositionWidgets();
-        collapseButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        collapseButton.extractRenderState(guiGraphics);
 
         if (collapsed) {
             return;
@@ -213,7 +213,7 @@ public class GenericObjectWidget extends AbstractEntryWidget<Object> implements 
                 continue;
             }
 
-            widget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+            widget.extractRenderState(guiGraphics);
         }
 
         //guiGraphics.verticalLine(this.getX()+4, this.getY()+16, this.getY()+this.getHeight(), 0xff1c1c17);

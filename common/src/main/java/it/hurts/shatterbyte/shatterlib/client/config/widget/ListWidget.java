@@ -269,18 +269,18 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
     /* ---------- render ---------- */
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float pt) {
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
         //guiGraphics.fill(getX(), getY(), getX() + width, getY() + height, 0x22000000);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 1, 0xff1c1c17);
         //guiGraphics.hLine(this.getX(), this.getX() + this.width -1, this.getY() + 2, 0xff3c3c42);
-        collapseButton.extractRenderState(guiGraphics, mouseX, mouseY, pt);
+        collapseButton.extractRenderState(guiGraphics);
 
         if (collapsed) {
             return;
         }
 
         collapseButton.renderExpandedBranchLine(guiGraphics);
-        addButton.extractRenderState(guiGraphics, mouseX, mouseY, pt);
+        addButton.extractRenderState(guiGraphics);
 
         int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int left = this.getX();
@@ -298,7 +298,7 @@ public class ListWidget<E> extends AbstractEntryWidget<List>
 //                guiGraphics.hLine(left, right, widgetBottom + 1, 0xff1c1c17);
 //                guiGraphics.hLine(left, right, widgetBottom + 2, 0xff3c3c42);
 //            }
-            widget.extractRenderState(guiGraphics, mouseX, mouseY, pt);
+            widget.extractRenderState(guiGraphics);
         }
     }
 

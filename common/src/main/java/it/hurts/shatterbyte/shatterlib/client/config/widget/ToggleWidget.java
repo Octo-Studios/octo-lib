@@ -9,8 +9,8 @@ import it.hurts.shatterbyte.shatterlib.module.config.ShatterConfig;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
 
 import java.lang.annotation.Annotation;
@@ -33,17 +33,17 @@ public class ToggleWidget extends AbstractEntryWidget<Boolean> {
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        UIElements.TOGGLE_DISABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 3);
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
+        UIElements.TOGGLE_DISABLED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY() + 3);
         if (this.progress > 0f) {
             guiGraphics.enableScissor(this.getX(), this.getY(), Mth.ceil(this.getX() + progress * 10), this.getY() + this.height + 1);
-            UIElements.TOGGLE_ENABLED.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY() + 3);
+            UIElements.TOGGLE_ENABLED.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY() + 3);
             guiGraphics.disableScissor();
         }
 
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(progress * 10f, 2);
-        UIElements.TOGGLE_THINGY.render(guiGraphics, RenderPipelines.GUI_TEXTURED, this.getX(), this.getY());
+        UIElements.TOGGLE_THINGY.render(guiGraphics, GuiPipeline.TEXTURED, this.getX(), this.getY());
         guiGraphics.pose().popMatrix();
     }
 

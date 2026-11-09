@@ -7,13 +7,13 @@ import it.hurts.shatterbyte.shatterlib.util.ShatterColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -414,9 +414,9 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
     }
 
     @Override
-    protected void renderEntry(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        rowHexWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        togglePopupButton.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    protected void renderEntry(GuiGraphicsExtractor guiGraphics) {
+        rowHexWidget.extractRenderState(guiGraphics);
+        togglePopupButton.extractRenderState(guiGraphics);
         renderToggleColorSwatch(guiGraphics);
 
         if (!expanded) {
@@ -434,23 +434,23 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
         renderFieldLabel(guiGraphics, "HSV", layout.labelLocalX(), layout.hsvFieldLocalY());
         renderFieldLabel(guiGraphics, "HSL", layout.labelLocalX(), layout.hslFieldLocalY());
 
-        popupHexWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        rgbRWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        rgbGWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        rgbBWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        popupHexWidget.extractRenderState(guiGraphics);
+        rgbRWidget.extractRenderState(guiGraphics);
+        rgbGWidget.extractRenderState(guiGraphics);
+        rgbBWidget.extractRenderState(guiGraphics);
 
-        cmykCWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        cmykMWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        cmykYWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        cmykKWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        cmykCWidget.extractRenderState(guiGraphics);
+        cmykMWidget.extractRenderState(guiGraphics);
+        cmykYWidget.extractRenderState(guiGraphics);
+        cmykKWidget.extractRenderState(guiGraphics);
 
-        hsvHWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        hsvSWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        hsvVWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hsvHWidget.extractRenderState(guiGraphics);
+        hsvSWidget.extractRenderState(guiGraphics);
+        hsvVWidget.extractRenderState(guiGraphics);
 
-        hslHWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        hslSWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
-        hslLWidget.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+        hslHWidget.extractRenderState(guiGraphics);
+        hslSWidget.extractRenderState(guiGraphics);
+        hslLWidget.extractRenderState(guiGraphics);
 
         Rect svRect = toGlobalRect(layout.pickerLocalX(), layout.svLocalY(), layout.pickerWidth(), SV_H);
         Rect hueRect = toGlobalRect(layout.pickerLocalX(), layout.hueLocalY(), layout.pickerWidth(), SLIDER_H);
@@ -912,7 +912,7 @@ public class ShatterColorWidget extends AbstractEntryWidget<ShatterColor> implem
     }
 
     private void renderFrame(GuiGraphicsExtractor guiGraphics, Rect rect) {
-        UIElements.FRAME.render(guiGraphics, RenderPipelines.GUI_TEXTURED, rect.x() - 1, rect.y() - 1, rect.width() + 2, rect.height() + 2);
+        UIElements.FRAME.render(guiGraphics, GuiPipeline.TEXTURED, rect.x() - 1, rect.y() - 1, rect.width() + 2, rect.height() + 2);
         guiGraphics.fill(rect.x(), rect.y(), rect.right(), rect.y() + 1, PANEL_BORDER);
         guiGraphics.fill(rect.x(), rect.bottom() - 1, rect.right(), rect.bottom(), PANEL_BORDER);
     }

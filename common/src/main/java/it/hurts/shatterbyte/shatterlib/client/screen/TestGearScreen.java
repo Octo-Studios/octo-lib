@@ -7,6 +7,7 @@ import it.hurts.shatterbyte.shatterlib.client.screen.widget.TestGear;
 import it.hurts.shatterbyte.shatterlib.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -14,8 +15,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.Random;
-
-import static net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED;
 
 public class TestGearScreen extends Screen {
     Tween tween = Tween.create().setLoops(-1);
@@ -49,17 +48,17 @@ public class TestGearScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics) {
         //super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+        super.extractRenderState(guiGraphics);
         if (shouldTick) {
             this.shouldTick = false;
             guiGraphics.pose().pushMatrix();
-            guiGraphics.pose().translate(mouseX,mouseY);
+            guiGraphics.pose().translate(guiGraphics.mouseX(), guiGraphics.mouseY());
             UIParticle particle = new GalacticUIParticle(1.25f, 40, 0, 0, UIParticle.Layer.SCREEN, 0);
             particle.setScreen(this);
             particle.setRollVelocity(new Random().nextFloat(-5, 5));
@@ -68,7 +67,7 @@ public class TestGearScreen extends Screen {
             guiGraphics.pose().popMatrix();
         }
 
-        RenderUtils.renderTilingTexture(GUI_TEXTURED, Identifier.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);
+        RenderUtils.renderTilingTexture(GuiPipeline.TEXTURED, Identifier.withDefaultNamespace("textures/particle/sga_").withSuffix("a.png"), guiGraphics, 10, 10, 0, 0, 8, 8, 80, 80, 0xffffffff, true, false);
     }
 
     @Override

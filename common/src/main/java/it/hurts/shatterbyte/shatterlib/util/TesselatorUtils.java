@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.BindGroupLayouts;
 import it.hurts.shatterbyte.shatterlib.ShatterLib;
+import net.minecraft.client.renderer.oit.OitPipelineSet;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -26,21 +27,29 @@ import static net.minecraft.client.renderer.RenderPipelines.*;
 
 public class TesselatorUtils {
 
-    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(ENTITY_SNIPPET)
-            .withDepthStencilState(DepthStencilState.DEFAULT)
-            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
+    private static final RenderPipeline.Snippet TRAIL_SNIPPET = RenderPipeline.builder(ENTITY_SNIPPET)
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
             .withShaderDefine("PER_FACE_LIGHTING")
             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
             .withPolygonMode(PolygonMode.FILL)
             .withVertexBinding(0, DefaultVertexFormat.ENTITY)
             .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .buildSnippet();
+
+    public static final RenderPipeline TRAIL_PIPELINE = RenderPipeline.builder(TRAIL_SNIPPET)
+            .withDepthStencilState(DepthStencilState.DEFAULT)
+            .withColorTargetState(new ColorTargetState(BlendFunction.LIGHTNING))
             .withLocation(Identifier.fromNamespaceAndPath(ShatterLib.MOD_ID, "trail"))
+            .build();
+
+    private static final OitPipelineSet TRAIL_OIT_PIPELINES = OitPipelineSet.builder(
+            ShatterLib.MOD_ID + "_trail", RenderPipeline.builder(TRAIL_SNIPPET).withShaderDefine("OIT_ADDITIVE"))
             .build();
 
     private static final Function<Identifier, RenderType> RENDER_TYPE_FUNCTION = Util.memoize(
             (identifier) -> {
                 RenderSetup renderSetup = RenderSetup.builder(TRAIL_PIPELINE)
+                        .setOitPipelines(TRAIL_OIT_PIPELINES)
                         .withTexture("Sampler0", identifier)
                         .useLightmap()
                         .useOverlay()
@@ -48,7 +57,7 @@ public class TesselatorUtils {
                         .sortOnUpload()
                         .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
                         .createRenderSetup();
-                return RenderType.create("entity_translucent_cull", renderSetup);
+                return RenderType.create("shatterlib_trail", renderSetup);
             }
     );
 

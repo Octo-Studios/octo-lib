@@ -2,7 +2,6 @@ package it.hurts.octostudios.octolib.module.network;
 
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import it.hurts.octostudios.octolib.module.config.network.SyncConfigPacket;
 import it.hurts.octostudios.octolib.module.config.network.TestScreenPacket;
 import it.hurts.octostudios.octolib.module.config.network.UnholyAbominationPacket;
@@ -13,9 +12,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class OctolibNetwork {
     public static void init() {
-        registerS2C(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC, SyncConfigPacket::handle);
-        registerS2C(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC, TestScreenPacket::handle);
-        registerS2C(UnholyAbominationPacket.TYPE, UnholyAbominationPacket.STREAM_CODEC, UnholyAbominationPacket::handle);
+        if (Platform.getEnv() == EnvType.SERVER) {
+            NetworkManager.registerS2CPayloadType(SyncConfigPacket.TYPE, SyncConfigPacket.STREAM_CODEC);
+            NetworkManager.registerS2CPayloadType(TestScreenPacket.TYPE, TestScreenPacket.STREAM_CODEC);
+            NetworkManager.registerS2CPayloadType(UnholyAbominationPacket.TYPE, UnholyAbominationPacket.STREAM_CODEC);
+        }
     }
 
     public static <T extends CustomPacketPayload> void registerS2C (

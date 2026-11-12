@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
+  "id": "octolib",
   "version": "${mod_version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
@@ -11,15 +11,15 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "it.hurts.shatterbyte.${mod_id}.fabric.ShatterLibFabric"
+      "it.hurts.octostudios.${mod_id}.fabric.OctoLibFabric"
     ],
     "client": [
-      "it.hurts.shatterbyte.${mod_id}.fabric.ShatterLibFabricClient"
+      "it.hurts.octostudios.${mod_id}.fabric.OctoLibFabricClient"
     ]
   },
   "mixins": [
-    "shatterlib-common.mixins.json",
-    "shatterlib-fabric.mixins.json"
+    "octolib-common.mixins.json",
+    "octolib-fabric.mixins.json"
   ],
   "depends": {
     "minecraft": ">=1.21.8",

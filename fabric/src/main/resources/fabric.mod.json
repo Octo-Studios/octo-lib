@@ -22,12 +22,19 @@
     "octolib-fabric.mixins.json"
   ],
   "depends": {
-    "minecraft": "~1.21",
+    "minecraft": [
+      "1.21",
+      "1.21.1"
+    ],
     "java": ">=21",
     "architectury": ">=13.0.2",
     "fabric-api": "*"
   },
-  "suggests": {
-    "another-mod": "*"
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
   }
 }

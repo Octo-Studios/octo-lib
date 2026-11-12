@@ -12,6 +12,7 @@ public final class OctoLibClient {
     
     private static void registerEvents() {
         ClientTickEvent.CLIENT_LEVEL_PRE.register(OctoRenderManager::clientTick);
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(OctoRenderManager::worldExit);
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(p -> ConfigManager.reloadAll());
     }
 }

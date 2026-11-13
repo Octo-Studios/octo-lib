@@ -11,7 +11,7 @@ public class CompoundEntry extends ConfigEntry implements Map<String, ConfigEntr
     public static final CfgTag COMPOUND_CFG_TAG = new CfgTag(CompoundEntry.class);
     
     public static final Map<CfgTag, ScalarFactory> SCALAR_FACTORIES = new HashMap<>() {{
-        put(CfgTag.INT, o -> new IntEntry((Integer) o));
+        put(CfgTag.INT, o -> new IntEntry((Number) o));
         put(CfgTag.STR, o -> new StringEntry((String) o));
         put(CfgTag.FLOAT, o -> new DoubleEntry((Double) o));
         put(CfgTag.BOOL, o -> new BoolEntry((Boolean) o));
@@ -226,7 +226,7 @@ public class CompoundEntry extends ConfigEntry implements Map<String, ConfigEntr
     public int getInt(String key) {
         var entry = map.get(key);
         checkType(entry, CfgTag.INT);
-        return (int) entry.getData();
+        return Integer.parseInt(entry.getData().toString());
     }
     
     private void checkType(ConfigEntry entry, CfgTag tag) {

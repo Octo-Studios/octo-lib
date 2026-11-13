@@ -5,6 +5,7 @@ import it.hurts.octostudios.octolib.modules.config.cfgbuilder.*;
 import it.hurts.octostudios.octolib.modules.config.cfgbuilder.scalar.ScalarEntry;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.comments.CommentLine;
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -230,11 +231,17 @@ public class ConstructorExt extends Constructor {
                 map.put(key, value);
                 
                 if (keyNode.getBlockComments() != null)
-                    value.setBlockComment(keyNode.getBlockComments().stream().map(l -> l.getValue().substring(1)).collect(Collectors.joining("\n")));
+                    value.setBlockComment(readComments(keyNode.getBlockComments()));
                 if (keyNode.getInLineComments() != null)
-                    value.setInlineComment(keyNode.getInLineComments().stream().map(l -> l.getValue().substring(1)).collect(Collectors.joining("\n")));
+                    value.setInlineComment(readComments(keyNode.getInLineComments()));
             }
             return map;
+        }
+
+        private String readComments(List<CommentLine> comments) {
+            return comments.stream().map(CommentLine::getValue)
+                    .map(value -> value.startsWith(" ") ? value.substring(1) : value)
+                    .collect(Collectors.joining("\n"));
         }
         
         protected ScalarEntry constructScalar(Node valueNode) {

@@ -1,4 +1,4 @@
-package it.hurts.octostudios.octolib.module.config.loader;
+package it.hurts.shatterbyte.shatterlib.module.config.loader;
 
 import java.io.IOException;
 import java.io.StringReader;

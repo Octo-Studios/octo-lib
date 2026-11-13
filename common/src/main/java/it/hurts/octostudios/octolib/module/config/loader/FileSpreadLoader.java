@@ -5,9 +5,9 @@ import it.hurts.octostudios.octolib.module.config.cfgbuilder.ArrayEntry;
 import it.hurts.octostudios.octolib.module.config.cfgbuilder.ConfigEntry;
 import it.hurts.octostudios.octolib.module.config.provider.ConfigProvider;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class FileSpreadLoader<T> implements IConfigFileLoader<Iterable<T>, List<
         var file = Platform.getConfigFolder().resolve(filePath + ".yaml").toFile();
     
         if (file.getParentFile().isDirectory() || file.getParentFile().mkdirs()) {
-            try (FileWriter writer = new FileWriter(file)) {
+            try (var writer = new FileWriter(file, StandardCharsets.UTF_8)) {
                 provider.saveAll(writer, data.iterator());
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -31,8 +31,8 @@ public class FileSpreadLoader<T> implements IConfigFileLoader<Iterable<T>, List<
         var file = Platform.getConfigFolder().resolve(filePath + ".yaml").toFile();
     
         if (file.isFile()) {
-            try (FileReader writer = new FileReader(file)) {
-                return provider.loadAll(writer, (Iterator) ((ArrayEntry) pattern).iterator());
+            try (var reader = YamlConfigReader.open(file.toPath())) {
+                return provider.loadAll(reader, (Iterator) ((ArrayEntry) pattern).iterator());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

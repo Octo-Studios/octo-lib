@@ -90,7 +90,7 @@ public class SchemeInjector implements EntryInjector<ConfigEntry> {
             return object;
         
         if (pattern == CfgTag.FLOAT && object.getTag() == CfgTag.INT)
-            return new DoubleEntry((int) object.getData());
+            return new DoubleEntry(((Number) object.getData()).doubleValue());
         
         if (object.getNodeId() == EntryId.SCALAR && pattern == CfgTag.STR)
             return new StringEntry(object.getData().toString());

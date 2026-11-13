@@ -1,6 +1,6 @@
-package it.hurts.octostudios.octolib.modules.config.cfgbuilder.scalar;
+package it.hurts.octostudios.octolib.module.config.cfgbuilder.scalar;
 
-import it.hurts.octostudios.octolib.modules.config.cfgbuilder.CfgTag;
+import it.hurts.octostudios.octolib.module.config.cfgbuilder.CfgTag;
 
 public class IntEntry extends NumberEntry{
     

@@ -11,7 +11,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.loading.moddiscovery.ModInfo;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -91,32 +90,29 @@ public final class NeoForgePlatformHelper implements ShatterLibPlatform {
 
     @Override
     public <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload) {
-        PacketDistributor.sendToPlayer(player, payload);
+        if (player.connection.hasChannel(payload))
+            PacketDistributor.sendToPlayer(player, payload);
     }
 
     @Override
     public <T extends CustomPacketPayload> void sendToPlayers(Collection<ServerPlayer> players, T payload) {
-        for (ServerPlayer player : players) {
-            PacketDistributor.sendToPlayer(player, payload);
-        }
+        for (var player : players)
+            sendToPlayer(player, payload);
     }
 
     private void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar(ShatterLib.MOD_ID).versioned("1");
+        var registrar = event.registrar(ShatterLib.MOD_ID).versioned("1");
+        var optionalRegistrar = registrar.optional();
 
-        for (ClientboundReceiverRegistration<?> registration : clientboundReceivers) {
+        for (var registration : clientboundReceivers)
+            registration.register(registration.type().id().getNamespace().equals(ShatterLib.MOD_ID) ? optionalRegistrar : registrar);
+
+        for (var registration : clientboundPayloads)
+            if (clientboundReceivers.stream().noneMatch(receiver -> receiver.type().id().equals(registration.type().id())))
+                registration.register(registration.type().id().getNamespace().equals(ShatterLib.MOD_ID) ? optionalRegistrar : registrar);
+
+        for (var registration : serverboundReceivers)
             registration.register(registrar);
-        }
-
-        for (ClientboundPayloadRegistration<?> registration : clientboundPayloads) {
-            if (clientboundReceivers.stream().noneMatch(receiver -> receiver.type().id().equals(registration.type().id()))) {
-                registration.register(registrar);
-            }
-        }
-
-        for (ServerboundReceiverRegistration<?> registration : serverboundReceivers) {
-            registration.register(registrar);
-        }
     }
 
     private record ClientboundPayloadRegistration<T extends CustomPacketPayload>(

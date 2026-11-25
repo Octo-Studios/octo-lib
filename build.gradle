@@ -65,8 +65,8 @@ subprojects {
     publishing {
         repositories {
             maven {
-                name = "octo"
-                url = "https://maven.octo-studios.com/releases"
+                name = "shatterbyte"
+                url = "https://maven.shatterbyte.com/releases"
                 credentials(PasswordCredentials)
                 authentication {
                     basic(BasicAuthentication)

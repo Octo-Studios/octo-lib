@@ -136,10 +136,10 @@ public final class ConfigManager {
         } catch (Exception e) {
             OctoLib.LOGGER.error("Error occurs while reading " + location + " config.");
             throw new RuntimeException(e);
-        } finally {
-            if (saveToFile)
-                config.getLoader().saveToFiles(location, Cast.cast(object), provider);
         }
+
+        if (saveToFile)
+            config.getLoader().saveToFiles(location, Cast.cast(object), provider);
     }
     
     public static synchronized void reloadStringConfig(String stringData, String location, boolean saveToFile) {
@@ -157,10 +157,10 @@ public final class ConfigManager {
         } catch (Exception e) {
             OctoLib.LOGGER.error("Error occurs while reading " + location + " config.");
             throw new RuntimeException(e);
-        } finally {
-            if (saveToFile)
-                config.getLoader().saveToFiles(location, Cast.cast(object), provider);
         }
+
+        if (saveToFile)
+            config.getLoader().saveToFiles(location, Cast.cast(object), provider);
     }
     
     public static synchronized String saveAsString(String location) {

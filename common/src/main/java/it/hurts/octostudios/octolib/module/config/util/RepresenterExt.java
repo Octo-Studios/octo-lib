@@ -109,6 +109,24 @@ public class RepresenterExt extends Representer {
         return new NodeTuple(nodeKey, nodeValue);
     }
     
+    @Override
+    protected void checkGlobalTag(Property property, Node node, Object object) {
+        if (removeTypes() || !(object instanceof Map<?, ?>) || !(node instanceof MappingNode mapping)) {
+            super.checkGlobalTag(property, node, object);
+            return;
+        }
+
+        var objectTags = new IdentityHashMap<Node, Tag>();
+        for (var entry : mapping.getValue()) {
+            var value = entry.getValueNode();
+            if (value instanceof MappingNode && value.getTag().isCustomGlobal())
+                objectTags.put(value, value.getTag());
+        }
+
+        super.checkGlobalTag(property, node, object);
+        objectTags.forEach(Node::setTag);
+    }
+
     protected boolean convertEnumToStr() {
         return false;
     }

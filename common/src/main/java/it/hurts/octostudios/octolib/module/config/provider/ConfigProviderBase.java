@@ -7,7 +7,6 @@ import lombok.Getter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -39,7 +38,9 @@ public class ConfigProviderBase implements ConfigProvider {
     }
     
     public static ConfigProviderBase getDefault(int indent) {
-        PropertyUtils propertyUtils = new PropertyUtilsExt();
+        var propertyUtils = new PropertyUtilsExt();
+
+        propertyUtils.setSkipMissingProperties(true);
         
         LoaderOptions loaderOptions = new LoaderOptions();
         loaderOptions.setProcessComments(true);
